@@ -2,7 +2,6 @@
 #include "util/zfile.h"
 #include <QDebug>
 #include <QtMath>
-#include <QTextStream>
 
 ZDifference::ZDifference()
 {
@@ -56,6 +55,7 @@ void ZDifference::execute()
         if(makeRect())
         {
             recallRect();
+            //test
             for(int i = m_model_lst.size() - 2;i >= 0;i--)
             {
                 ZModel model = m_model_lst[i];
@@ -67,8 +67,8 @@ void ZDifference::execute()
 
 bool ZDifference::initRect()
 {
-    m_diff_rect_rows = ZFile::lines(m_file_src);
-    m_diff_rect_cols = ZFile::lines(m_file_dst);
+    m_diff_rect_rows = ZFile::lines(m_file_src, m_line_src_lst);
+    m_diff_rect_cols = ZFile::lines(m_file_dst, m_line_dst_lst);
 
     if(m_diff_rect_rows == -1 || m_diff_rect_cols == -1)
     {
@@ -102,73 +102,30 @@ bool ZDifference::initRect()
 
 bool ZDifference::makeRect()
 {
-    int diff_rect_row = 1;
-    int diff_rect_col = 1;
+    int line_src_count = m_line_src_lst.size();
+    int line_dst_count = m_line_dst_lst.size();
 
-    if(!m_file_src->open(QIODevice::ReadOnly | QIODevice::Text))
+    for(int i = 0;i < line_src_count;i++)
     {
-        return false;
-    }
-
-    if(!m_file_dst->open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return false;
-    }
-
-    QTextStream in_src(m_file_src);
-    QTextStream in_dst(m_file_dst);
-
-    while(!in_src.atEnd())
-    {
-        short top = m_diff_rect[diff_rect_row - 1][diff_rect_col];
-        short top_left = m_diff_rect[diff_rect_row - 1][diff_rect_col - 1];
-        short left = m_diff_rect[diff_rect_row][diff_rect_col - 1];
-
-        QString line_src = in_src.readLine();
-        QString line_dst = NULL;
-        if(!in_dst.atEnd())
+        QString line_src = m_line_src_lst[i];
+        for(int j = 0;j < line_dst_count;j++)
         {
-            line_dst = in_dst.readLine();
+            QString line_dst = m_line_dst_lst[j];
+
+            short top = m_diff_rect[i][j + 1];
+            short top_left = m_diff_rect[i][j];
+            short left = m_diff_rect[i + 1][j];
+
             if(QString::compare(line_src, line_dst) == 0)
             {
-                m_diff_rect[diff_rect_row][diff_rect_col] = top_left;
+                m_diff_rect[i + 1][j + 1] = top_left;
             }
             else
             {
-                m_diff_rect[diff_rect_row][diff_rect_col] = qMin(top, qMin(top_left, left)) + 1;
+                m_diff_rect[i + 1][j + 1] = qMin(top, qMin(top_left, left)) + 1;
             }
-
-            diff_rect_col++;
-            m_line_dst_lst.append(line_dst);
         }
-        else
-        {
-            diff_rect_col -= 1;
-            m_diff_rect[diff_rect_row][diff_rect_col] = qMin(top, qMin(top_left, left)) + 1;
-        }
-
-        diff_rect_row++;
-        m_line_src_lst.append(line_src);
     }
-
-    diff_rect_row -= 1;
-
-    while(!in_dst.atEnd())
-    {
-        short top = m_diff_rect[diff_rect_row - 1][diff_rect_col];
-        short top_left = m_diff_rect[diff_rect_row - 1][diff_rect_col - 1];
-        short left = m_diff_rect[diff_rect_row][diff_rect_col - 1];
-
-        QString line_dst = in_dst.readLine();
-
-        m_diff_rect[diff_rect_row][diff_rect_col] = qMin(top, qMin(top_left, left)) + 1;
-
-        diff_rect_col++;
-        m_line_dst_lst.append(line_dst);
-    }
-
-    m_file_src->close();
-    m_file_dst->close();
 
     return true;
 }
