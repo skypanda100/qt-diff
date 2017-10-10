@@ -142,7 +142,7 @@ bool Difference::makeRect()
     in_dst.close();
 }
 
-bool Difference::recallRect()
+void Difference::recallRect()
 {
     int row = m_diff_rect_rows;
     int col = m_diff_rect_cols;
@@ -152,56 +152,96 @@ bool Difference::recallRect()
 
     while(i >= 0 && j >= 0)
     {
-        short top = m_diff_rect[i - 1][j];
-        short top_left = m_diff_rect[i - 1][j - 1];
-        short left = m_diff_rect[i][j - 1];
+        QString line_src = m_line_src_lst[i];
+        QString line_dst = m_line_dst_lst[j];
+
+        short top = 0;
+        short top_left = 0;
+        short left = 0;
 
         short[] val_arr = {top_left, top, left};
         int[] idx_arr = {0, 1, 2};
 
-        QString line_src = m_line_src_lst[i];
-        QString line_dst = m_line_dst_lst[j];
-        if(QString::compare(line_src, line_dst) == 0)
+        if(i == 0 && j > 0)
         {
-            i -= 1;
-            j -= 1;
+            val_arr[0] = 1;
+            val_arr[1] = 1;
+            val_arr[2] = 0;
+        }
+        else if(i > 0 && j == 0)
+        {
+            val_arr[0] = 1;
+            val_arr[1] = 0;
+            val_arr[2] = 1;
         }
         else
         {
-            for(int k = 0;k < sizeof(val_arr) / sizeof(short) - 1;k++)
+            if(QString::compare(line_src, line_dst) == 0)
             {
-                short val_1 = val_arr[k];
-                short val_2 = val_arr[k + 1];
-
-                int idx_1 = idx_arr[k];
-                int idx_2 = idx_arr[k + 1];
-
-                if(val_1 <= val_2)
-                {
-                    short val_tmp = val_1;
-                    val_arr[k] = val_2;
-                    val_arr[k + 1] = val_tmp;
-
-                    int idx_tmp = idx_1;
-                    idx_arr[k] = idx_2;
-                    idx_arr[k + 1] = idx_tmp;
-                }
+                val_arr[0] = 0;
+                val_arr[1] = 1;
+                val_arr[2] = 1;
             }
-
-            int idx_last = idx_arr[sizeof(idx_arr) / sizeof(short) - 1];
-            switch(idx_last)
+            else
             {
-                case 0:
-                    i -= 1;
-                    j -= 1;
-                    break;
-                case 1:
-                    i -= 1;
-                    break;
-                case 2:
-                    j -= 1;
-                    break;
+                val_arr[0] = m_diff_rect[i - 1][j - 1];
+                val_arr[1] = m_diff_rect[i - 1][j];
+                val_arr[2] = m_diff_rect[i][j - 1];
             }
         }
+
+        for(int k = 0;k < sizeof(val_arr) / sizeof(short) - 1;k++)
+        {
+            short val_1 = val_arr[k];
+            short val_2 = val_arr[k + 1];
+
+            int idx_1 = idx_arr[k];
+            int idx_2 = idx_arr[k + 1];
+
+            if(val_1 <= val_2)
+            {
+                short val_tmp = val_1;
+                val_arr[k] = val_2;
+                val_arr[k + 1] = val_tmp;
+
+                int idx_tmp = idx_1;
+                idx_arr[k] = idx_2;
+                idx_arr[k + 1] = idx_tmp;
+            }
+        }
+
+        Model model;
+        int idx_last = idx_arr[sizeof(idx_arr) / sizeof(short) - 1];
+        switch(idx_last)
+        {
+            case 0:
+                model.setSrcLine(line_src);
+                model.setDstLine(line_dst);
+                if(QString::compare(line_src, line_dst) == 0)
+                {
+                    model.setStatus(0);
+                }
+                else
+                {
+                    model.setStatus(1);
+                }
+                i -= 1;
+                j -= 1;
+                break;
+            case 1:
+                model.setSrcLine(line_src);
+                model.setDstLine(NULL);
+                model.setStatus(2);
+                i -= 1;
+                break;
+            case 2:
+                model.setSrcLine(NULL);
+                model.setDstLine(line_dst);
+                model.setStatus(3);
+                j -= 1;
+                break;
+        }
+
+        m_model_lst.append(model);
     }
 }

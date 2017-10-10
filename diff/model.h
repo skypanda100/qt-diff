@@ -24,7 +24,7 @@ public:
 private:
     QString m_src_line;
     QString m_dst_line;
-    int m_status;
+    int m_status; //0:same 1:modify 2:delete 3:add
 };
 
 #endif // MODEL

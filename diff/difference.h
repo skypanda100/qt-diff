@@ -20,7 +20,7 @@ public:
 private:
     bool initRect();
     bool makeRect();
-    bool recallRect();
+    void recallRect();
 
 private:
     QFile m_file_src;
