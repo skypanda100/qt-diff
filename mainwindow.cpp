@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "diff/zdifference.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,5 +19,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::test()
 {
-
+    ZDifference difference;
+    difference.setFileSrc("I:/a.txt");
+    difference.setFileDst("I:/b.txt");
+    difference.execute();
 }

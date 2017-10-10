@@ -1,13 +1,13 @@
-#ifndef MODEL
-#define MODEL
+#ifndef ZMODEL
+#define ZMODEL
 
 #include <QString>
 
-class Model{
+class ZModel{
 
 public:
-    Model();
-    ~Model();
+    ZModel();
+    ~ZModel();
 
     QString line() const;
     void setLine(const QString &line);
@@ -27,5 +27,5 @@ private:
     int m_status; //0:same 1:modify 2:delete 3:add
 };
 
-#endif // MODEL
+#endif // ZMODEL
 

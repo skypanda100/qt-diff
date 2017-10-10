@@ -1,16 +1,16 @@
-#ifndef DIFFERENCE
-#define DIFFERENCE
+#ifndef ZDIFFERENCE
+#define ZDIFFERENCE
 
 #include <QString>
 #include <QFile>
-#include "model.h"
+#include "zmodel.h"
 
-class Difference {
+class ZDifference {
 
 public:
-    Difference();
-    Difference(const QString &file_src, const QString &file_dst);
-    ~Difference();
+    ZDifference();
+    ZDifference(const QString &file_src, const QString &file_dst);
+    ~ZDifference();
 
     void setFileSrc(const QString &file_src);
     void setFileDst(const QString &file_dst);
@@ -18,8 +18,6 @@ public:
     void execute();
 
 private:
-    int lines(QFile *file);
-
     bool initRect();
     bool makeRect();
     void recallRect();
@@ -34,8 +32,8 @@ private:
 
     QList<QString> m_line_src_lst;
     QList<QString> m_line_dst_lst;
-    QList<Model> m_model_lst;
+    QList<ZModel> m_model_lst;
 };
 
-#endif // DIFFERENCE
+#endif // ZDIFFERENCE
 

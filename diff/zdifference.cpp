@@ -1,23 +1,24 @@
-#include "difference.h"
+#include "zdifference.h"
+#include "util/zfile.h"
 #include <QDebug>
 #include <QtMath>
 #include <QTextStream>
 
-Difference::Difference()
+ZDifference::ZDifference()
 {
     m_diff_rect = NULL;
     m_file_src = NULL;
     m_file_dst = NULL;
 }
 
-Difference::Difference(const QString &file_src, const QString &file_dst)
+ZDifference::ZDifference(const QString &file_src, const QString &file_dst)
 {
     m_diff_rect = NULL;
     m_file_src = new QFile(file_src);
     m_file_dst = new QFile(file_dst);
 }
 
-Difference::~Difference()
+ZDifference::~ZDifference()
 {
     if(m_diff_rect != NULL)
     {
@@ -38,58 +39,36 @@ Difference::~Difference()
     }
 }
 
-void Difference::setFileSrc(const QString &file_src)
+void ZDifference::setFileSrc(const QString &file_src)
 {
     m_file_src = new QFile(file_src);
 }
 
-void Difference::setFileDst(const QString &file_dst)
+void ZDifference::setFileDst(const QString &file_dst)
 {
     m_file_dst = new QFile(file_dst);
 }
 
-void Difference::execute()
+void ZDifference::execute()
 {
     if(initRect())
     {
         if(makeRect())
         {
             recallRect();
-            for(int i = 0;i < m_model_lst.size();i++)
+            for(int i = m_model_lst.size() - 2;i >= 0;i--)
             {
-                Model model = m_model_lst[i];
+                ZModel model = m_model_lst[i];
                 qDebug() << model.srcLine() << model.dstLine() << model.status();
             }
         }
     }
 }
 
-int Difference::lines(QFile *file)
+bool ZDifference::initRect()
 {
-    int count = -1;
-    if(!file->open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return count;
-    }
-    else
-    {
-        count = 0;
-    }
-
-    QTextStream in(file);
-    while(!in.atEnd())
-    {
-        count++;
-    }
-    file->close();
-
-    return count;
-}
-
-bool Difference::initRect()
-{
-    m_diff_rect_rows = lines(m_file_src);
-    m_diff_rect_cols = lines(m_file_dst);
+    m_diff_rect_rows = ZFile::lines(m_file_src);
+    m_diff_rect_cols = ZFile::lines(m_file_dst);
 
     if(m_diff_rect_rows == -1 || m_diff_rect_cols == -1)
     {
@@ -105,9 +84,9 @@ bool Difference::initRect()
     for(int i = 0;i < m_diff_rect_rows;i++)
     {
         m_diff_rect[i] = new short[m_diff_rect_cols];
+        memset(m_diff_rect[i], 0, m_diff_rect_cols);
     }
 
-    memset(m_diff_rect, 0, m_diff_rect_rows * m_diff_rect_cols);
     for(int i = 1;i < m_diff_rect_rows;i++)
     {
         m_diff_rect[i][0] = i;
@@ -121,7 +100,7 @@ bool Difference::initRect()
     return true;
 }
 
-bool Difference::makeRect()
+bool ZDifference::makeRect()
 {
     int diff_rect_row = 1;
     int diff_rect_col = 1;
@@ -164,12 +143,15 @@ bool Difference::makeRect()
         }
         else
         {
+            diff_rect_col -= 1;
             m_diff_rect[diff_rect_row][diff_rect_col] = qMin(top, qMin(top_left, left)) + 1;
         }
 
         diff_rect_row++;
         m_line_src_lst.append(line_src);
     }
+
+    diff_rect_row -= 1;
 
     while(!in_dst.atEnd())
     {
@@ -191,7 +173,7 @@ bool Difference::makeRect()
     return true;
 }
 
-void Difference::recallRect()
+void ZDifference::recallRect()
 {
     int row = m_diff_rect_rows;
     int col = m_diff_rect_cols;
@@ -231,6 +213,12 @@ void Difference::recallRect()
             val_arr[1] = 0;
             val_arr[2] = 1;
         }
+        else if(i == 0 && j == 0)
+        {
+            val_arr[0] = 0;
+            val_arr[1] = 0;
+            val_arr[2] = 0;
+        }
         else
         {
             if(QString::compare(line_src, line_dst) == 0)
@@ -267,7 +255,7 @@ void Difference::recallRect()
             }
         }
 
-        Model model;
+        ZModel model;
         int idx_last = idx_arr[sizeof(idx_arr) / sizeof(int) - 1];
         switch(idx_last)
         {

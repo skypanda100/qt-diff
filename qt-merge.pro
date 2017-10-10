@@ -14,11 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    diff/difference.cpp \
-    diff/model.cpp
+    diff/zdifference.cpp \
+    diff/zmodel.cpp \
+    util/zfile.cpp
 
 HEADERS  += mainwindow.h \
-    diff/difference.h \
-    diff/model.h
+    diff/zdifference.h \
+    diff/zmodel.h \
+    util/zfile.h
 
 FORMS    +=
