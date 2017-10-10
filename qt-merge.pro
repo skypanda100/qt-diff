@@ -15,12 +15,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     diff/difference.cpp \
-    util/file.cpp \
     diff/model.cpp
 
 HEADERS  += mainwindow.h \
     diff/difference.h \
-    util/file.h \
     diff/model.h
 
-FORMS    += mainwindow.ui
+FORMS    +=

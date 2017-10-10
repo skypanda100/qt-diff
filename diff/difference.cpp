@@ -1,53 +1,95 @@
 #include "difference.h"
-#include "util/file.h"
-#include <QTextStream>
+#include <QDebug>
 #include <QtMath>
+#include <QTextStream>
 
 Difference::Difference()
-    : m_diff_rect(NULL)
 {
-
+    m_diff_rect = NULL;
+    m_file_src = NULL;
+    m_file_dst = NULL;
 }
 
-Difference::Difference(QFile file_src, QFile file_dst)
-    : m_file_src(file_src)
-    , m_file_dst(file_dst)
-    , m_diff_rect(NULL)
+Difference::Difference(const QString &file_src, const QString &file_dst)
 {
-
+    m_diff_rect = NULL;
+    m_file_src = new QFile(file_src);
+    m_file_dst = new QFile(file_dst);
 }
 
 Difference::~Difference()
 {
     if(m_diff_rect != NULL)
     {
-        delete m_diff_rect;
+        delete[] m_diff_rect;
         m_diff_rect = NULL;
+    }
+
+    if(m_file_src != NULL)
+    {
+        delete m_file_src;
+        m_file_src = NULL;
+    }
+
+    if(m_file_dst != NULL)
+    {
+        delete m_file_dst;
+        m_file_dst = NULL;
     }
 }
 
-void Difference::setFileSrc(QFile file_src)
+void Difference::setFileSrc(const QString &file_src)
 {
-    m_file_src = file_src;
+    m_file_src = new QFile(file_src);
 }
 
-void Difference::setFileDst(QFile file_dst)
+void Difference::setFileDst(const QString &file_dst)
 {
-    m_file_dst = file_dst;
+    m_file_dst = new QFile(file_dst);
 }
 
 void Difference::execute()
 {
     if(initRect())
     {
-        makeRect();
+        if(makeRect())
+        {
+            recallRect();
+            for(int i = 0;i < m_model_lst.size();i++)
+            {
+                Model model = m_model_lst[i];
+                qDebug() << model.srcLine() << model.dstLine() << model.status();
+            }
+        }
     }
+}
+
+int Difference::lines(QFile *file)
+{
+    int count = -1;
+    if(!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return count;
+    }
+    else
+    {
+        count = 0;
+    }
+
+    QTextStream in(file);
+    while(!in.atEnd())
+    {
+        count++;
+    }
+    file->close();
+
+    return count;
 }
 
 bool Difference::initRect()
 {
-    m_diff_rect_rows = FileUtil::lines(m_file_src);
-    m_diff_rect_cols = FileUtil::lines(m_file_dst);
+    m_diff_rect_rows = lines(m_file_src);
+    m_diff_rect_cols = lines(m_file_dst);
 
     if(m_diff_rect_rows == -1 || m_diff_rect_cols == -1)
     {
@@ -59,7 +101,12 @@ bool Difference::initRect()
         m_diff_rect_cols += 1;
     }
 
-    m_diff_rect = new short[m_diff_rect_rows][m_diff_rect_cols];
+    m_diff_rect = new short*[m_diff_rect_rows];
+    for(int i = 0;i < m_diff_rect_rows;i++)
+    {
+        m_diff_rect[i] = new short[m_diff_rect_cols];
+    }
+
     memset(m_diff_rect, 0, m_diff_rect_rows * m_diff_rect_cols);
     for(int i = 1;i < m_diff_rect_rows;i++)
     {
@@ -79,18 +126,18 @@ bool Difference::makeRect()
     int diff_rect_row = 1;
     int diff_rect_col = 1;
 
-    if(!m_file_src.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(!m_file_src->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
     }
 
-    if(!m_file_dst.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(!m_file_dst->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
     }
 
-    QTextStream in_src(&m_file_src);
-    QTextStream in_dst(&m_file_dst);
+    QTextStream in_src(m_file_src);
+    QTextStream in_dst(m_file_dst);
 
     while(!in_src.atEnd())
     {
@@ -138,8 +185,10 @@ bool Difference::makeRect()
         m_line_dst_lst.append(line_dst);
     }
 
-    in_src.close();
-    in_dst.close();
+    m_file_src->close();
+    m_file_dst->close();
+
+    return true;
 }
 
 void Difference::recallRect()
@@ -152,15 +201,23 @@ void Difference::recallRect()
 
     while(i >= 0 && j >= 0)
     {
-        QString line_src = m_line_src_lst[i];
-        QString line_dst = m_line_dst_lst[j];
+        QString line_src = NULL;
+        QString line_dst = NULL;
+        if(i - 1 >= 0)
+        {
+            line_src = m_line_src_lst[i - 1];
+        }
+        if(j - 1 >= 0)
+        {
+            line_dst = m_line_dst_lst[j - 1];
+        }
 
         short top = 0;
         short top_left = 0;
         short left = 0;
 
-        short[] val_arr = {top_left, top, left};
-        int[] idx_arr = {0, 1, 2};
+        short val_arr[3] = {top_left, top, left};
+        int idx_arr[3] = {0, 1, 2};
 
         if(i == 0 && j > 0)
         {
@@ -190,7 +247,7 @@ void Difference::recallRect()
             }
         }
 
-        for(int k = 0;k < sizeof(val_arr) / sizeof(short) - 1;k++)
+        for(int k = 0;k < (int)(sizeof(val_arr) / sizeof(short) - 1);k++)
         {
             short val_1 = val_arr[k];
             short val_2 = val_arr[k + 1];
@@ -211,7 +268,7 @@ void Difference::recallRect()
         }
 
         Model model;
-        int idx_last = idx_arr[sizeof(idx_arr) / sizeof(short) - 1];
+        int idx_last = idx_arr[sizeof(idx_arr) / sizeof(int) - 1];
         switch(idx_last)
         {
             case 0:
@@ -245,3 +302,4 @@ void Difference::recallRect()
         m_model_lst.append(model);
     }
 }
+
