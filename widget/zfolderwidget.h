@@ -16,7 +16,7 @@ private:
     void initConnect();
 
 private:
-    QStringList m_header;
+    QStringList mHeader;
 };
 
 #endif // ZFOLDERWIDGET

@@ -20,8 +20,8 @@ private:
     void initConnect();
 
 private:
-    ZTopWidget *m_top_widget;
-    ZCenterWidget *m_center_widget;
+    ZTopWidget *mTopWidget;
+    ZCenterWidget *mCenterWidget;
 };
 
 #endif // MAINWINDOW_H

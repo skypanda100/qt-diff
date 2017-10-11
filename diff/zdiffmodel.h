@@ -16,15 +16,15 @@ public:
     void setStatus(int status);
 
     QString srcLine() const;
-    void setSrcLine(const QString &src_line);
+    void setSrcLine(const QString &srcLine);
 
     QString dstLine() const;
-    void setDstLine(const QString &dst_line);
+    void setDstLine(const QString &dstLine);
 
 private:
-    QString m_src_line;
-    QString m_dst_line;
-    int m_status; //0:same 1:modify 2:delete 3:add
+    QString mSrcLine;
+    QString mDstLine;
+    int mStatus; //0:same 1:modify 2:delete 3:add
 };
 
 #endif // ZDIFFMODEL

@@ -15,8 +15,8 @@ private:
     void initConnect();
 
 private:
-    QToolButton *m_folder_button;
-    QToolButton *m_refresh_button;
+    QToolButton *mFolderButton;
+    QToolButton *mRefreshButton;
 };
 
 #endif // ZTOPWIDGET

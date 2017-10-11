@@ -10,8 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete m_top_widget;
-    delete m_center_widget;
+    delete mTopWidget;
+    delete mCenterWidget;
 }
 
 void MainWindow::initData()
@@ -21,11 +21,11 @@ void MainWindow::initData()
 
 void MainWindow::initUI()
 {
-    m_top_widget = new ZTopWidget;
-    this->addToolBar(m_top_widget);
+    mTopWidget = new ZTopWidget;
+    this->addToolBar(mTopWidget);
 
-    m_center_widget = new ZCenterWidget;
-    this->setCentralWidget(m_center_widget);
+    mCenterWidget = new ZCenterWidget;
+    this->setCentralWidget(mCenterWidget);
 }
 
 void MainWindow::initConnect()

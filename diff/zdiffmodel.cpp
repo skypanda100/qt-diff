@@ -10,30 +10,30 @@ ZDiffModel::~ZDiffModel(){
 
 QString ZDiffModel::srcLine() const
 {
-    return m_src_line;
+    return mSrcLine;
 }
 
-void ZDiffModel::setSrcLine(const QString &src_line)
+void ZDiffModel::setSrcLine(const QString &srcLine)
 {
-    m_src_line = src_line;
+    mSrcLine = srcLine;
 }
 
 QString ZDiffModel::dstLine() const
 {
-    return m_dst_line;
+    return mDstLine;
 }
 
-void ZDiffModel::setDstLine(const QString &dst_line)
+void ZDiffModel::setDstLine(const QString &dstLine)
 {
-    m_dst_line = dst_line;
+    mDstLine = dstLine;
 }
 
 int ZDiffModel::status() const
 {
-    return m_status;
+    return mStatus;
 }
 
 void ZDiffModel::setStatus(int status)
 {
-    m_status = status;
+    mStatus = status;
 }

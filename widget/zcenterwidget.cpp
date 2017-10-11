@@ -17,16 +17,16 @@ ZTabBar::~ZTabBar(){
 void ZTabBar::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
-        m_drag_start_pos = event->pos();
+        mDragStartPos = event->pos();
     QTabBar::mousePressEvent(event);
 }
 
 void ZTabBar::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        int diffX = event->pos().x() - m_drag_start_pos.x();
-        int diffY = event->pos().y() - m_drag_start_pos.y();
-        if ((event->pos() - m_drag_start_pos).manhattanLength() > QApplication::startDragDistance()
+        int diffX = event->pos().x() - mDragStartPos.x();
+        int diffY = event->pos().y() - mDragStartPos.y();
+        if ((event->pos() - mDragStartPos).manhattanLength() > QApplication::startDragDistance()
             && diffX < 3 && diffX > -3
             && diffY < -10) {
             QDrag *drag = new QDrag(this);
@@ -55,7 +55,7 @@ ZCenterWidget::ZCenterWidget(QWidget *parent)
 
 ZCenterWidget::~ZCenterWidget()
 {
-    delete m_tab_bar;
+    delete mTabBar;
 }
 
 void ZCenterWidget::closeTab(int index)
@@ -87,13 +87,13 @@ void ZCenterWidget::initData()
 void ZCenterWidget::initUI()
 {
     setElideMode(Qt::ElideRight);
-    m_tab_bar = new ZTabBar(this);
-    setTabBar(m_tab_bar);
+    mTabBar = new ZTabBar(this);
+    setTabBar(mTabBar);
     setDocumentMode(true);
 }
 
 void ZCenterWidget::initConnect()
 {
-    connect(m_tab_bar, SIGNAL(closeTab(int)), this, SLOT(closeTab(int)));
+    connect(mTabBar, SIGNAL(closeTab(int)), this, SLOT(closeTab(int)));
 }
 

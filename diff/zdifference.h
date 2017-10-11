@@ -9,11 +9,11 @@ class ZDifference {
 
 public:
     ZDifference();
-    ZDifference(const QString &file_src, const QString &file_dst);
+    ZDifference(const QString &fileSrc, const QString &fileDst);
     ~ZDifference();
 
-    void setFileSrc(const QString &file_src);
-    void setFileDst(const QString &file_dst);
+    void setFileSrc(const QString &fileSrc);
+    void setFileDst(const QString &fileDst);
 
     void execute();
 
@@ -23,16 +23,16 @@ private:
     void recallRect();
 
 private:
-    QFile *m_file_src;
-    QFile *m_file_dst;
+    QFile *mFileSrc;
+    QFile *mFileDst;
 
-    short **m_diff_rect;
-    int m_diff_rect_rows;
-    int m_diff_rect_cols;
+    short **mDiffRect;
+    int mDiffRectRows;
+    int mDiffRectCols;
 
-    QList<QString> m_line_src_lst;
-    QList<QString> m_line_dst_lst;
-    QList<ZDiffModel> m_model_lst;
+    QList<QString> mLineSrcLst;
+    QList<QString> mLineDstLst;
+    QList<ZDiffModel> mModelLst;
 };
 
 #endif // ZDIFFERENCE

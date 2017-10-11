@@ -9,7 +9,7 @@ public:
     ZFile();
     ~ZFile();
 
-    static int lines(QFile *file, QList<QString> &line_lst);
+    static int lines(QFile *file, QList<QString> &lineLst);
 };
 
 #endif // ZFILE

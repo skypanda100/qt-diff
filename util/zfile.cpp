@@ -11,7 +11,7 @@ ZFile::~ZFile()
 
 }
 
-int ZFile::lines(QFile *file, QList<QString> &line_lst){
+int ZFile::lines(QFile *file, QList<QString> &lineLst){
     int count = -1;
     if(!file->open(QIODevice::ReadOnly | QIODevice::Text)){
         return count;
@@ -21,7 +21,7 @@ int ZFile::lines(QFile *file, QList<QString> &line_lst){
 
     QTextStream in(file);
     while(!in.atEnd()){
-        line_lst.append(in.readLine());
+        lineLst.append(in.readLine());
         count++;
     }
     file->close();

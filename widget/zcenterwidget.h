@@ -19,7 +19,7 @@ protected:
 
 private:
     friend class ZCenterWidget;
-    QPoint m_drag_start_pos;
+    QPoint mDragStartPos;
 };
 
 class ZCenterWidget : public QTabWidget{
@@ -41,7 +41,7 @@ private:
     void initConnect();
 
 private:
-    ZTabBar *m_tab_bar;
+    ZTabBar *mTabBar;
 };
 
 #endif // ZCENTERWIDGET
