@@ -9,6 +9,9 @@ public:
     ZTopWidget(QWidget *parent = 0);
     ~ZTopWidget();
 
+signals:
+    void folderComparison();
+
 private:
     void initData();
     void initUI();

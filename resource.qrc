@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>icon/folder.png</file>
         <file>icon/refresh.png</file>
+        <file>icon/search.png</file>
     </qresource>
 </RCC>

@@ -1,4 +1,5 @@
 #include "zcenterwidget.h"
+#include "zfolderwidget.h"
 
 ZTabBar::ZTabBar(QWidget *parent)
     : QTabBar(parent)
@@ -70,9 +71,15 @@ void ZCenterWidget::closeTab(int index)
         return;
     }
 
-    QWidget *widget = this->widget(index);
+    ZFolderWidget *widget = (ZFolderWidget *)(this->widget(index));
     removeTab(index);
     delete widget;
+}
+
+void ZCenterWidget::folderComparison()
+{
+    ZFolderWidget *folderWidget = new ZFolderWidget;
+    addTab(folderWidget, "Folder comparison");
 }
 
 void ZCenterWidget::paintEvent(QPaintEvent *event){
