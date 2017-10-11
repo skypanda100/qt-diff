@@ -16,11 +16,13 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     diff/zdifference.cpp \
     diff/zmodel.cpp \
-    util/zfile.cpp
+    util/zfile.cpp \
+    tree/ztreemodel.cpp \
+    tree/ztreeitem.cpp
 
 HEADERS  += mainwindow.h \
     diff/zdifference.h \
     diff/zmodel.h \
-    util/zfile.h
-
-FORMS    +=
+    util/zfile.h \
+    tree/ztreemodel.h \
+    tree/ztreeitem.h
