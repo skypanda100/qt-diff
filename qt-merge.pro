@@ -15,14 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     diff/zdifference.cpp \
-    diff/zmodel.cpp \
     util/zfile.cpp \
-    tree/ztreemodel.cpp \
-    tree/ztreeitem.cpp
+    widget/tree/ztreemodel.cpp \
+    widget/tree/ztreeitem.cpp \
+    diff/zdiffmodel.cpp \
+    widget/ztopwidget.cpp
 
 HEADERS  += mainwindow.h \
     diff/zdifference.h \
-    diff/zmodel.h \
     util/zfile.h \
-    tree/ztreemodel.h \
-    tree/ztreeitem.h
+    widget/tree/ztreemodel.h \
+    widget/tree/ztreeitem.h \
+    diff/zdiffmodel.h \
+    widget/ztopwidget.h

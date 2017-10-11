@@ -58,7 +58,7 @@ void ZDifference::execute()
             //test
             for(int i = m_model_lst.size() - 2;i >= 0;i--)
             {
-                ZModel model = m_model_lst[i];
+                ZDiffModel model = m_model_lst[i];
                 qDebug() << model.srcLine() << model.dstLine() << model.status();
             }
         }
@@ -212,7 +212,7 @@ void ZDifference::recallRect()
             }
         }
 
-        ZModel model;
+        ZDiffModel model;
         int idx_last = idx_arr[sizeof(idx_arr) / sizeof(int) - 1];
         switch(idx_last)
         {

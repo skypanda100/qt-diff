@@ -12,11 +12,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-    void test();
+private:
+    void initData();
+    void initUI();
+    void initConnect();
 
 private:
-    QPushButton *button;
 };
 
 #endif // MAINWINDOW_H

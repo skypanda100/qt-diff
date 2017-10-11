@@ -1,13 +1,13 @@
-#ifndef ZMODEL
-#define ZMODEL
+#ifndef ZDIFFMODEL
+#define ZDIFFMODEL
 
 #include <QString>
 
-class ZModel{
+class ZDiffModel{
 
 public:
-    ZModel();
-    ~ZModel();
+    ZDiffModel();
+    ~ZDiffModel();
 
     QString line() const;
     void setLine(const QString &line);
@@ -27,5 +27,5 @@ private:
     int m_status; //0:same 1:modify 2:delete 3:add
 };
 
-#endif // ZMODEL
+#endif // ZDIFFMODEL
 

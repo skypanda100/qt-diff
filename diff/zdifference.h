@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QFile>
-#include "zmodel.h"
+#include "zdiffmodel.h"
 
 class ZDifference {
 
@@ -32,7 +32,7 @@ private:
 
     QList<QString> m_line_src_lst;
     QList<QString> m_line_dst_lst;
-    QList<ZModel> m_model_lst;
+    QList<ZDiffModel> m_model_lst;
 };
 
 #endif // ZDIFFERENCE

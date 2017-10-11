@@ -4,23 +4,26 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    button = new QPushButton;
-    button->setFixedSize(200, 50);
-    button->setText("test");
-    connect(button, SIGNAL(clicked()), this, SLOT(test()));
-
-    this->setCentralWidget(button);
+    initData();
+    initUI();
+    initConnect();
 }
 
 MainWindow::~MainWindow()
 {
-    delete button;
 }
 
-void MainWindow::test()
+void MainWindow::initData()
 {
-    ZDifference difference;
-    difference.setFileSrc("I:/a.txt");
-    difference.setFileDst("I:/b.txt");
-    difference.execute();
+
+}
+
+void MainWindow::initUI()
+{
+
+}
+
+void MainWindow::initConnect()
+{
+
 }
