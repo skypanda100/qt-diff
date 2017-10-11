@@ -43,4 +43,5 @@ void ZTopWidget::initUI()
 void ZTopWidget::initConnect()
 {
     connect(mFolderButton, SIGNAL(clicked()), this, SIGNAL(folderComparison()));
+    connect(mRefreshButton, SIGNAL(clicked()), this, SIGNAL(startOrRecompare()));
 }

@@ -1,23 +1,23 @@
-#include "zdifference.h"
+#include "zfilediff.h"
 #include "util/zfile.h"
 #include <QDebug>
 #include <QtMath>
 
-ZDifference::ZDifference()
+ZFileDiff::ZFileDiff()
 {
     mDiffRect = NULL;
     mFileSrc = NULL;
     mFileDst = NULL;
 }
 
-ZDifference::ZDifference(const QString &fileSrc, const QString &fileDst)
+ZFileDiff::ZFileDiff(const QString &fileSrc, const QString &fileDst)
 {
     mDiffRect = NULL;
     mFileSrc = new QFile(fileSrc);
     mFileDst = new QFile(fileDst);
 }
 
-ZDifference::~ZDifference()
+ZFileDiff::~ZFileDiff()
 {
     if(mDiffRect != NULL)
     {
@@ -38,17 +38,17 @@ ZDifference::~ZDifference()
     }
 }
 
-void ZDifference::setFileSrc(const QString &fileSrc)
+void ZFileDiff::setFileSrc(const QString &fileSrc)
 {
     mFileSrc = new QFile(fileSrc);
 }
 
-void ZDifference::setFileDst(const QString &fileDst)
+void ZFileDiff::setFileDst(const QString &fileDst)
 {
     mFileDst = new QFile(fileDst);
 }
 
-void ZDifference::execute()
+void ZFileDiff::execute()
 {
     if(initRect())
     {
@@ -58,14 +58,14 @@ void ZDifference::execute()
             //test
             for(int i = mModelLst.size() - 2;i >= 0;i--)
             {
-                ZDiffModel model = mModelLst[i];
+                ZFileDiffModel model = mModelLst[i];
                 qDebug() << model.srcLine() << model.dstLine() << model.status();
             }
         }
     }
 }
 
-bool ZDifference::initRect()
+bool ZFileDiff::initRect()
 {
     mDiffRectRows = ZFile::lines(mFileSrc, mLineSrcLst);
     mDiffRectCols = ZFile::lines(mFileDst, mLineDstLst);
@@ -100,7 +100,7 @@ bool ZDifference::initRect()
     return true;
 }
 
-bool ZDifference::makeRect()
+bool ZFileDiff::makeRect()
 {
     int lineSrcCount = mLineSrcLst.size();
     int lineDstCount = mLineDstLst.size();
@@ -130,7 +130,7 @@ bool ZDifference::makeRect()
     return true;
 }
 
-void ZDifference::recallRect()
+void ZFileDiff::recallRect()
 {
     int row = mDiffRectRows;
     int col = mDiffRectCols;
@@ -212,7 +212,7 @@ void ZDifference::recallRect()
             }
         }
 
-        ZDiffModel model;
+        ZFileDiffModel model;
         int idxLast = idxArr[sizeof(idxArr) / sizeof(int) - 1];
         switch(idxLast)
         {

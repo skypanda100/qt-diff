@@ -31,4 +31,6 @@ void MainWindow::initUI()
 void MainWindow::initConnect()
 {
     connect(mTopWidget, SIGNAL(folderComparison()), mCenterWidget, SLOT(folderComparison()));
+    connect(mTopWidget, SIGNAL(startOrRecompare()), mCenterWidget, SLOT(startOrRecompare()));
+
 }

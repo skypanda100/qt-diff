@@ -14,24 +14,28 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    diff/zdifference.cpp \
     util/zfile.cpp \
     widget/tree/ztreemodel.cpp \
     widget/tree/ztreeitem.cpp \
-    diff/zdiffmodel.cpp \
     widget/ztopwidget.cpp \
     widget/zcenterwidget.cpp \
-    widget/zfolderwidget.cpp
+    widget/zfolderwidget.cpp \
+    diff/zfilediff.cpp \
+    diff/zfilediffmodel.cpp \
+    diff/zpathdiffmodel.cpp \
+    diff/zpathdiff.cpp
 
 HEADERS  += mainwindow.h \
-    diff/zdifference.h \
     util/zfile.h \
     widget/tree/ztreemodel.h \
     widget/tree/ztreeitem.h \
-    diff/zdiffmodel.h \
     widget/ztopwidget.h \
     widget/zcenterwidget.h \
-    widget/zfolderwidget.h
+    widget/zfolderwidget.h \
+    diff/zfilediffmodel.h \
+    diff/zfilediff.h \
+    diff/zpathdiffmodel.h \
+    diff/zpathdiff.h
 
 RESOURCES += \
     resource.qrc

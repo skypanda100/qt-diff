@@ -82,6 +82,12 @@ void ZCenterWidget::folderComparison()
     addTab(folderWidget, "Folder comparison");
 }
 
+void ZCenterWidget::startOrRecompare()
+{
+    ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+    widget->compare();
+}
+
 void ZCenterWidget::paintEvent(QPaintEvent *event){
     QTabWidget::paintEvent(event);
 }

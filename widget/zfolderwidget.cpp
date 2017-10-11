@@ -1,5 +1,9 @@
 #include "zfolderwidget.h"
 #include "tree/ztreemodel.h"
+#include "diff/zpathdiff.h"
+#include "diff/zpathdiffmodel.h"
+#include "diff/zfilediff.h"
+#include "diff/zfilediffmodel.h"
 
 ZFolderWidget::ZFolderWidget(QWidget *parent)
     :QWidget(parent)
@@ -16,6 +20,63 @@ ZFolderWidget::~ZFolderWidget()
     delete mSearchButtonSrc;
     delete mSearchButtonDst;
     delete mTreeView;
+}
+
+void ZFolderWidget::compare()
+{
+    QString srcBasePath = mPathEditSrc->text().trimmed();
+    QString dstBasePath = mPathEditDst->text().trimmed();
+
+    ZPathDiff pathDiff(srcBasePath, dstBasePath);
+    QList<ZPathDiffModel> pathModelLst = pathDiff.execute();
+
+    for(int i = 0;i < pathModelLst.size();i++)
+    {
+        ZPathDiffModel pathDiffModel = pathModelLst[i];
+        int no = i + 1;
+        QString path;
+        QString extension;
+        int status = pathDiffModel.status();
+        if(status == 0)
+        {
+            path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, srcBasePath.length());
+            extension = pathDiffModel.srcFileInfo().suffix();
+        }
+        else if(status == 2)
+        {
+            path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, srcBasePath.length());
+            extension = pathDiffModel.srcFileInfo().suffix();
+        }
+        else if(status == 3)
+        {
+            path = pathDiffModel.dstFileInfo().absoluteFilePath().remove(0, dstBasePath.length());
+            extension = pathDiffModel.dstFileInfo().suffix();
+        }
+        else
+        {
+
+        }
+
+
+        QModelIndex index = mTreeView->selectionModel()->currentIndex();
+        QAbstractItemModel *model = mTreeView->model();
+
+        if (!model->insertRow(index.row() + 1, index.parent()))
+        {
+            return;
+        }
+        QModelIndex child1 = model->index(index.row() + 1, 0, index.parent());
+        model->setData(child1, QVariant(no), Qt::EditRole);
+
+        QModelIndex child2 = model->index(index.row() + 1, 1, index.parent());
+        model->setData(child2, QVariant(path), Qt::EditRole);
+
+        QModelIndex child3 = model->index(index.row() + 1, 2, index.parent());
+        model->setData(child3, QVariant(extension), Qt::EditRole);
+
+        QModelIndex child4 = model->index(index.row() + 1, 3, index.parent());
+        model->setData(child4, QVariant(status), Qt::EditRole);
+    }
 }
 
 void ZFolderWidget::initData()

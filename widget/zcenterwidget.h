@@ -32,6 +32,7 @@ public:
 public slots:
     void closeTab(int index = -1);
     void folderComparison();
+    void startOrRecompare();
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;

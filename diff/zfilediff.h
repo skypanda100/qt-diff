@@ -1,16 +1,16 @@
-#ifndef ZDIFFERENCE
-#define ZDIFFERENCE
+#ifndef ZFILEDIFF
+#define ZFILEDIFF
 
 #include <QString>
 #include <QFile>
-#include "zdiffmodel.h"
+#include "zfilediffmodel.h"
 
-class ZDifference {
+class ZFileDiff {
 
 public:
-    ZDifference();
-    ZDifference(const QString &fileSrc, const QString &fileDst);
-    ~ZDifference();
+    ZFileDiff();
+    ZFileDiff(const QString &fileSrc, const QString &fileDst);
+    ~ZFileDiff();
 
     void setFileSrc(const QString &fileSrc);
     void setFileDst(const QString &fileDst);
@@ -32,8 +32,8 @@ private:
 
     QList<QString> mLineSrcLst;
     QList<QString> mLineDstLst;
-    QList<ZDiffModel> mModelLst;
+    QList<ZFileDiffModel> mModelLst;
 };
 
-#endif // ZDIFFERENCE
+#endif // ZFILEDIFF
 

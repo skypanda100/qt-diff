@@ -10,6 +10,8 @@ public:
     ZFolderWidget(QWidget *parent = 0);
     ~ZFolderWidget();
 
+    void compare();
+
 private:
     void initData();
     void initUI();
