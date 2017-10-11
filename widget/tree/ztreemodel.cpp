@@ -185,7 +185,7 @@ int ZTreeModel::rowCount(const QModelIndex &parent) const
 
 bool ZTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole)
+    if (role != Qt::EditRole && role != Qt::DisplayRole)
         return false;
 
     ZTreeItem *item = getItem(index);

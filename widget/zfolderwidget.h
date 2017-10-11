@@ -16,6 +16,7 @@ private:
     void initData();
     void initUI();
     void initConnect();
+    void clearAll();
 
 private slots:
     void searchClicked();

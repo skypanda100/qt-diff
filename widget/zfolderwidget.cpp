@@ -24,6 +24,8 @@ ZFolderWidget::~ZFolderWidget()
 
 void ZFolderWidget::compare()
 {
+    clearAll();
+
     QString srcBasePath = mPathEditSrc->text().trimmed();
     QString dstBasePath = mPathEditDst->text().trimmed();
 
@@ -40,17 +42,17 @@ void ZFolderWidget::compare()
         if(status == 0)
         {
             path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, srcBasePath.length());
-            extension = pathDiffModel.srcFileInfo().suffix();
+            extension = pathDiffModel.srcFileInfo().completeSuffix();
         }
         else if(status == 2)
         {
             path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, srcBasePath.length());
-            extension = pathDiffModel.srcFileInfo().suffix();
+            extension = pathDiffModel.srcFileInfo().completeSuffix();
         }
         else if(status == 3)
         {
             path = pathDiffModel.dstFileInfo().absoluteFilePath().remove(0, dstBasePath.length());
-            extension = pathDiffModel.dstFileInfo().suffix();
+            extension = pathDiffModel.dstFileInfo().completeSuffix();
         }
         else
         {
@@ -58,7 +60,7 @@ void ZFolderWidget::compare()
         }
 
 
-        QModelIndex index = mTreeView->selectionModel()->currentIndex();
+        QModelIndex index = mTreeView->model()->index(i - 1, 0);
         QAbstractItemModel *model = mTreeView->model();
 
         if (!model->insertRow(index.row() + 1, index.parent()))
@@ -66,16 +68,16 @@ void ZFolderWidget::compare()
             return;
         }
         QModelIndex child1 = model->index(index.row() + 1, 0, index.parent());
-        model->setData(child1, QVariant(no), Qt::EditRole);
+        model->setData(child1, QVariant(no), Qt::DisplayRole);
 
         QModelIndex child2 = model->index(index.row() + 1, 1, index.parent());
-        model->setData(child2, QVariant(path), Qt::EditRole);
+        model->setData(child2, QVariant(path), Qt::DisplayRole);
 
         QModelIndex child3 = model->index(index.row() + 1, 2, index.parent());
-        model->setData(child3, QVariant(extension), Qt::EditRole);
+        model->setData(child3, QVariant(extension), Qt::DisplayRole);
 
         QModelIndex child4 = model->index(index.row() + 1, 3, index.parent());
-        model->setData(child4, QVariant(status), Qt::EditRole);
+        model->setData(child4, QVariant(status), Qt::DisplayRole);
     }
 }
 
@@ -129,6 +131,14 @@ void ZFolderWidget::initConnect()
 {
     connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(searchClicked()));
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(searchClicked()));
+}
+
+void ZFolderWidget::clearAll()
+{
+    QAbstractItemModel *model = mTreeView->model();
+    if(model->rowCount() > 0){
+        model->removeRows(0, model->rowCount());
+    }
 }
 
 void ZFolderWidget::searchClicked()
