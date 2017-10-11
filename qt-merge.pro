@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     widget/tree/ztreemodel.cpp \
     widget/tree/ztreeitem.cpp \
     diff/zdiffmodel.cpp \
-    widget/ztopwidget.cpp
+    widget/ztopwidget.cpp \
+    widget/zcenterwidget.cpp \
+    widget/zfolderwidget.cpp
 
 HEADERS  += mainwindow.h \
     diff/zdifference.h \
@@ -27,4 +29,9 @@ HEADERS  += mainwindow.h \
     widget/tree/ztreemodel.h \
     widget/tree/ztreeitem.h \
     diff/zdiffmodel.h \
-    widget/ztopwidget.h
+    widget/ztopwidget.h \
+    widget/zcenterwidget.h \
+    widget/zfolderwidget.h
+
+RESOURCES += \
+    resource.qrc
