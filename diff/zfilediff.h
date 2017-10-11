@@ -15,7 +15,7 @@ public:
     void setFileSrc(const QString &fileSrc);
     void setFileDst(const QString &fileDst);
 
-    void execute();
+    QList<ZFileDiffModel> execute();
 
 private:
     bool initRect();

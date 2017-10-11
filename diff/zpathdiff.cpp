@@ -84,7 +84,7 @@ QList<ZPathDiffModel> ZPathDiff::execute()
                 {
                     ZPathDiffModel model;
                     model.setSrcFileInfo(srcFileInfo);
-                    model.setSrcFileInfo(dstFileInfo);
+                    model.setDstFileInfo(dstFileInfo);
                     model.setStatus(0);
 
                     pathModelLst.append(model);

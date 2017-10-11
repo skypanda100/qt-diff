@@ -48,21 +48,22 @@ void ZFileDiff::setFileDst(const QString &fileDst)
     mFileDst = new QFile(fileDst);
 }
 
-void ZFileDiff::execute()
+QList<ZFileDiffModel> ZFileDiff::execute()
 {
     if(initRect())
     {
         if(makeRect())
         {
             recallRect();
-            //test
-            for(int i = mModelLst.size() - 2;i >= 0;i--)
-            {
-                ZFileDiffModel model = mModelLst[i];
-                qDebug() << model.srcLine() << model.dstLine() << model.status();
-            }
+//            //test
+//            for(int i = mModelLst.size() - 2;i >= 0;i--)
+//            {
+//                ZFileDiffModel model = mModelLst[i];
+//                qDebug() << model.srcLine() << model.dstLine() << model.status();
+//            }
         }
     }
+    return mModelLst;
 }
 
 bool ZFileDiff::initRect()

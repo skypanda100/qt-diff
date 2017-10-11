@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     diff/zfilediff.cpp \
     diff/zfilediffmodel.cpp \
     diff/zpathdiffmodel.cpp \
-    diff/zpathdiff.cpp
+    diff/zpathdiff.cpp \
+    ctl/zfolderctl.cpp
 
 HEADERS  += mainwindow.h \
     util/zfile.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     diff/zfilediffmodel.h \
     diff/zfilediff.h \
     diff/zpathdiffmodel.h \
-    diff/zpathdiff.h
+    diff/zpathdiff.h \
+    ctl/zfolderctl.h
 
 RESOURCES += \
     resource.qrc

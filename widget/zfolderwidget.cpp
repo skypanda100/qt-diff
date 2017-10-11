@@ -1,12 +1,9 @@
 #include "zfolderwidget.h"
 #include "tree/ztreemodel.h"
-#include "diff/zpathdiff.h"
-#include "diff/zpathdiffmodel.h"
-#include "diff/zfilediff.h"
-#include "diff/zfilediffmodel.h"
 
 ZFolderWidget::ZFolderWidget(QWidget *parent)
-    :QWidget(parent)
+    : QWidget(parent)
+    , mFolderCtl(NULL)
 {
     initData();
     initUI();
@@ -20,65 +17,36 @@ ZFolderWidget::~ZFolderWidget()
     delete mSearchButtonSrc;
     delete mSearchButtonDst;
     delete mTreeView;
+    if(mFolderCtl != NULL)
+    {
+        mFolderCtl->quit();
+        delete mFolderCtl;
+        mFolderCtl = NULL;
+    }
 }
 
 void ZFolderWidget::compare()
 {
+    if(mFolderCtl != NULL)
+    {
+        if(mFolderCtl->isRunning())
+        {
+            onDiffEnd();
+        }
+    }
     clearAll();
 
     QString srcBasePath = mPathEditSrc->text().trimmed();
     QString dstBasePath = mPathEditDst->text().trimmed();
 
     ZPathDiff pathDiff(srcBasePath, dstBasePath);
-    QList<ZPathDiffModel> pathModelLst = pathDiff.execute();
+    mPathModelLst = pathDiff.execute();
 
-    for(int i = 0;i < pathModelLst.size();i++)
-    {
-        ZPathDiffModel pathDiffModel = pathModelLst[i];
-        int no = i + 1;
-        QString path;
-        QString extension;
-        int status = pathDiffModel.status();
-        if(status == 0)
-        {
-            path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, srcBasePath.length());
-            extension = pathDiffModel.srcFileInfo().completeSuffix();
-        }
-        else if(status == 2)
-        {
-            path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, srcBasePath.length());
-            extension = pathDiffModel.srcFileInfo().completeSuffix();
-        }
-        else if(status == 3)
-        {
-            path = pathDiffModel.dstFileInfo().absoluteFilePath().remove(0, dstBasePath.length());
-            extension = pathDiffModel.dstFileInfo().completeSuffix();
-        }
-        else
-        {
+    mFolderCtl = new ZFolderCtl(srcBasePath, dstBasePath, mPathModelLst);
+    connect(mFolderCtl, SIGNAL(diffMessage(int,QString,QString,QString,int,int,int)), this, SLOT(onDiffMessage(int,QString,QString,QString,int,int,int)));
+    connect(mFolderCtl, SIGNAL(diffEnd()), this, SLOT(onDiffEnd()));
 
-        }
-
-
-        QModelIndex index = mTreeView->model()->index(i - 1, 0);
-        QAbstractItemModel *model = mTreeView->model();
-
-        if (!model->insertRow(index.row() + 1, index.parent()))
-        {
-            return;
-        }
-        QModelIndex child1 = model->index(index.row() + 1, 0, index.parent());
-        model->setData(child1, QVariant(no), Qt::DisplayRole);
-
-        QModelIndex child2 = model->index(index.row() + 1, 1, index.parent());
-        model->setData(child2, QVariant(path), Qt::DisplayRole);
-
-        QModelIndex child3 = model->index(index.row() + 1, 2, index.parent());
-        model->setData(child3, QVariant(extension), Qt::DisplayRole);
-
-        QModelIndex child4 = model->index(index.row() + 1, 3, index.parent());
-        model->setData(child4, QVariant(status), Qt::DisplayRole);
-    }
+    mFolderCtl->start();
 }
 
 void ZFolderWidget::initData()
@@ -141,6 +109,40 @@ void ZFolderWidget::clearAll()
     }
 }
 
+void ZFolderWidget::insert(int no, const QString &path
+                           , const QString &extension, const QString &status
+                           , int lineAdded, int lineRemoved
+                           , int lineModified)
+{
+    QModelIndex index = mTreeView->model()->index(no - 2, 0);
+    QAbstractItemModel *model = mTreeView->model();
+
+    if (!model->insertRow(index.row() + 1, index.parent()))
+    {
+        return;
+    }
+    QModelIndex child1 = model->index(index.row() + 1, 0, index.parent());
+    model->setData(child1, QVariant(no), Qt::DisplayRole);
+
+    QModelIndex child2 = model->index(index.row() + 1, 1, index.parent());
+    model->setData(child2, QVariant(path), Qt::DisplayRole);
+
+    QModelIndex child3 = model->index(index.row() + 1, 2, index.parent());
+    model->setData(child3, QVariant(extension), Qt::DisplayRole);
+
+    QModelIndex child4 = model->index(index.row() + 1, 3, index.parent());
+    model->setData(child4, QVariant(status), Qt::DisplayRole);
+
+    QModelIndex child5 = model->index(index.row() + 1, 4, index.parent());
+    model->setData(child5, QVariant(lineAdded), Qt::DisplayRole);
+
+    QModelIndex child6 = model->index(index.row() + 1, 5, index.parent());
+    model->setData(child6, QVariant(lineRemoved), Qt::DisplayRole);
+
+    QModelIndex child7 = model->index(index.row() + 1, 6, index.parent());
+    model->setData(child7, QVariant(lineModified), Qt::DisplayRole);
+}
+
 void ZFolderWidget::searchClicked()
 {
     QObject *object = this->sender();
@@ -157,5 +159,22 @@ void ZFolderWidget::searchClicked()
         QString directory = QFileDialog::getExistingDirectory(this,
                                    tr("search"), currentDir);
         mPathEditDst->setText(directory);
+    }
+}
+
+void ZFolderWidget::onDiffMessage(int no, const QString &path
+                                  , const QString &extension, const QString &status
+                                  , int lineAdded, int lineRemoved
+                                  , int lineModified)
+{
+    insert(no, path, extension, status, lineAdded, lineRemoved, lineModified);
+}
+
+void ZFolderWidget::onDiffEnd()
+{
+    if(mFolderCtl != NULL)
+    {
+        delete mFolderCtl;
+        mFolderCtl = NULL;
     }
 }
