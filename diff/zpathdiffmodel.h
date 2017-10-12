@@ -2,7 +2,7 @@
 #define ZPATHDIFFMODEL
 
 #include <QFileInfo>
-#include "env/cons.h"
+#include "env/zcons.h"
 
 class ZPathDiffModel{
 

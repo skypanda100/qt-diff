@@ -40,9 +40,9 @@ HEADERS  += mainwindow.h \
     diff/zpathdiffmodel.h \
     diff/zpathdiff.h \
     ctl/zfolderctl.h \
-    env/cons.h \
     widget/tree/ztreeitemmodel.h \
-    widget/zbottomwidget.h
+    widget/zbottomwidget.h \
+    env/zcons.h
 
 RESOURCES += \
     resource.qrc

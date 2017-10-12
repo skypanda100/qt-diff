@@ -2,7 +2,7 @@
 #define ZFILEDIFFMODEL
 
 #include <QString>
-#include "env/cons.h"
+#include "env/zcons.h"
 
 class ZFileDiffModel{
 

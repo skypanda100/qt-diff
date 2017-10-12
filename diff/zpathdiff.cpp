@@ -1,7 +1,7 @@
 #include "zpathdiff.h"
 #include <QFileInfo>
 #include "util/zfile.h"
-#include "env/cons.h"
+#include "env/zcons.h"
 
 ZPathDiff::ZPathDiff()
 {

@@ -2,7 +2,7 @@
 #include "diff/zfilediff.h"
 #include "diff/zfilediffmodel.h"
 #include "util/zfile.h"
-#include "env/cons.h"
+#include "env/zcons.h"
 
 ZFolderCtl::ZFolderCtl(QString srcBasePath, QString dstBasePath, QList<ZPathDiffModel> &mPathModelLst, QObject *parent)
     : QThread(parent)
@@ -32,6 +32,7 @@ void ZFolderCtl::run()
         int lineAdded = 0;
         int lineRemoved = 0;
         int lineModified = 0;
+        QColor color = STATUS_CLR[0];
 
         if(status == Same)
         {
@@ -93,58 +94,52 @@ void ZFolderCtl::run()
 
         }
 
-        switch(status)
-        {
-        case Same:
-            sts = "Same";
-            break;
-        case Modified:
-            sts = "Modified";
-            break;
-        case Removed:
-            sts = "Removed";
-            break;
-        case Added:
-            sts = "Added";
-            break;
-        }
+        sts = STATUS_STR[(int)status];
+        color = STATUS_CLR[(int)status];
 
         QList<ZTreeItemModel> itemModelList;
 
         ZTreeItemModel noItemModel;
         noItemModel.setHasIcon(false);
         noItemModel.setValue(no);
+        noItemModel.setColor(color);
         itemModelList.append(noItemModel);
 
         ZTreeItemModel pathItemModel;
         pathItemModel.setHasIcon(true);
         pathItemModel.setIcon(icon);
         pathItemModel.setValue(path);
+        pathItemModel.setColor(color);
         itemModelList.append(pathItemModel);
 
         ZTreeItemModel extItemModel;
         extItemModel.setHasIcon(false);
         extItemModel.setValue(extension);
+        extItemModel.setColor(color);
         itemModelList.append(extItemModel);
 
         ZTreeItemModel stsItemModel;
         stsItemModel.setHasIcon(false);
         stsItemModel.setValue(sts);
+        stsItemModel.setColor(color);
         itemModelList.append(stsItemModel);
 
         ZTreeItemModel laItemModel;
         laItemModel.setHasIcon(false);
         laItemModel.setValue(lineAdded);
+        laItemModel.setColor(color);
         itemModelList.append(laItemModel);
 
         ZTreeItemModel lrItemModel;
         lrItemModel.setHasIcon(false);
         lrItemModel.setValue(lineRemoved);
+        lrItemModel.setColor(color);
         itemModelList.append(lrItemModel);
 
         ZTreeItemModel lmItemModel;
         lmItemModel.setHasIcon(false);
         lmItemModel.setValue(lineModified);
+        lmItemModel.setColor(color);
         itemModelList.append(lmItemModel);
 
         emit diffMessage(itemModelList);

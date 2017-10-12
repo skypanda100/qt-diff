@@ -2,7 +2,7 @@
 #include "util/zfile.h"
 #include <QDebug>
 #include <QtMath>
-#include "env/cons.h"
+#include "env/zcons.h"
 
 ZFileDiff::ZFileDiff()
 {

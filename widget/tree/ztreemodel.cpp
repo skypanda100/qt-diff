@@ -2,7 +2,7 @@
 
 #include "ztreeitem.h"
 #include "ztreemodel.h"
-#include "env/cons.h"
+#include "env/zcons.h"
 #include "util/zfile.h"
 #include "ztreeitemmodel.h"
 
@@ -47,8 +47,15 @@ QVariant ZTreeModel::data(const QModelIndex &index, int role) const
         return itemModel.icon();
     }
 
-    if (role != Qt::DisplayRole && role != Qt::EditRole)
+    if(role == Qt::TextColorRole)
+    {
+        return itemModel.color();
+    }
+
+    if(role != Qt::DisplayRole && role != Qt::EditRole)
+    {
         return QVariant();
+    }
 
     return itemModel.value();
 }
@@ -56,7 +63,7 @@ QVariant ZTreeModel::data(const QModelIndex &index, int role) const
 //! [3]
 Qt::ItemFlags ZTreeModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
+    if(!index.isValid())
         return 0;
 
     return QAbstractItemModel::flags(index);
@@ -69,7 +76,7 @@ ZTreeItem *ZTreeModel::getItem(const QModelIndex &index) const
     if(index.isValid())
     {
         ZTreeItem *item = static_cast<ZTreeItem*>(index.internalPointer());
-        if (item)
+        if(item)
             return item;
     }
     return rootItem;
@@ -79,7 +86,7 @@ ZTreeItem *ZTreeModel::getItem(const QModelIndex &index) const
 QVariant ZTreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    if(orientation == Qt::Horizontal && role == Qt::DisplayRole)
         return rootItem->data(section);
 
     return QVariant();
@@ -88,7 +95,7 @@ QVariant ZTreeModel::headerData(int section, Qt::Orientation orientation,
 //! [5]
 QModelIndex ZTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (parent.isValid() && parent.column() != 0)
+    if(parent.isValid() && parent.column() != 0)
         return QModelIndex();
 //! [5]
 
@@ -96,7 +103,7 @@ QModelIndex ZTreeModel::index(int row, int column, const QModelIndex &parent) co
     ZTreeItem *parentItem = getItem(parent);
 
     ZTreeItem *childItem = parentItem->child(row);
-    if (childItem)
+    if(childItem)
         return createIndex(row, column, childItem);
     else
         return QModelIndex();
@@ -129,13 +136,13 @@ bool ZTreeModel::insertRows(int position, int rows, const QModelIndex &parent)
 //! [7]
 QModelIndex ZTreeModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid())
+    if(!index.isValid())
         return QModelIndex();
 
     ZTreeItem *childItem = getItem(index);
     ZTreeItem *parentItem = childItem->parent();
 
-    if (parentItem == rootItem)
+    if(parentItem == rootItem)
         return QModelIndex();
 
     return createIndex(parentItem->childNumber(), 0, parentItem);
@@ -150,7 +157,7 @@ bool ZTreeModel::removeColumns(int position, int columns, const QModelIndex &par
     success = rootItem->removeColumns(position, columns);
     endRemoveColumns();
 
-    if (rootItem->columnCount() == 0)
+    if(rootItem->columnCount() == 0)
         removeRows(0, rowCount());
 
     return success;
@@ -184,7 +191,7 @@ bool ZTreeModel::setData(const QModelIndex &index, const QVariant &value, int ro
     ZTreeItem *item = getItem(index);
     bool result = item->setData(index.column(), value);
 
-    if (result)
+    if(result)
         emit dataChanged(index, index, roles);
 
     return result;
@@ -193,12 +200,12 @@ bool ZTreeModel::setData(const QModelIndex &index, const QVariant &value, int ro
 bool ZTreeModel::setHeaderData(int section, Qt::Orientation orientation,
                               const QVariant &value, int role)
 {
-    if (role != Qt::EditRole || orientation != Qt::Horizontal)
+    if(role != Qt::EditRole || orientation != Qt::Horizontal)
         return false;
 
     bool result = rootItem->setData(section, value);
 
-    if (result)
+    if(result)
         emit headerDataChanged(orientation, section, section);
 
     return result;
@@ -216,7 +223,7 @@ void ZTreeModel::setupModelData(const QStringList &lines, ZTreeItem *parent)
     while (number < lines.count()) {
         int position = 0;
         while (position < lines[number].length()) {
-            if (lines[number].mid(position, 1) != " ")
+            if(lines[number].mid(position, 1) != " ")
                 break;
             ++position;
         }
