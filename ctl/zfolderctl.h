@@ -24,6 +24,7 @@ private:
     QString mSrcBasePath;
     QString mDstBasePath;
     QList<ZPathDiffModel> &mPathModelLst;
+    bool mIsRunning;
 };
 
 #endif // ZFOLDERCTL

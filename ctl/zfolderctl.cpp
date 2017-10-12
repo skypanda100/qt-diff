@@ -10,6 +10,7 @@ ZFolderCtl::ZFolderCtl(QString srcBasePath, QString dstBasePath, QList<ZPathDiff
 {
     mSrcBasePath = srcBasePath;
     mDstBasePath = dstBasePath;
+    mIsRunning = false;
 }
 
 ZFolderCtl::~ZFolderCtl()
@@ -19,9 +20,14 @@ ZFolderCtl::~ZFolderCtl()
 
 void ZFolderCtl::run()
 {
+    mIsRunning = true;
     int modelCount = mPathModelLst.size();
     for(int i = 0;i < modelCount;i++)
     {
+        if(!mIsRunning)
+        {
+            break;
+        }
         ZPathDiffModel pathDiffModel = mPathModelLst[i];
         int no = i + 1;
         QString path;
@@ -145,12 +151,14 @@ void ZFolderCtl::run()
         emit diffMessage(itemModelList);
         emit progress(i + 1, modelCount);
     }
-    emit diffEnd();
+    stopRun();
 }
 
 void ZFolderCtl::stopRun()
 {
+    mIsRunning = false;
     quit();
+    wait();
 
     emit progress(100, 100);
     emit diffEnd();
