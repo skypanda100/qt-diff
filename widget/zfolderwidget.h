@@ -16,6 +16,7 @@ public:
     ~ZFolderWidget();
 
     void compare();
+    void stopCompare();
 
 signals:
     void progress(int value, int maxValue);

@@ -147,3 +147,11 @@ void ZFolderCtl::run()
     }
     emit diffEnd();
 }
+
+void ZFolderCtl::stopRun()
+{
+    quit();
+
+    emit progress(100, 100);
+    emit diffEnd();
+}

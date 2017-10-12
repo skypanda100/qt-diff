@@ -12,6 +12,7 @@ public:
 signals:
     void folderComparison();
     void startOrRecompare();
+    void stopCompare();
 
 private:
     void initData();
@@ -21,6 +22,7 @@ private:
 private:
     QToolButton *mFolderButton;
     QToolButton *mRefreshButton;
+    QToolButton *mStopButton;
 };
 
 #endif // ZTOPWIDGET

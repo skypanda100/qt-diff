@@ -89,6 +89,12 @@ void ZCenterWidget::startOrRecompare()
     widget->compare();
 }
 
+void ZCenterWidget::stopCompare()
+{
+    ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+    widget->stopCompare();
+}
+
 void ZCenterWidget::paintEvent(QPaintEvent *event){
     QTabWidget::paintEvent(event);
 }

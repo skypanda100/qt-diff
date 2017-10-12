@@ -36,6 +36,7 @@ public slots:
     void closeTab(int index = -1);
     void folderComparison();
     void startOrRecompare();
+    void stopCompare();
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;

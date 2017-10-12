@@ -65,6 +65,14 @@ void ZFolderWidget::compare()
     mFolderCtl->start();
 }
 
+void ZFolderWidget::stopCompare()
+{
+    if(mFolderCtl != NULL)
+    {
+        mFolderCtl->stopRun();
+    }
+}
+
 void ZFolderWidget::initData()
 {
     qRegisterMetaType< QList<ZTreeItemModel> >("QList<ZTreeItemModel>");

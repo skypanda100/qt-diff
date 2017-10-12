@@ -12,6 +12,7 @@ ZTopWidget::~ZTopWidget()
 {
     delete mFolderButton;
     delete mRefreshButton;
+    delete mStopButton;
 }
 
 void ZTopWidget::initData()
@@ -35,8 +36,16 @@ void ZTopWidget::initUI()
     mRefreshButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mRefreshButton->setFixedSize(QSize(80, 100));
 
+    mStopButton = new QToolButton;
+    QIcon stopIcon(":/icon/stop.png");
+    mStopButton->setIcon(stopIcon);
+    mStopButton->setText("Stop");
+    mStopButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mStopButton->setFixedSize(QSize(80, 100));
+
     this->addWidget(mFolderButton);
     this->addWidget(mRefreshButton);
+    this->addWidget(mStopButton);
     this->setIconSize(QSize(60, 60));
 }
 
@@ -44,4 +53,5 @@ void ZTopWidget::initConnect()
 {
     connect(mFolderButton, SIGNAL(clicked()), this, SIGNAL(folderComparison()));
     connect(mRefreshButton, SIGNAL(clicked()), this, SIGNAL(startOrRecompare()));
+    connect(mStopButton, SIGNAL(clicked()), this, SIGNAL(stopCompare()));
 }
