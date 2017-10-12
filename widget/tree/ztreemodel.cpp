@@ -42,7 +42,7 @@ QVariant ZTreeModel::data(const QModelIndex &index, int role) const
     QVariant dataVariant = item->data(index.column());
     ZTreeItemModel itemModel = dataVariant.value<ZTreeItemModel>();
 
-    if(itemModel.hasIcon())
+    if(role == Qt::DecorationRole && itemModel.hasIcon())
     {
         return itemModel.icon();
     }
