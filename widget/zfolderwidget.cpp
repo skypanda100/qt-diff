@@ -1,5 +1,7 @@
 #include "zfolderwidget.h"
 #include "tree/ztreemodel.h"
+#include <QMetaType>
+
 
 ZFolderWidget::ZFolderWidget(QWidget *parent)
     : QWidget(parent)
@@ -49,7 +51,7 @@ void ZFolderWidget::compare()
     mPathModelLst = pathDiff.execute();
 
     mFolderCtl = new ZFolderCtl(srcBasePath, dstBasePath, mPathModelLst);
-    connect(mFolderCtl, SIGNAL(diffMessage(int,QString,QString,QString,int,int,int)), this, SLOT(onDiffMessage(int,QString,QString,QString,int,int,int)));
+    connect(mFolderCtl, SIGNAL(diffMessage(const QList<ZTreeItemModel> &)), this, SLOT(onDiffMessage(const QList<ZTreeItemModel> &)));
     connect(mFolderCtl, SIGNAL(diffEnd()), this, SLOT(onDiffEnd()));
 
     mFolderCtl->start();
@@ -57,6 +59,8 @@ void ZFolderWidget::compare()
 
 void ZFolderWidget::initData()
 {
+    qRegisterMetaType< QList<ZTreeItemModel> >("QList<ZTreeItemModel>");
+
     mHeader << "#"
             << "Path"
             << "Extension"
@@ -116,38 +120,22 @@ void ZFolderWidget::clearAll()
     }
 }
 
-void ZFolderWidget::insert(int no, const QString &path
-                           , const QString &extension, const QString &status
-                           , int lineAdded, int lineRemoved
-                           , int lineModified)
+void ZFolderWidget::insert(const QList<ZTreeItemModel> &itemModelList)
 {
-    QModelIndex index = mTreeView->model()->index(no - 2, 0);
+    QModelIndex index = mTreeView->model()->index(itemModelList[0].value().toInt() - 2, 0);
     QAbstractItemModel *model = mTreeView->model();
 
     if (!model->insertRow(index.row() + 1, index.parent()))
     {
         return;
     }
-    QModelIndex child1 = model->index(index.row() + 1, 0, index.parent());
-    model->setData(child1, QVariant(no), Qt::DisplayRole);
 
-    QModelIndex child2 = model->index(index.row() + 1, 1, index.parent());
-    model->setData(child2, QVariant(path), Qt::DisplayRole);
-
-    QModelIndex child3 = model->index(index.row() + 1, 2, index.parent());
-    model->setData(child3, QVariant(extension), Qt::DisplayRole);
-
-    QModelIndex child4 = model->index(index.row() + 1, 3, index.parent());
-    model->setData(child4, QVariant(status), Qt::DisplayRole);
-
-    QModelIndex child5 = model->index(index.row() + 1, 4, index.parent());
-    model->setData(child5, QVariant(lineAdded), Qt::DisplayRole);
-
-    QModelIndex child6 = model->index(index.row() + 1, 5, index.parent());
-    model->setData(child6, QVariant(lineRemoved), Qt::DisplayRole);
-
-    QModelIndex child7 = model->index(index.row() + 1, 6, index.parent());
-    model->setData(child7, QVariant(lineModified), Qt::DisplayRole);
+    int itemCount = itemModelList.size();
+    for(int i = 0;i < itemCount;i++)
+    {
+        QModelIndex child = model->index(index.row() + 1, i, index.parent());
+        model->setData(child, QVariant::fromValue(itemModelList[i]), Qt::DisplayRole);
+    }
 }
 
 void ZFolderWidget::searchClicked()
@@ -175,12 +163,9 @@ void ZFolderWidget::searchClicked()
     }
 }
 
-void ZFolderWidget::onDiffMessage(int no, const QString &path
-                                  , const QString &extension, const QString &status
-                                  , int lineAdded, int lineRemoved
-                                  , int lineModified)
+void ZFolderWidget::onDiffMessage(const QList<ZTreeItemModel> &itemModelList)
 {
-    insert(no, path, extension, status, lineAdded, lineRemoved, lineModified);
+    insert(itemModelList);
 }
 
 void ZFolderWidget::onDiffEnd()

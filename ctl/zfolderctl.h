@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include "diff/zpathdiffmodel.h"
+#include "widget/tree/ztreeitemmodel.h"
 
 class ZFolderCtl : public QThread{
     Q_OBJECT
@@ -14,10 +15,7 @@ public:
     void run() Q_DECL_OVERRIDE;
 
 signals:
-    void diffMessage(int no, const QString &path
-                     , const QString &extension, const QString &status
-                     , int lineAdded, int lineRemoved
-                     , int lineModified);
+    void diffMessage(const QList<ZTreeItemModel> &itemModelList);
     void diffEnd();
 
 private:

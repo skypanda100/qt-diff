@@ -58,7 +58,7 @@ QIcon ZFile::icon(const QString &path)
     {
         tmpFile.close();
         icon = provider.icon(QFileInfo(path));
-//        tmpFile.remove();
+        tmpFile.remove();
     }
 //    else
 //    {

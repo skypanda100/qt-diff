@@ -2,6 +2,9 @@
 
 #include "ztreeitem.h"
 #include "ztreemodel.h"
+#include "env/cons.h"
+#include "util/zfile.h"
+#include "ztreeitemmodel.h"
 
 //! [0]
 ZTreeModel::ZTreeModel(const QStringList &headers, const QString &data, QObject *parent)
@@ -32,34 +35,22 @@ int ZTreeModel::columnCount(const QModelIndex & /* parent */) const
 
 QVariant ZTreeModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if(!index.isValid())
         return QVariant();
 
     ZTreeItem *item = getItem(index);
     QVariant dataVariant = item->data(index.column());
-    QString dataStr = dataVariant.toString();
+    ZTreeItemModel itemModel = dataVariant.value<ZTreeItemModel>();
 
-    if (role == Qt::DecorationRole &&
-            index.column() == 1 &&    //第一列的节点
-            rowCount(index) == 0       //子节点数为0
-            )
+    if(itemModel.hasIcon())
     {
-        if(dataStr.indexOf("|") > 0)
-        {
-            QStringList dataList = dataStr.split("|");
-            return QIcon(dataList[0]);
-        }
+        return itemModel.icon();
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
-    if(dataStr.indexOf("zdt") > 0)
-    {
-        QStringList dataList = dataStr.split("|");
-        return QVariant(dataList[1]);
-    }
-    return dataVariant;
+    return itemModel.value();
 }
 
 //! [3]

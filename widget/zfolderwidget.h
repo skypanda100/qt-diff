@@ -22,17 +22,11 @@ private:
     void initUI();
     void initConnect();
     void clearAll();
-    void insert(int no, const QString &path
-                , const QString &extension, const QString &status
-                , int lineAdded, int lineRemoved
-                , int lineModified);
+    void insert(const QList<ZTreeItemModel> &itemModelList);
 
 private slots:
     void searchClicked();
-    void onDiffMessage(int no, const QString &path
-                     , const QString &extension, const QString &status
-                     , int lineAdded, int lineRemoved
-                     , int lineModified);
+    void onDiffMessage(const QList<ZTreeItemModel> &itemModelList);
     void onDiffEnd();
 
 private:
