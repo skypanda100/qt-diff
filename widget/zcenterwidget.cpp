@@ -79,6 +79,7 @@ void ZCenterWidget::closeTab(int index)
 void ZCenterWidget::folderComparison()
 {
     ZFolderWidget *folderWidget = new ZFolderWidget;
+    connect(folderWidget, SIGNAL(progress(int,int)), this, SIGNAL(progress(int,int)));
     addTab(folderWidget, "Folder comparison");
 }
 

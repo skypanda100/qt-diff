@@ -29,6 +29,9 @@ public:
     ZCenterWidget(QWidget *parent = 0);
     ~ZCenterWidget();
 
+signals:
+    void progress(int value, int maxValue);
+
 public slots:
     void closeTab(int index = -1);
     void folderComparison();

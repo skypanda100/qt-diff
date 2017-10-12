@@ -53,6 +53,7 @@ void ZFolderWidget::compare()
     mFolderCtl = new ZFolderCtl(srcBasePath, dstBasePath, mPathModelLst);
     connect(mFolderCtl, SIGNAL(diffMessage(const QList<ZTreeItemModel> &)), this, SLOT(onDiffMessage(const QList<ZTreeItemModel> &)));
     connect(mFolderCtl, SIGNAL(diffEnd()), this, SLOT(onDiffEnd()));
+    connect(mFolderCtl, SIGNAL(progress(int,int)), this, SIGNAL(progress(int,int)));
 
     mFolderCtl->start();
 }

@@ -17,6 +17,9 @@ public:
 
     void compare();
 
+signals:
+    void progress(int value, int maxValue);
+
 private:
     void initData();
     void initUI();

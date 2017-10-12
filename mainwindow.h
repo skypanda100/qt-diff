@@ -5,6 +5,7 @@
 #include <QtWidgets>
 #include "widget/ztopwidget.h"
 #include "widget/zcenterwidget.h"
+#include "widget/zbottomwidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -22,6 +23,7 @@ private:
 private:
     ZTopWidget *mTopWidget;
     ZCenterWidget *mCenterWidget;
+    ZBottomWidget *mBottomWidget;
 };
 
 #endif // MAINWINDOW_H

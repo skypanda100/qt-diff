@@ -12,6 +12,7 @@ MainWindow::~MainWindow()
 {
     delete mTopWidget;
     delete mCenterWidget;
+    delete mBottomWidget;
 }
 
 void MainWindow::initData()
@@ -26,11 +27,14 @@ void MainWindow::initUI()
 
     mCenterWidget = new ZCenterWidget;
     this->setCentralWidget(mCenterWidget);
+
+    mBottomWidget = new ZBottomWidget;
+    this->setStatusBar(mBottomWidget);
 }
 
 void MainWindow::initConnect()
 {
     connect(mTopWidget, SIGNAL(folderComparison()), mCenterWidget, SLOT(folderComparison()));
     connect(mTopWidget, SIGNAL(startOrRecompare()), mCenterWidget, SLOT(startOrRecompare()));
-
+    connect(mCenterWidget, SIGNAL(progress(int,int)), mBottomWidget, SLOT(onProgress(int,int)));
 }

@@ -17,6 +17,7 @@ public:
 signals:
     void diffMessage(const QList<ZTreeItemModel> &itemModelList);
     void diffEnd();
+    void progress(int value, int maxValue);
 
 private:
     QString mSrcBasePath;

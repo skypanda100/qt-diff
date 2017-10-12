@@ -148,6 +148,7 @@ void ZFolderCtl::run()
         itemModelList.append(lmItemModel);
 
         emit diffMessage(itemModelList);
+        emit progress(i + 1, modelCount);
     }
     emit diffEnd();
 }
