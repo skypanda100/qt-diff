@@ -80,7 +80,7 @@ void ZCenterWidget::folderComparison()
 {
     ZFolderWidget *folderWidget = new ZFolderWidget;
     connect(folderWidget, SIGNAL(progress(int,int)), this, SIGNAL(progress(int,int)));
-    addTab(folderWidget, "Folder comparison");
+    addTab(folderWidget, QIcon(":/icon/folder.png"), "Folder comparison");
 }
 
 void ZCenterWidget::startOrRecompare()
