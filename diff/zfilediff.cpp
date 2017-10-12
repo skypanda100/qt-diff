@@ -22,7 +22,12 @@ ZFileDiff::~ZFileDiff()
 {
     if(mDiffRect != NULL)
     {
-        delete[] mDiffRect;
+        for(int i = 0;i < mDiffRectRows;i++)
+        {
+            delete mDiffRect[i];
+            mDiffRect[i] = NULL;
+        }
+        delete mDiffRect;
         mDiffRect = NULL;
     }
 
