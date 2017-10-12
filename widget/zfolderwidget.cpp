@@ -94,9 +94,6 @@ void ZFolderWidget::initUI()
     mTreeView = new QTreeView;
     ZTreeModel *model = new ZTreeModel(mHeader, "");
     mTreeView->setModel(model);
-    for (int column = 0; column < model->columnCount(); ++column){
-        mTreeView->resizeColumnToContents(column);
-    }
     mTreeView->setAlternatingRowColors(true);
 
     QVBoxLayout *folderLayout = new QVBoxLayout;
@@ -135,6 +132,9 @@ void ZFolderWidget::insert(const QList<ZTreeItemModel> &itemModelList)
     {
         QModelIndex child = model->index(index.row() + 1, i, index.parent());
         model->setData(child, QVariant::fromValue(itemModelList[i]), Qt::DisplayRole);
+    }
+    for (int column = 0; column < model->columnCount(); ++column){
+        mTreeView->resizeColumnToContents(column);
     }
 }
 
