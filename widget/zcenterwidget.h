@@ -13,13 +13,19 @@ public:
 signals:
     void closeTab(int);
 
+public slots:
+    void onProgress(int value, int maxValue);
+
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
 
 private:
     friend class ZCenterWidget;
     QPoint mDragStartPos;
+    int mValue;
+    int mMaxValue;
 };
 
 class ZCenterWidget : public QTabWidget{

@@ -151,10 +151,10 @@ void ZFolderCtl::run()
         emit diffMessage(itemModelList);
         emit progress(i + 1, modelCount);
     }
-    stopRun();
+    stopRunAndDelete();
 }
 
-void ZFolderCtl::stopRun()
+void ZFolderCtl::stopRunAndDelete()
 {
     mIsRunning = false;
     quit();

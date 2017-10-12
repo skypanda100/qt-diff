@@ -21,7 +21,7 @@ ZFolderWidget::~ZFolderWidget()
     delete mTreeView;
     if(mFolderCtl != NULL)
     {
-        mFolderCtl->stopRun();
+        mFolderCtl->stopRunAndDelete();
     }
 }
 
@@ -29,7 +29,7 @@ void ZFolderWidget::compare()
 {
     if(mFolderCtl != NULL)
     {
-        mFolderCtl->stopRun();
+        mFolderCtl->stopRunAndDelete();
     }
     clearAll();
 
@@ -64,7 +64,7 @@ void ZFolderWidget::stopCompare()
 {
     if(mFolderCtl != NULL)
     {
-        mFolderCtl->stopRun();
+        mFolderCtl->stopRunAndDelete();
     }
 }
 

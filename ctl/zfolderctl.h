@@ -13,7 +13,7 @@ public:
     ~ZFolderCtl();
 
     void run() Q_DECL_OVERRIDE;
-    void stopRun();
+    void stopRunAndDelete();
 
 signals:
     void diffMessage(const QList<ZTreeItemModel> &itemModelList);

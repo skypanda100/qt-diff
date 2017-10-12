@@ -46,6 +46,44 @@ void ZTabBar::mouseMoveEvent(QMouseEvent *event)
     QTabBar::mouseMoveEvent(event);
 }
 
+void ZTabBar::paintEvent(QPaintEvent *event)
+{
+    QTabBar::paintEvent(event);
+
+    float progress = (float)((mValue * 1.0f) / (mMaxValue * 1.0f));
+    if(progress < 1.0f)
+    {
+        QPainter painter(this);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QBrush(QColor(0, 128, 0, 100)));
+
+        int width = this->width() * progress;
+        int height = this->height();
+
+        painter.drawRect(0, 0, width, height);
+    }
+}
+
+void ZTabBar::onProgress(int value, int maxValue)
+{
+    if(maxValue == 0)
+    {
+        mValue = 0;
+        mMaxValue = 1;
+    }
+    else if(value > maxValue)
+    {
+        mValue = maxValue;
+        mMaxValue = maxValue;
+    }
+    else
+    {
+        mValue = value;
+        mMaxValue = maxValue;
+    }
+    update();
+}
+
 ZCenterWidget::ZCenterWidget(QWidget *parent)
     :QTabWidget(parent)
 {
@@ -81,6 +119,7 @@ void ZCenterWidget::folderComparison()
     ZFolderWidget *folderWidget = new ZFolderWidget;
     connect(folderWidget, SIGNAL(progress(int,int)), this, SIGNAL(progress(int,int)));
     addTab(folderWidget, QIcon(":/icon/folder.png"), "Folder comparison");
+    connect(folderWidget, SIGNAL(progress(int,int)), (ZTabBar *)(this->tabBar()), SLOT(onProgress(int,int)));
 }
 
 void ZCenterWidget::startOrRecompare()
