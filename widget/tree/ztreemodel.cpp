@@ -40,12 +40,13 @@ QVariant ZTreeModel::data(const QModelIndex &index, int role) const
     QString dataStr = dataVariant.toString();
 
     if (role == Qt::DecorationRole &&
-            index.column() == 0 &&    //第一列的节点
+            index.column() == 1 &&    //第一列的节点
             rowCount(index) == 0       //子节点数为0
             )
     {
-        if(dataStr.indexOf("zdt") > 0){
-            QStringList dataList = dataStr.split("zdt");
+        if(dataStr.indexOf("|") > 0)
+        {
+            QStringList dataList = dataStr.split("|");
             return QIcon(dataList[0]);
         }
     }
@@ -53,8 +54,9 @@ QVariant ZTreeModel::data(const QModelIndex &index, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
-    if(dataStr.indexOf("zdt") > 0){
-        QStringList dataList = dataStr.split("zdt");
+    if(dataStr.indexOf("zdt") > 0)
+    {
+        QStringList dataList = dataStr.split("|");
         return QVariant(dataList[1]);
     }
     return dataVariant;
@@ -66,14 +68,15 @@ Qt::ItemFlags ZTreeModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return 0;
 
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    return QAbstractItemModel::flags(index);
 }
 //! [3]
 
 //! [4]
 ZTreeItem *ZTreeModel::getItem(const QModelIndex &index) const
 {
-    if (index.isValid()) {
+    if(index.isValid())
+    {
         ZTreeItem *item = static_cast<ZTreeItem*>(index.internalPointer());
         if (item)
             return item;
@@ -185,14 +188,13 @@ int ZTreeModel::rowCount(const QModelIndex &parent) const
 
 bool ZTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole && role != Qt::DisplayRole)
-        return false;
-
+    QVector<int> roles;
+    roles.append(role);
     ZTreeItem *item = getItem(index);
     bool result = item->setData(index.column(), value);
 
     if (result)
-        emit dataChanged(index, index);
+        emit dataChanged(index, index, roles);
 
     return result;
 }
@@ -230,23 +232,29 @@ void ZTreeModel::setupModelData(const QStringList &lines, ZTreeItem *parent)
 
         QString lineData = lines[number].mid(position).trimmed();
 
-        if (!lineData.isEmpty()) {
+        if(!lineData.isEmpty())
+        {
             // Read the column data from the rest of the line.
             QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
             QVector<QVariant> columnData;
             for (int column = 0; column < columnStrings.count(); ++column)
                 columnData << columnStrings[column];
 
-            if (position > indentations.last()) {
+            if(position > indentations.last())
+            {
                 // The last child of the current parent is now the new parent
                 // unless the current parent has no children.
 
-                if (parents.last()->childCount() > 0) {
+                if(parents.last()->childCount() > 0)
+                {
                     parents << parents.last()->child(parents.last()->childCount()-1);
                     indentations << position;
                 }
-            } else {
-                while (position < indentations.last() && parents.count() > 0) {
+            }
+            else
+            {
+                while(position < indentations.last() && parents.count() > 0)
+                {
                     parents.pop_back();
                     indentations.pop_back();
                 }

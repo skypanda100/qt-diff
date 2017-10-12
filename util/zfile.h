@@ -5,6 +5,7 @@
 #include <QList>
 #include <QFileInfo>
 #include <QDir>
+#include <QIcon>
 
 class ZFile{
 public:
@@ -14,6 +15,8 @@ public:
     static int lines(QFile *file, QList<QString> &lineLst);
 
     static QFileInfoList files(const QString &path);
+
+    static QIcon icon(const QString &path);
 };
 
 #endif // ZFILE

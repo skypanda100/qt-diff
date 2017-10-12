@@ -1,5 +1,7 @@
 #include "zfile.h"
 #include <QTextStream>
+#include <QFileIconProvider>
+#include <QTemporaryFile>
 
 ZFile::ZFile()
 {
@@ -43,4 +45,25 @@ QFileInfoList ZFile::files(const QString &path)
     }
 
     return fileList;
+}
+
+QIcon ZFile::icon(const QString &path)
+{
+    QFileIconProvider provider;
+    QIcon icon;
+    QTemporaryFile tmpFile(path);
+    tmpFile.setAutoRemove(false);
+
+    if (tmpFile.open())
+    {
+        tmpFile.close();
+        icon = provider.icon(QFileInfo(path));
+//        tmpFile.remove();
+    }
+//    else
+//    {
+//        qCritical() << QString("failed to write temporary file %1").arg(tmpFile.fileName());
+//    }
+
+    return icon;
 }

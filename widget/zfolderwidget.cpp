@@ -39,6 +39,12 @@ void ZFolderWidget::compare()
     QString srcBasePath = mPathEditSrc->text().trimmed();
     QString dstBasePath = mPathEditDst->text().trimmed();
 
+    QDir srcBaseDir(srcBasePath);
+    QDir dstBaseDir(dstBasePath);
+
+    srcBasePath = srcBaseDir.absolutePath();
+    dstBasePath = dstBaseDir.absolutePath();
+
     ZPathDiff pathDiff(srcBasePath, dstBasePath);
     mPathModelLst = pathDiff.execute();
 
@@ -104,7 +110,8 @@ void ZFolderWidget::initConnect()
 void ZFolderWidget::clearAll()
 {
     QAbstractItemModel *model = mTreeView->model();
-    if(model->rowCount() > 0){
+    if(model->rowCount() > 0)
+    {
         model->removeRows(0, model->rowCount());
     }
 }
@@ -151,14 +158,20 @@ void ZFolderWidget::searchClicked()
         QString currentDir = mPathEditSrc->text().isEmpty() ? QDir::currentPath() : mPathEditSrc->text();
         QString directory = QFileDialog::getExistingDirectory(this,
                                    tr("search"), currentDir);
-        mPathEditSrc->setText(directory);
+        if(!directory.isEmpty())
+        {
+            mPathEditSrc->setText(directory);
+        }
     }
     else
     {
         QString currentDir = mPathEditDst->text().isEmpty() ? QDir::currentPath() : mPathEditDst->text();
         QString directory = QFileDialog::getExistingDirectory(this,
                                    tr("search"), currentDir);
-        mPathEditDst->setText(directory);
+        if(!directory.isEmpty())
+        {
+            mPathEditDst->setText(directory);
+        }
     }
 }
 
