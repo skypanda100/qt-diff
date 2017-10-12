@@ -1,6 +1,7 @@
 #include "zpathdiff.h"
 #include <QFileInfo>
 #include "util/zfile.h"
+#include "env/cons.h"
 
 ZPathDiff::ZPathDiff()
 {
@@ -49,7 +50,7 @@ QList<ZPathDiffModel> ZPathDiff::execute()
 
             ZPathDiffModel model;
             model.setDstFileInfo(dstFileInfo);
-            model.setStatus(3);
+            model.setStatus(Added);
 
             pathModelLst.append(model);
         }
@@ -62,7 +63,7 @@ QList<ZPathDiffModel> ZPathDiff::execute()
 
             ZPathDiffModel model;
             model.setSrcFileInfo(srcFileInfo);
-            model.setStatus(2);
+            model.setStatus(Removed);
 
             pathModelLst.append(model);
         }
@@ -85,7 +86,7 @@ QList<ZPathDiffModel> ZPathDiff::execute()
                     ZPathDiffModel model;
                     model.setSrcFileInfo(srcFileInfo);
                     model.setDstFileInfo(dstFileInfo);
-                    model.setStatus(0);
+                    model.setStatus(Same);
 
                     pathModelLst.append(model);
                     dstFileInfoList.removeOne(dstFileInfo);
@@ -96,7 +97,7 @@ QList<ZPathDiffModel> ZPathDiff::execute()
             {
                 ZPathDiffModel model;
                 model.setSrcFileInfo(srcFileInfo);
-                model.setStatus(2);
+                model.setStatus(Removed);
 
                 pathModelLst.append(model);
             }
@@ -109,7 +110,7 @@ QList<ZPathDiffModel> ZPathDiff::execute()
 
             ZPathDiffModel model;
             model.setDstFileInfo(dstFileInfo);
-            model.setStatus(3);
+            model.setStatus(Added);
 
             pathModelLst.append(model);
         }

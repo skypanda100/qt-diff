@@ -27,13 +27,13 @@ void ZFolderCtl::run()
         QString path;
         QIcon icon;
         QString extension;
-        int status = pathDiffModel.status();
+        Status status = pathDiffModel.status();
         QString sts;
         int lineAdded = 0;
         int lineRemoved = 0;
         int lineModified = 0;
 
-        if(status == 0)
+        if(status == Same)
         {
             path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, mSrcBasePath.length());
             extension = pathDiffModel.srcFileInfo().completeSuffix();
@@ -44,15 +44,15 @@ void ZFolderCtl::run()
             for(int j = modelLst.size() - 2;j >= 0;j--)
             {
                 ZFileDiffModel model = modelLst[j];
-                if(model.status() == 0)
+                if(model.status() == Same)
                 {
 
                 }
-                else if(model.status() == 1)
+                else if(model.status() == Modified)
                 {
                     lineModified++;
                 }
-                else if(model.status() == 2)
+                else if(model.status() == Removed)
                 {
                     lineRemoved++;
                 }
@@ -63,12 +63,12 @@ void ZFolderCtl::run()
             }
             if(lineModified != 0 || lineRemoved != 0 || lineAdded != 0)
             {
-                status = 1;
+                status = Modified;
                 pathDiffModel.setStatus(status);
                 mPathModelLst[i] = pathDiffModel;
             }
         }
-        else if(status == 2)
+        else if(status == Removed)
         {
             path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, mSrcBasePath.length());
             extension = pathDiffModel.srcFileInfo().completeSuffix();
@@ -78,7 +78,7 @@ void ZFolderCtl::run()
             QList<QString> lineLst;
             lineRemoved = ZFile::lines(&file, lineLst);
         }
-        else if(status == 3)
+        else if(status == Added)
         {
             path = pathDiffModel.dstFileInfo().absoluteFilePath().remove(0, mDstBasePath.length());
             extension = pathDiffModel.dstFileInfo().completeSuffix();
@@ -95,16 +95,16 @@ void ZFolderCtl::run()
 
         switch(status)
         {
-        case 0:
+        case Same:
             sts = "Same";
             break;
-        case 1:
+        case Modified:
             sts = "Modified";
             break;
-        case 2:
+        case Removed:
             sts = "Removed";
             break;
-        case 3:
+        case Added:
             sts = "Added";
             break;
         }

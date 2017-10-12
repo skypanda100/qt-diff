@@ -33,15 +33,19 @@ int ZFile::lines(QFile *file, QList<QString> &lineLst){
 
 QFileInfoList ZFile::files(const QString &path)
 {
-    QDir dir(path);
-    QFileInfoList fileList = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    QFileInfoList folderList = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    for(int i = 0; i < folderList.size(); i++)
+    QFileInfoList fileList;
+    if(!path.isEmpty())
     {
-         QString path = folderList.at(i).absoluteFilePath();
-         QFileInfoList childFileList = files(path);
-         fileList.append(childFileList);
+        QDir dir(path);
+        fileList = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+        QFileInfoList folderList = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+        for(int i = 0; i < folderList.size(); i++)
+        {
+             QString path = folderList.at(i).absoluteFilePath();
+             QFileInfoList childFileList = files(path);
+             fileList.append(childFileList);
+        }
     }
 
     return fileList;

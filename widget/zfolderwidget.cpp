@@ -44,8 +44,15 @@ void ZFolderWidget::compare()
     QDir srcBaseDir(srcBasePath);
     QDir dstBaseDir(dstBasePath);
 
-    srcBasePath = srcBaseDir.absolutePath();
-    dstBasePath = dstBaseDir.absolutePath();
+    if(!srcBasePath.isEmpty())
+    {
+        srcBasePath = srcBaseDir.absolutePath();
+    }
+
+    if(!dstBasePath.isEmpty())
+    {
+        dstBasePath = dstBaseDir.absolutePath();
+    }
 
     ZPathDiff pathDiff(srcBasePath, dstBasePath);
     mPathModelLst = pathDiff.execute();

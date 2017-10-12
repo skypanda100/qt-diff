@@ -2,6 +2,7 @@
 #define ZFILEDIFFMODEL
 
 #include <QString>
+#include "env/cons.h"
 
 class ZFileDiffModel{
 
@@ -12,8 +13,8 @@ public:
     QString line() const;
     void setLine(const QString &line);
 
-    int status() const;
-    void setStatus(int status);
+    Status status() const;
+    void setStatus(Status status);
 
     QString srcLine() const;
     void setSrcLine(const QString &srcLine);
@@ -24,7 +25,7 @@ public:
 private:
     QString mSrcLine;
     QString mDstLine;
-    int mStatus; //0:same 1:modify 2:delete 3:add
+    Status mStatus; //0:same 1:modify 2:delete 3:add
 };
 
 #endif // ZFILEDIFFMODEL

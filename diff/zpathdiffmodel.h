@@ -2,6 +2,7 @@
 #define ZPATHDIFFMODEL
 
 #include <QFileInfo>
+#include "env/cons.h"
 
 class ZPathDiffModel{
 
@@ -15,13 +16,13 @@ public:
     QFileInfo dstFileInfo() const;
     void setDstFileInfo(const QFileInfo &dstFileInfo);
 
-    int status() const;
-    void setStatus(int status);
+    Status status() const;
+    void setStatus(Status status);
 
 private:
     QFileInfo mSrcFileInfo;
     QFileInfo mDstFileInfo;
-    int mStatus; //0:same 1:modify 2:delete 3:add
+    Status mStatus; //0:same 1:modify 2:delete 3:add
 };
 
 #endif // ZPATHDIFFMODEL

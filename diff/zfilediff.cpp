@@ -2,6 +2,7 @@
 #include "util/zfile.h"
 #include <QDebug>
 #include <QtMath>
+#include "env/cons.h"
 
 ZFileDiff::ZFileDiff()
 {
@@ -222,11 +223,11 @@ void ZFileDiff::recallRect()
                 model.setDstLine(lineDst);
                 if(QString::compare(lineSrc, lineDst) == 0)
                 {
-                    model.setStatus(0);
+                    model.setStatus(Same);
                 }
                 else
                 {
-                    model.setStatus(1);
+                    model.setStatus(Modified);
                 }
                 i -= 1;
                 j -= 1;
@@ -234,13 +235,13 @@ void ZFileDiff::recallRect()
             case 1:
                 model.setSrcLine(lineSrc);
                 model.setDstLine(NULL);
-                model.setStatus(2);
+                model.setStatus(Removed);
                 i -= 1;
                 break;
             case 2:
                 model.setSrcLine(NULL);
                 model.setDstLine(lineDst);
-                model.setStatus(3);
+                model.setStatus(Added);
                 j -= 1;
                 break;
         }

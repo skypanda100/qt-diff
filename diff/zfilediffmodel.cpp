@@ -28,12 +28,12 @@ void ZFileDiffModel::setDstLine(const QString &dstLine)
     mDstLine = dstLine;
 }
 
-int ZFileDiffModel::status() const
+Status ZFileDiffModel::status() const
 {
     return mStatus;
 }
 
-void ZFileDiffModel::setStatus(int status)
+void ZFileDiffModel::setStatus(Status status)
 {
     mStatus = status;
 }

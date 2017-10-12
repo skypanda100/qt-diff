@@ -3,7 +3,13 @@
 
 #include <QString>
 
-const QString PATH_SPLIT = "|";
+enum Status
+{
+    Same = 0,
+    Modified,
+    Removed,
+    Added
+};
 
 #endif // CONS
 

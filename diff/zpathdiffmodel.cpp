@@ -30,12 +30,12 @@ void ZPathDiffModel::setDstFileInfo(const QFileInfo &dstFileInfo)
     mDstFileInfo = dstFileInfo;
 }
 
-int ZPathDiffModel::status() const
+Status ZPathDiffModel::status() const
 {
     return mStatus;
 }
 
-void ZPathDiffModel::setStatus(int status)
+void ZPathDiffModel::setStatus(Status status)
 {
     mStatus = status;
 }
