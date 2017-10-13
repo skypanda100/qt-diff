@@ -37,5 +37,4 @@ void MainWindow::initConnect()
     connect(mTopWidget, SIGNAL(folderComparison()), mCenterWidget, SLOT(folderComparison()));
     connect(mTopWidget, SIGNAL(startOrRecompare()), mCenterWidget, SLOT(startOrRecompare()));
     connect(mTopWidget, SIGNAL(stopCompare()), mCenterWidget, SLOT(stopCompare()));
-    connect(mCenterWidget, SIGNAL(progress(int,int)), mBottomWidget, SLOT(onProgress(int,int)));
 }

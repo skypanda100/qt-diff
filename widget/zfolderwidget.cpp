@@ -55,7 +55,7 @@ void ZFolderWidget::compare()
     mFolderCtl = new ZFolderCtl(srcBasePath, dstBasePath, mPathModelLst);
     connect(mFolderCtl, SIGNAL(diffMessage(const QList<ZTreeItemModel> &)), this, SLOT(onDiffMessage(const QList<ZTreeItemModel> &)));
     connect(mFolderCtl, SIGNAL(diffEnd()), this, SLOT(onDiffEnd()));
-    connect(mFolderCtl, SIGNAL(progress(int,int)), this, SIGNAL(progress(int,int)));
+    connect(mFolderCtl, SIGNAL(progress(int,int)), this, SLOT(onProgress(int,int)));
 
     mFolderCtl->start();
 }
@@ -65,6 +65,24 @@ void ZFolderWidget::stopCompare()
     if(mFolderCtl != NULL)
     {
         mFolderCtl->stopRunAndDelete();
+    }
+}
+
+void ZFolderWidget::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+
+    float progress = (float)((mValue * 1.0f) / (mMaxValue * 1.0f));
+    if(progress < 1.0f)
+    {
+        QPainter painter(this);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QBrush(QColor(3, 102, 214, 200)));
+
+        int width = this->width() * progress;
+        int height = 2;
+
+        painter.drawRect(0, 0, width, height);
     }
 }
 
@@ -79,6 +97,9 @@ void ZFolderWidget::initData()
             << "Lines added"
             << "Lines removed"
             << "Lines modified";
+
+    mValue = 1;
+    mMaxValue = 1;
 }
 
 void ZFolderWidget::initUI()
@@ -186,4 +207,24 @@ void ZFolderWidget::onDiffEnd()
         delete mFolderCtl;
         mFolderCtl = NULL;
     }
+}
+
+void ZFolderWidget::onProgress(int value, int maxValue)
+{
+    if(maxValue == 0)
+    {
+        mValue = 0;
+        mMaxValue = 1;
+    }
+    else if(value > maxValue)
+    {
+        mValue = maxValue;
+        mMaxValue = maxValue;
+    }
+    else
+    {
+        mValue = value;
+        mMaxValue = maxValue;
+    }
+    update();
 }

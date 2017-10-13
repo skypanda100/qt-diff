@@ -18,8 +18,8 @@ public:
     void compare();
     void stopCompare();
 
-signals:
-    void progress(int value, int maxValue);
+protected:
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
 
 private:
     void initData();
@@ -32,6 +32,7 @@ private slots:
     void searchClicked();
     void onDiffMessage(const QList<ZTreeItemModel> &itemModelList);
     void onDiffEnd();
+    void onProgress(int value, int maxValue);
 
 private:
     QStringList mHeader;
@@ -42,6 +43,8 @@ private:
     QPushButton *mSearchButtonDst;
     ZFolderCtl *mFolderCtl;
     QList<ZPathDiffModel> mPathModelLst;
+    int mValue;
+    int mMaxValue;
 };
 
 #endif // ZFOLDERWIDGET
