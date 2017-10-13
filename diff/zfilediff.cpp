@@ -87,10 +87,10 @@ bool ZFileDiff::initRect()
         mDiffRectCols += 1;
     }
 
-    mDiffRect = new short*[mDiffRectRows];
+    mDiffRect = new int*[mDiffRectRows];
     for(int i = 0;i < mDiffRectRows;i++)
     {
-        mDiffRect[i] = new short[mDiffRectCols];
+        mDiffRect[i] = new int[mDiffRectCols];
         memset(mDiffRect[i], 0, mDiffRectCols);
     }
 
@@ -119,9 +119,9 @@ bool ZFileDiff::makeRect()
         {
             QString lineDst = mLineDstLst[j];
 
-            short top = mDiffRect[i][j + 1];
-            short topLeft = mDiffRect[i][j];
-            short left = mDiffRect[i + 1][j];
+            int top = mDiffRect[i][j + 1];
+            int topLeft = mDiffRect[i][j];
+            int left = mDiffRect[i + 1][j];
 
             if(QString::compare(lineSrc, lineDst) == 0)
             {
@@ -158,11 +158,11 @@ void ZFileDiff::recallRect()
             lineDst = mLineDstLst[j - 1];
         }
 
-        short top = 0;
-        short topLeft = 0;
-        short left = 0;
+        int top = 0;
+        int topLeft = 0;
+        int left = 0;
 
-        short valArr[3] = {topLeft, top, left};
+        int valArr[3] = {topLeft, top, left};
         int idxArr[3] = {0, 1, 2};
 
         if(i == 0 && j > 0)
@@ -199,17 +199,17 @@ void ZFileDiff::recallRect()
             }
         }
 
-        for(int k = 0;k < (int)(sizeof(valArr) / sizeof(short) - 1);k++)
+        for(int k = 0;k < (int)(sizeof(valArr) / sizeof(int) - 1);k++)
         {
-            short valCur = valArr[k];
-            short valNxt = valArr[k + 1];
+            int valCur = valArr[k];
+            int valNxt = valArr[k + 1];
 
             int idxCur = idxArr[k];
             int idxNxt = idxArr[k + 1];
 
             if(valCur <= valNxt)
             {
-                short valTmp = valCur;
+                int valTmp = valCur;
                 valArr[k] = valNxt;
                 valArr[k + 1] = valTmp;
 

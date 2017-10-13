@@ -26,7 +26,7 @@ private:
     QFile *mFileSrc;
     QFile *mFileDst;
 
-    short **mDiffRect;
+    int **mDiffRect;
     int mDiffRectRows;
     int mDiffRectCols;
 
