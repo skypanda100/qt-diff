@@ -43,7 +43,7 @@ void ZFolderCtl::run()
         if(status == Same)
         {
             path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, mSrcBasePath.length());
-            extension = pathDiffModel.srcFileInfo().completeSuffix();
+            extension = pathDiffModel.srcFileInfo().suffix();
             icon = ZFile::icon(pathDiffModel.srcFileInfo().absoluteFilePath());
 
             ZFileDiff fileDiff(pathDiffModel.srcFileInfo().absoluteFilePath(), pathDiffModel.dstFileInfo().absoluteFilePath());
@@ -78,7 +78,7 @@ void ZFolderCtl::run()
         else if(status == Removed)
         {
             path = pathDiffModel.srcFileInfo().absoluteFilePath().remove(0, mSrcBasePath.length());
-            extension = pathDiffModel.srcFileInfo().completeSuffix();
+            extension = pathDiffModel.srcFileInfo().suffix();
             icon = ZFile::icon(pathDiffModel.srcFileInfo().absoluteFilePath());
 
             QFile file(pathDiffModel.srcFileInfo().absoluteFilePath());
@@ -88,7 +88,7 @@ void ZFolderCtl::run()
         else if(status == Added)
         {
             path = pathDiffModel.dstFileInfo().absoluteFilePath().remove(0, mDstBasePath.length());
-            extension = pathDiffModel.dstFileInfo().completeSuffix();
+            extension = pathDiffModel.dstFileInfo().suffix();
             icon = ZFile::icon(pathDiffModel.dstFileInfo().absoluteFilePath());
 
             QFile file(pathDiffModel.dstFileInfo().absoluteFilePath());
