@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     diff/zpathdiff.cpp \
     ctl/zfolderctl.cpp \
     widget/tree/ztreeitemmodel.cpp \
-    widget/zbottomwidget.cpp
+    widget/zbottomwidget.cpp \
+    util/zhash.cpp
 
 HEADERS  += mainwindow.h \
     util/zfile.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     ctl/zfolderctl.h \
     widget/tree/ztreeitemmodel.h \
     widget/zbottomwidget.h \
-    env/zcons.h
+    env/zcons.h \
+    util/zhash.h
 
 RESOURCES += \
     resource.qrc

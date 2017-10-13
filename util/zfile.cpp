@@ -2,6 +2,7 @@
 #include <QTextStream>
 #include <QFileIconProvider>
 #include <QTemporaryFile>
+#include "zhash.h"
 
 ZFile::ZFile()
 {
@@ -24,6 +25,25 @@ int ZFile::lines(QFile *file, QList<QString> &lineLst){
     QTextStream in(file);
     while(!in.atEnd()){
         lineLst.append(in.readLine());
+        count++;
+    }
+    file->close();
+
+    return count;
+}
+
+int ZFile::lines(QFile *file, QList<unsigned int> &hashLst){
+    int count = -1;
+    if(!file->open(QIODevice::ReadOnly | QIODevice::Text)){
+        return count;
+    }else{
+        count = 0;
+    }
+
+    QTextStream in(file);
+    while(!in.atEnd()){
+        QString line = in.readLine();
+        hashLst.append(ZHash::ELFHash(line));
         count++;
     }
     file->close();
@@ -64,10 +84,6 @@ QIcon ZFile::icon(const QString &path)
         icon = provider.icon(QFileInfo(path));
         tmpFile.remove();
     }
-//    else
-//    {
-//        qCritical() << QString("failed to write temporary file %1").arg(tmpFile.fileName());
-//    }
 
     return icon;
 }

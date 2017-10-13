@@ -30,6 +30,8 @@ private:
     int mDiffRectRows;
     int mDiffRectCols;
 
+    QList<unsigned int> mHashSrcLst;
+    QList<unsigned int> mHashDstLst;
     QList<QString> mLineSrcLst;
     QList<QString> mLineDstLst;
     QList<ZFileDiffModel> mModelLst;

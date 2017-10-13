@@ -74,8 +74,8 @@ QList<ZFileDiffModel> ZFileDiff::execute()
 
 bool ZFileDiff::initRect()
 {
-    mDiffRectRows = ZFile::lines(mFileSrc, mLineSrcLst);
-    mDiffRectCols = ZFile::lines(mFileDst, mLineDstLst);
+    mDiffRectRows = ZFile::lines(mFileSrc, mHashSrcLst);
+    mDiffRectCols = ZFile::lines(mFileDst, mHashDstLst);
 
     if(mDiffRectRows == -1 || mDiffRectCols == -1)
     {
@@ -109,21 +109,21 @@ bool ZFileDiff::initRect()
 
 bool ZFileDiff::makeRect()
 {
-    int lineSrcCount = mLineSrcLst.size();
-    int lineDstCount = mLineDstLst.size();
+    int hashSrcCount = mHashSrcLst.size();
+    int hashDstCount = mHashDstLst.size();
 
-    for(int i = 0;i < lineSrcCount;i++)
+    for(int i = 0;i < hashSrcCount;i++)
     {
-        QString lineSrc = mLineSrcLst[i];
-        for(int j = 0;j < lineDstCount;j++)
+        unsigned int hashSrc = mHashSrcLst[i];
+        for(int j = 0;j < hashDstCount;j++)
         {
-            QString lineDst = mLineDstLst[j];
+            unsigned int hashDst = mHashDstLst[j];
 
             int top = mDiffRect[i][j + 1];
             int topLeft = mDiffRect[i][j];
             int left = mDiffRect[i + 1][j];
 
-            if(QString::compare(lineSrc, lineDst) == 0)
+            if(hashSrc == hashDst)
             {
                 mDiffRect[i + 1][j + 1] = topLeft;
             }
@@ -147,15 +147,15 @@ void ZFileDiff::recallRect()
 
     while(i >= 0 && j >= 0)
     {
-        QString lineSrc = NULL;
-        QString lineDst = NULL;
+        unsigned int hashSrc = 0;
+        unsigned int hashDst = 0;
         if(i - 1 >= 0)
         {
-            lineSrc = mLineSrcLst[i - 1];
+            hashSrc = mHashSrcLst[i - 1];
         }
         if(j - 1 >= 0)
         {
-            lineDst = mLineDstLst[j - 1];
+            hashDst = mHashDstLst[j - 1];
         }
 
         int top = 0;
@@ -185,7 +185,7 @@ void ZFileDiff::recallRect()
         }
         else
         {
-            if(QString::compare(lineSrc, lineDst) == 0)
+            if(hashSrc == hashDst)
             {
                 valArr[0] = 0;
                 valArr[1] = 1;
@@ -224,9 +224,9 @@ void ZFileDiff::recallRect()
         switch(idxLast)
         {
             case 0:
-                model.setSrcLine(lineSrc);
-                model.setDstLine(lineDst);
-                if(QString::compare(lineSrc, lineDst) == 0)
+                model.setSrcHash(hashSrc);
+                model.setDstHash(hashDst);
+                if(hashSrc == hashDst)
                 {
                     model.setStatus(Same);
                 }
@@ -238,14 +238,14 @@ void ZFileDiff::recallRect()
                 j -= 1;
                 break;
             case 1:
-                model.setSrcLine(lineSrc);
-                model.setDstLine(NULL);
+                model.setSrcHash(hashSrc);
+                model.setDstHash(0);
                 model.setStatus(Removed);
                 i -= 1;
                 break;
             case 2:
-                model.setSrcLine(NULL);
-                model.setDstLine(lineDst);
+                model.setSrcHash(0);
+                model.setDstHash(hashDst);
                 model.setStatus(Added);
                 j -= 1;
                 break;

@@ -14,6 +14,8 @@ public:
 
     static int lines(QFile *file, QList<QString> &lineLst);
 
+    static int lines(QFile *file, QList<unsigned int> &hashLst);
+
     static QFileInfoList files(const QString &path);
 
     static QIcon icon(const QString &path);
