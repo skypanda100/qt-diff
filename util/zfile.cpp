@@ -3,7 +3,6 @@
 #include <QFileIconProvider>
 #include <QTemporaryFile>
 #include "zhash.h"
-#include <QDebug>
 
 ZFile::ZFile()
 {
