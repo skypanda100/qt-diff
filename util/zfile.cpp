@@ -3,6 +3,7 @@
 #include <QFileIconProvider>
 #include <QTemporaryFile>
 #include "zhash.h"
+#include <QDebug>
 
 ZFile::ZFile()
 {
@@ -14,7 +15,7 @@ ZFile::~ZFile()
 
 }
 
-int ZFile::lines(QFile *file, QList<QString> &lineLst){
+int ZFile::linesWithLine(QFile *file, QList<QString> &lineLst){
     int count = -1;
     if(!file->open(QIODevice::ReadOnly | QIODevice::Text)){
         return count;
@@ -32,7 +33,7 @@ int ZFile::lines(QFile *file, QList<QString> &lineLst){
     return count;
 }
 
-int ZFile::lines(QFile *file, QList<unsigned int> &hashLst){
+int ZFile::linesWithHash(QFile *file, QList<unsigned int> &hashLst){
     int count = -1;
     if(!file->open(QIODevice::ReadOnly)){
         return count;

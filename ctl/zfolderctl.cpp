@@ -82,8 +82,8 @@ void ZFolderCtl::run()
             icon = ZFile::icon(pathDiffModel.srcFileInfo().absoluteFilePath());
 
             QFile file(pathDiffModel.srcFileInfo().absoluteFilePath());
-            QList<QString> lineLst;
-            lineRemoved = ZFile::lines(&file, lineLst);
+            QList<unsigned int> hashLst;
+            lineRemoved = ZFile::linesWithHash(&file, hashLst);
         }
         else if(status == Added)
         {
@@ -92,8 +92,8 @@ void ZFolderCtl::run()
             icon = ZFile::icon(pathDiffModel.dstFileInfo().absoluteFilePath());
 
             QFile file(pathDiffModel.dstFileInfo().absoluteFilePath());
-            QList<QString> lineLst;
-            lineAdded = ZFile::lines(&file, lineLst);
+            QList<unsigned int> hashLst;
+            lineAdded = ZFile::linesWithHash(&file, hashLst);
         }
         else
         {

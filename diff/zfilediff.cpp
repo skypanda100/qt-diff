@@ -74,8 +74,8 @@ QList<ZFileDiffModel> ZFileDiff::execute()
 
 bool ZFileDiff::initRect()
 {
-    mDiffRectRows = ZFile::lines(mFileSrc, mHashSrcLst);
-    mDiffRectCols = ZFile::lines(mFileDst, mHashDstLst);
+    mDiffRectRows = ZFile::linesWithHash(mFileSrc, mHashSrcLst);
+    mDiffRectCols = ZFile::linesWithHash(mFileDst, mHashDstLst);
 
     if(mDiffRectRows == -1 || mDiffRectCols == -1)
     {

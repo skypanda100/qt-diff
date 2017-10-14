@@ -12,9 +12,9 @@ public:
     ZFile();
     ~ZFile();
 
-    static int lines(QFile *file, QList<QString> &lineLst);
+    static int linesWithLine(QFile *file, QList<QString> &lineLst);
 
-    static int lines(QFile *file, QList<unsigned int> &hashLst);
+    static int linesWithHash(QFile *file, QList<unsigned int> &hashLst);
 
     static QFileInfoList files(const QString &path);
 
