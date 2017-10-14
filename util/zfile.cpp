@@ -34,7 +34,7 @@ int ZFile::lines(QFile *file, QList<QString> &lineLst){
 
 int ZFile::lines(QFile *file, QList<unsigned int> &hashLst){
     int count = -1;
-    if(!file->open(QIODevice::ReadOnly | QIODevice::Text)){
+    if(!file->open(QIODevice::ReadOnly)){
         return count;
     }else{
         count = 0;

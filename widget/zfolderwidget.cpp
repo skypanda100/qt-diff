@@ -1,7 +1,7 @@
 #include "zfolderwidget.h"
 #include "tree/ztreemodel.h"
 #include <QMetaType>
-
+#include <QtMath>
 
 ZFolderWidget::ZFolderWidget(QWidget *parent)
     : QWidget(parent)
@@ -53,9 +53,9 @@ void ZFolderWidget::compare()
     mPathModelLst = pathDiff.execute();
 
     mFolderCtl = new ZFolderCtl(srcBasePath, dstBasePath, mPathModelLst);
-    connect(mFolderCtl, SIGNAL(diffMessage(const QList<ZTreeItemModel> &)), this, SLOT(onDiffMessage(const QList<ZTreeItemModel> &)));
-    connect(mFolderCtl, SIGNAL(diffEnd()), this, SLOT(onDiffEnd()));
-    connect(mFolderCtl, SIGNAL(progress(int,int)), this, SLOT(onProgress(int,int)));
+    connect(mFolderCtl, SIGNAL(diffMessage(const QList<ZTreeItemModel> &)), this, SLOT(onDiffMessage(const QList<ZTreeItemModel> &)), Qt::QueuedConnection);
+    connect(mFolderCtl, SIGNAL(diffEnd()), this, SLOT(onDiffEnd()), Qt::QueuedConnection);
+    connect(mFolderCtl, SIGNAL(progress(int,int)), this, SLOT(onProgress(int,int)), Qt::QueuedConnection);
 
     mFolderCtl->start();
 }
@@ -77,10 +77,10 @@ void ZFolderWidget::paintEvent(QPaintEvent *event)
     {
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(QColor(3, 102, 214, 200)));
+        painter.setBrush(QBrush(QColor(3, 102, 214)));
 
-        int width = this->width() * progress;
-        int height = 2;
+        int width = qCeil(this->width() * progress);
+        int height = 5;
 
         painter.drawRect(0, 0, width, height);
     }
@@ -165,9 +165,6 @@ void ZFolderWidget::insert(const QList<ZTreeItemModel> &itemModelList)
         QModelIndex child = model->index(index.row() + 1, i, index.parent());
         model->setData(child, QVariant::fromValue(itemModelList[i]), Qt::DisplayRole);
     }
-    for (int column = 0; column < model->columnCount(); ++column){
-        mTreeView->resizeColumnToContents(column);
-    }
 }
 
 void ZFolderWidget::searchClicked()
@@ -202,6 +199,12 @@ void ZFolderWidget::onDiffMessage(const QList<ZTreeItemModel> &itemModelList)
 
 void ZFolderWidget::onDiffEnd()
 {
+    QAbstractItemModel *model = mTreeView->model();
+    for(int column = 0; column < model->columnCount(); ++column)
+    {
+        mTreeView->resizeColumnToContents(column);
+    }
+
     if(mFolderCtl != NULL)
     {
         delete mFolderCtl;
