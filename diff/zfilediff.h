@@ -18,6 +18,7 @@ public:
     QList<ZFileDiffModel> execute();
 
 private:
+    bool hasDifference();
     bool initRect();
     bool makeRect();
     void recallRect();

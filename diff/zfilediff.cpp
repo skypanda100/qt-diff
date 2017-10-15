@@ -56,27 +56,65 @@ void ZFileDiff::setFileDst(const QString &fileDst)
 
 QList<ZFileDiffModel> ZFileDiff::execute()
 {
-    if(initRect())
+    if(hasDifference())
     {
-        if(makeRect())
+        if(initRect())
         {
-            recallRect();
-//            //test
-//            for(int i = mModelLst.size() - 2;i >= 0;i--)
-//            {
-//                ZFileDiffModel model = mModelLst[i];
-//                qDebug() << model.srcLine() << model.dstLine() << model.status();
-//            }
+            if(makeRect())
+            {
+                recallRect();
+            }
         }
     }
     return mModelLst;
 }
 
-bool ZFileDiff::initRect()
+bool ZFileDiff::hasDifference()
 {
     mDiffRectRows = ZFile::linesWithHash(mFileSrc, mHashSrcLst);
     mDiffRectCols = ZFile::linesWithHash(mFileDst, mHashDstLst);
 
+    if(mDiffRectRows == -1 || mDiffRectCols == -1)
+    {
+        return true;
+    }
+    else if(mDiffRectRows != mDiffRectCols)
+    {
+        return true;
+    }
+    else
+    {
+        int lineCount = mDiffRectRows;
+        int i = 0;
+        for(;i < lineCount;i++)
+        {
+            unsigned int srcHash = mHashSrcLst[i];
+            unsigned int dstHash = mHashDstLst[i];
+            if(srcHash != dstHash)
+            {
+                break;
+            }
+            else
+            {
+                ZFileDiffModel model;
+                model.setSrcHash(srcHash);
+                model.setDstHash(dstHash);
+                model.setStatus(Same);
+
+                mModelLst.append(model);
+            }
+        }
+        if(i != lineCount)
+        {
+            mModelLst.clear();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ZFileDiff::initRect()
+{
     if(mDiffRectRows == -1 || mDiffRectCols == -1)
     {
         return false;
