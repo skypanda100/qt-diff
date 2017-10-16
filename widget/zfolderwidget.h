@@ -42,10 +42,13 @@ private:
     int mLineAdded;
     int mLineRemoved;
     int mLineModified;
+    QTime mTime;
     QString mFileInfo;
     QString mLineInfo;
+    QString mTimeInfo;
     QLabel *mFileLabel;
     QLabel *mLineLabel;
+    QLabel *mTimeLabel;
     QStringList mHeader;
     QTreeView *mTreeView;
     QLineEdit *mPathEditSrc;

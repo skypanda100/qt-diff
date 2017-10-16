@@ -16,6 +16,7 @@ ZFolderWidget::~ZFolderWidget()
 {
     delete mFileLabel;
     delete mLineLabel;
+    delete mTimeLabel;
     delete mPathEditSrc;
     delete mPathEditDst;
     delete mSearchButtonSrc;
@@ -29,6 +30,7 @@ ZFolderWidget::~ZFolderWidget()
 
 void ZFolderWidget::compare()
 {
+    mTime.restart();
     if(mFolderCtl != NULL)
     {
         mFolderCtl->stopRunAndDelete();
@@ -68,6 +70,7 @@ void ZFolderWidget::stopCompare()
     {
         mFolderCtl->stopRunAndDelete();
     }
+    mTimeLabel->setText(mTimeInfo.arg(mTime.elapsed()/1000.0f));
 }
 
 void ZFolderWidget::paintEvent(QPaintEvent *event)
@@ -105,6 +108,7 @@ void ZFolderWidget::initData()
 
     mFileInfo = "%1 files added,%2 files removed,%3 files modified,%4 files total";
     mLineInfo = "%1 lines added,%2 lines removed,%3 lines modified,%4 lines total";
+    mTimeInfo = "%1 s";
 
     mFileAdded = 0;
     mFileRemoved = 0;
@@ -152,12 +156,15 @@ void ZFolderWidget::initUI()
                         .arg(mLineRemoved)
                         .arg(mLineModified)
                         .arg(mLineAdded + mLineRemoved + mLineModified));
+    mTimeLabel = new QLabel;
+    mTimeLabel->setText(mTimeInfo.arg(0));
 
     QVBoxLayout *folderLayout = new QVBoxLayout;
     folderLayout->addLayout(searchLayout);
     folderLayout->addWidget(mTreeView, 1);
     folderLayout->addWidget(mFileLabel, 0, Qt::AlignRight);
     folderLayout->addWidget(mLineLabel, 0, Qt::AlignRight);
+    folderLayout->addWidget(mTimeLabel, 0, Qt::AlignRight);
 
     setLayout(folderLayout);
 }
@@ -291,6 +298,8 @@ void ZFolderWidget::onDiffEnd()
         delete mFolderCtl;
         mFolderCtl = NULL;
     }
+
+    mTimeLabel->setText(mTimeInfo.arg(mTime.elapsed()/1000.0f));
 }
 
 void ZFolderWidget::onProgress(int value, int maxValue)
