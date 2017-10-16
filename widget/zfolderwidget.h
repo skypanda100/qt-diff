@@ -27,6 +27,7 @@ private:
     void initConnect();
     void clearAll();
     void insert(const QList<ZTreeItemModel> &itemModelList);
+    void updateInfo();
 
 private slots:
     void searchClicked();
@@ -35,6 +36,16 @@ private slots:
     void onProgress(int value, int maxValue);
 
 private:
+    int mFileAdded;
+    int mFileRemoved;
+    int mFileModified;
+    int mLineAdded;
+    int mLineRemoved;
+    int mLineModified;
+    QString mFileInfo;
+    QString mLineInfo;
+    QLabel *mFileLabel;
+    QLabel *mLineLabel;
     QStringList mHeader;
     QTreeView *mTreeView;
     QLineEdit *mPathEditSrc;

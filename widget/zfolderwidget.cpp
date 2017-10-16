@@ -14,6 +14,8 @@ ZFolderWidget::ZFolderWidget(QWidget *parent)
 
 ZFolderWidget::~ZFolderWidget()
 {
+    delete mFileLabel;
+    delete mLineLabel;
     delete mPathEditSrc;
     delete mPathEditDst;
     delete mSearchButtonSrc;
@@ -100,6 +102,16 @@ void ZFolderWidget::initData()
 
     mValue = 1;
     mMaxValue = 1;
+
+    mFileInfo = "%1 files added,%2 files removed,%3 files modified,%4 files total";
+    mLineInfo = "%1 lines added,%2 lines removed,%3 lines modified,%4 lines total";
+
+    mFileAdded = 0;
+    mFileRemoved = 0;
+    mFileModified = 0;
+    mLineAdded = 0;
+    mLineRemoved = 0;
+    mLineModified = 0;
 }
 
 void ZFolderWidget::initUI()
@@ -128,9 +140,25 @@ void ZFolderWidget::initUI()
     mTreeView->setModel(model);
     mTreeView->setAlternatingRowColors(true);
 
+    mFileLabel = new QLabel;
+    mFileLabel->setText(QString(mFileInfo)
+                        .arg(mFileAdded)
+                        .arg(mFileRemoved)
+                        .arg(mFileModified)
+                        .arg(mFileAdded + mFileRemoved + mFileModified));
+    mLineLabel = new QLabel;
+    mLineLabel->setText(QString(mLineInfo)
+                        .arg(mLineAdded)
+                        .arg(mLineRemoved)
+                        .arg(mLineModified)
+                        .arg(mLineAdded + mLineRemoved + mLineModified));
+
     QVBoxLayout *folderLayout = new QVBoxLayout;
     folderLayout->addLayout(searchLayout);
     folderLayout->addWidget(mTreeView, 1);
+    folderLayout->addWidget(mFileLabel, 0, Qt::AlignRight);
+    folderLayout->addWidget(mLineLabel, 0, Qt::AlignRight);
+
     setLayout(folderLayout);
 }
 
@@ -147,6 +175,15 @@ void ZFolderWidget::clearAll()
     {
         model->removeRows(0, model->rowCount());
     }
+
+    mFileAdded = 0;
+    mFileRemoved = 0;
+    mFileModified = 0;
+    mLineAdded = 0;
+    mLineRemoved = 0;
+    mLineModified = 0;
+
+    updateInfo();
 }
 
 void ZFolderWidget::insert(const QList<ZTreeItemModel> &itemModelList)
@@ -165,6 +202,50 @@ void ZFolderWidget::insert(const QList<ZTreeItemModel> &itemModelList)
         QModelIndex child = model->index(index.row() + 1, i, index.parent());
         model->setData(child, QVariant::fromValue(itemModelList[i]), Qt::DisplayRole);
     }
+
+    QString status = itemModelList[3].value().toString();
+    int i = 0;
+    for(;i < (int)(sizeof(STATUS_STR) / sizeof(QString));i++)
+    {
+        if(QString::compare(status, STATUS_STR[i]) == 0)
+        {
+            break;
+        }
+    }
+    switch((Status)i)
+    {
+    case Same:
+        break;
+    case Modified:
+        mFileModified += 1;
+        break;
+    case Removed:
+        mFileRemoved += 1;
+        break;
+    case Added:
+        mFileAdded += 1;
+        break;
+    }
+    mLineAdded += itemModelList[4].value().toInt();
+    mLineRemoved += itemModelList[5].value().toInt();
+    mLineModified += itemModelList[6].value().toInt();
+
+    updateInfo();
+}
+
+void ZFolderWidget::updateInfo()
+{
+    mFileLabel->setText(QString(mFileInfo)
+                        .arg(mFileAdded)
+                        .arg(mFileRemoved)
+                        .arg(mFileModified)
+                        .arg(mFileAdded + mFileRemoved + mFileModified));
+
+    mLineLabel->setText(QString(mLineInfo)
+                        .arg(mLineAdded)
+                        .arg(mLineRemoved)
+                        .arg(mLineModified)
+                        .arg(mLineAdded + mLineRemoved + mLineModified));
 }
 
 void ZFolderWidget::searchClicked()

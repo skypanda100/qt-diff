@@ -85,13 +85,19 @@ void ZCenterWidget::folderComparison()
 void ZCenterWidget::startOrRecompare()
 {
     ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
-    widget->compare();
+    if(widget != NULL)
+    {
+        widget->compare();
+    }
 }
 
 void ZCenterWidget::stopCompare()
 {
     ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
-    widget->stopCompare();
+    if(widget != NULL)
+    {
+        widget->stopCompare();
+    }
 }
 
 void ZCenterWidget::paintEvent(QPaintEvent *event){
