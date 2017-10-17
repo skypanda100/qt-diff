@@ -12,6 +12,8 @@ public:
     ZFile();
     ~ZFile();
 
+    static int lines(QFile *file);
+
     static int linesWithLine(QFile *file, QList<QString> &lineLst);
 
     static int linesWithHash(QFile *file, QList<unsigned int> &hashLst);

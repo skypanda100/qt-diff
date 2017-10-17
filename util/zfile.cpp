@@ -14,16 +14,44 @@ ZFile::~ZFile()
 
 }
 
-int ZFile::linesWithLine(QFile *file, QList<QString> &lineLst){
+int ZFile::lines(QFile *file)
+{
     int count = -1;
-    if(!file->open(QIODevice::ReadOnly | QIODevice::Text)){
+    if(!file->open(QIODevice::ReadOnly))
+    {
         return count;
-    }else{
+    }
+    else
+    {
         count = 0;
     }
 
     QTextStream in(file);
-    while(!in.atEnd()){
+    while(!in.atEnd())
+    {
+        in.readLine();
+        count++;
+    }
+    file->close();
+
+    return count;
+}
+
+int ZFile::linesWithLine(QFile *file, QList<QString> &lineLst)
+{
+    int count = -1;
+    if(!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return count;
+    }
+    else
+    {
+        count = 0;
+    }
+
+    QTextStream in(file);
+    while(!in.atEnd())
+    {
         lineLst.append(in.readLine());
         count++;
     }
@@ -32,16 +60,21 @@ int ZFile::linesWithLine(QFile *file, QList<QString> &lineLst){
     return count;
 }
 
-int ZFile::linesWithHash(QFile *file, QList<unsigned int> &hashLst){
+int ZFile::linesWithHash(QFile *file, QList<unsigned int> &hashLst)
+{
     int count = -1;
-    if(!file->open(QIODevice::ReadOnly)){
+    if(!file->open(QIODevice::ReadOnly))
+    {
         return count;
-    }else{
+    }
+    else
+    {
         count = 0;
     }
 
     QTextStream in(file);
-    while(!in.atEnd()){
+    while(!in.atEnd())
+    {
         QString line = in.readLine();
         hashLst.append(ZHash::ELFHash(line));
         count++;

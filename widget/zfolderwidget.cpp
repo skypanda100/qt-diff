@@ -21,6 +21,11 @@ ZFolderWidget::~ZFolderWidget()
     delete mPathEditDst;
     delete mSearchButtonSrc;
     delete mSearchButtonDst;
+    if(mTreeView->model() != NULL)
+    {
+        ZTreeModel *model = (ZTreeModel *)mTreeView->model();
+        delete model;
+    }
     delete mTreeView;
     if(mFolderCtl != NULL)
     {
@@ -106,9 +111,9 @@ void ZFolderWidget::initData()
     mValue = 1;
     mMaxValue = 1;
 
-    mFileInfo = "%1 files added,%2 files removed,%3 files modified,%4 files total";
-    mLineInfo = "%1 lines added,%2 lines removed,%3 lines modified,%4 lines total";
-    mTimeInfo = "%1 s";
+    mFileInfo = "% 10d files added,% 10d files removed,% 10d files modified,% 10d files total";
+    mLineInfo = "% 10d lines added,% 10d lines removed,% 10d lines modified,% 10d lines total";
+    mTimeInfo = "%1s elapsed";
 
     mFileAdded = 0;
     mFileRemoved = 0;
@@ -145,17 +150,9 @@ void ZFolderWidget::initUI()
     mTreeView->setAlternatingRowColors(true);
 
     mFileLabel = new QLabel;
-    mFileLabel->setText(QString(mFileInfo)
-                        .arg(mFileAdded)
-                        .arg(mFileRemoved)
-                        .arg(mFileModified)
-                        .arg(mFileAdded + mFileRemoved + mFileModified));
     mLineLabel = new QLabel;
-    mLineLabel->setText(QString(mLineInfo)
-                        .arg(mLineAdded)
-                        .arg(mLineRemoved)
-                        .arg(mLineModified)
-                        .arg(mLineAdded + mLineRemoved + mLineModified));
+    updateInfo();
+
     mTimeLabel = new QLabel;
     mTimeLabel->setText(mTimeInfo.arg(0));
 
@@ -242,17 +239,19 @@ void ZFolderWidget::insert(const QList<ZTreeItemModel> &itemModelList)
 
 void ZFolderWidget::updateInfo()
 {
-    mFileLabel->setText(QString(mFileInfo)
-                        .arg(mFileAdded)
-                        .arg(mFileRemoved)
-                        .arg(mFileModified)
-                        .arg(mFileAdded + mFileRemoved + mFileModified));
+    QByteArray fileBa = mFileInfo.toLatin1();
+    mFileLabel->setText(QString::asprintf(fileBa.data()
+                        , mFileAdded
+                        , mFileRemoved
+                        , mFileModified
+                        , mFileAdded + mFileRemoved + mFileModified));
 
-    mLineLabel->setText(QString(mLineInfo)
-                        .arg(mLineAdded)
-                        .arg(mLineRemoved)
-                        .arg(mLineModified)
-                        .arg(mLineAdded + mLineRemoved + mLineModified));
+    QByteArray lineBa = mLineInfo.toLatin1();
+    mLineLabel->setText(QString::asprintf(lineBa.data()
+                        , mLineAdded
+                        , mLineRemoved
+                        , mLineModified
+                        , mLineAdded + mLineRemoved + mLineModified));
 }
 
 void ZFolderWidget::searchClicked()
