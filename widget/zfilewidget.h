@@ -53,6 +53,29 @@ private:
     QWidget *lineNumberArea;
 };
 
+class ZScrollTextWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    ZScrollTextWidget(Qt::Alignment verticalAlignment, QWidget *parent = 0);
+    ~ZScrollTextWidget();
+
+private:
+    void initData();
+    void initUI();
+    void initConnect();
+
+private slots:
+    void setVerticalRange(int min, int max);
+    void setHorizontalRange(int min, int max);
+
+private:
+    Qt::Alignment mVerticalAlignment;
+    ZTextWidget *mTextWidget;
+    QScrollBar *mVerticalBar;
+    QScrollBar *mHorizontalBar;
+};
+
 class ZFileWidget : public QWidget
 {
     Q_OBJECT
@@ -66,8 +89,8 @@ private:
     void initConnect();
 
 private:
-    ZTextWidget *mSrcTextWidget;
-    ZTextWidget *mDstTextWidget;
+    ZScrollTextWidget *mSrcScrollTextWidget;
+    ZScrollTextWidget *mDstScrollTextWidget;
 };
 
 #endif // ZFILEWIDGET

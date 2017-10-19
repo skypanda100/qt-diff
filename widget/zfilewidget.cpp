@@ -131,6 +131,7 @@ void ZTextWidget::initData()
 void ZTextWidget::initUI()
 {
     lineNumberArea = new ZLineNumberWidget(this);
+    verticalScrollBar()->setTracking(true);
 
     updateLineNumberAreaWidth(0);
 }
@@ -139,6 +140,94 @@ void ZTextWidget::initConnect()
 {
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineNumberArea(QRect, int)));
+}
+
+ZScrollTextWidget::ZScrollTextWidget(Qt::Alignment verticalAlignment, QWidget *parent)
+    : QWidget(parent)
+    , mVerticalAlignment(verticalAlignment)
+{
+    initData();
+    initUI();
+    initConnect();
+}
+
+ZScrollTextWidget::~ZScrollTextWidget()
+{
+    delete mTextWidget;
+    delete mVerticalBar;
+    delete mHorizontalBar;
+}
+
+void ZScrollTextWidget::initData()
+{
+
+}
+
+void ZScrollTextWidget::initUI()
+{
+    mTextWidget = new ZTextWidget;
+    mTextWidget->setLineWrapMode(QPlainTextEdit::NoWrap);
+    mTextWidget->verticalScrollBar()->setTracking(true);
+    mTextWidget->horizontalScrollBar()->setTracking(true);
+    mTextWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    mTextWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    mVerticalBar = new QScrollBar(Qt::Vertical, this);
+    mVerticalBar->setFixedWidth(20);
+    mVerticalBar->setVisible(false);
+
+    mHorizontalBar = new QScrollBar(Qt::Horizontal, this);
+    mHorizontalBar->setFixedHeight(20);
+    mHorizontalBar->setVisible(false);
+
+    QGridLayout *mainLayout =new QGridLayout;
+    mainLayout->setSpacing(0);
+    if(mVerticalAlignment == Qt::AlignLeft)
+    {
+        mainLayout->addWidget(mVerticalBar, 0, 0);
+        mainLayout->addWidget(mTextWidget, 0, 1);
+        mainLayout->addWidget(mHorizontalBar, 1, 1);
+    }
+    else
+    {
+        mainLayout->addWidget(mTextWidget, 0, 0);
+        mainLayout->addWidget(mVerticalBar, 0, 1);
+        mainLayout->addWidget(mHorizontalBar, 1, 0);
+    }
+    this->setLayout(mainLayout);
+}
+
+void ZScrollTextWidget::initConnect()
+{
+    connect(mVerticalBar, SIGNAL(valueChanged(int)), mTextWidget->verticalScrollBar(), SLOT(setValue(int)));
+    connect(mTextWidget->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setVerticalRange(int,int)));
+    connect(mTextWidget->verticalScrollBar(), SIGNAL(sliderMoved(int)), mVerticalBar, SLOT(setValue(int)));
+    connect(mTextWidget->verticalScrollBar(), SIGNAL(valueChanged(int)), mVerticalBar, SLOT(setValue(int)));
+    connect(mHorizontalBar, SIGNAL(valueChanged(int)), mTextWidget->horizontalScrollBar(), SLOT(setValue(int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setHorizontalRange(int,int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(sliderMoved(int)), mVerticalBar, SLOT(setValue(int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), mVerticalBar, SLOT(setValue(int)));
+
+}
+
+void ZScrollTextWidget::setVerticalRange(int min, int max)
+{
+    if(!mVerticalBar->isVisible())
+    {
+        mVerticalBar->setVisible(true);
+    }
+    mVerticalBar->setValue(max);
+    mVerticalBar->setRange(min, max);
+}
+
+void ZScrollTextWidget::setHorizontalRange(int min, int max)
+{
+    if(!mHorizontalBar->isVisible())
+    {
+        mHorizontalBar->setVisible(true);
+    }
+    mHorizontalBar->setValue(max);
+    mHorizontalBar->setRange(min, max);
 }
 
 ZFileWidget::ZFileWidget(QWidget *parent)
@@ -151,8 +240,8 @@ ZFileWidget::ZFileWidget(QWidget *parent)
 
 ZFileWidget::~ZFileWidget()
 {
-    delete mSrcTextWidget;
-    delete mDstTextWidget;
+    delete mSrcScrollTextWidget;
+    delete mDstScrollTextWidget;
 }
 
 void ZFileWidget::initData()
@@ -162,13 +251,13 @@ void ZFileWidget::initData()
 
 void ZFileWidget::initUI()
 {
-    mSrcTextWidget = new ZTextWidget;
-    mDstTextWidget = new ZTextWidget;
+    mSrcScrollTextWidget = new ZScrollTextWidget(Qt::AlignLeft);
+    mDstScrollTextWidget = new ZScrollTextWidget(Qt::AlignRight);
 
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    mainLayout->addWidget(mSrcTextWidget);
+    mainLayout->addWidget(mSrcScrollTextWidget);
     mainLayout->addSpacing(30);
-    mainLayout->addWidget(mDstTextWidget);
+    mainLayout->addWidget(mDstScrollTextWidget);
 
     this->setLayout(mainLayout);
 }
