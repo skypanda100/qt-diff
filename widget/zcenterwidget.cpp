@@ -112,7 +112,22 @@ void ZCenterWidget::fileCompare(ZPathDiffModel pathDiffModel)
 {
     ZFileWidget *fileWidget = new ZFileWidget(pathDiffModel);
     fileWidget->setObjectName(OBJECT_FILE_COMPARISON);
-    int index = addTab(fileWidget, QIcon(":/icon/file.png"), "File comparison");
+    QString title;
+    switch(pathDiffModel.status())
+    {
+    case Same:
+    case Modified:
+    case Removed:
+        title = pathDiffModel.srcFileInfo().fileName();
+        break;
+    case Added:
+        title = pathDiffModel.dstFileInfo().fileName();
+        break;
+    default:
+        title = "File comparison";
+    }
+
+    int index = addTab(fileWidget, QIcon(":/icon/file.png"), title);
     this->setCurrentIndex(index);
 }
 

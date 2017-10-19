@@ -64,6 +64,10 @@ public:
     ZScrollTextWidget(Qt::Alignment verticalAlignment, QWidget *parent = 0);
     ~ZScrollTextWidget();
 
+    void appendText(const QString &text);
+    void setVerticalValue(int value);
+    void setHorizontalValue(int value);
+
 private:
     void initData();
     void initUI();
@@ -94,6 +98,9 @@ private:
 
 private:
     ZPathDiffModel mPathDiffModel;
+    QList<ZFileDiffModel> mModelLst;
+    QList<QString> mSrcLineLst;
+    QList<QString> mDstLineLst;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
 };

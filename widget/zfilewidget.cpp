@@ -1,4 +1,6 @@
 #include "zfilewidget.h"
+#include "util/zfile.h"
+#include <QFile>
 
 ZLineNumberWidget::ZLineNumberWidget(ZTextWidget *parent)
     : QWidget(parent)
@@ -158,6 +160,19 @@ ZScrollTextWidget::~ZScrollTextWidget()
     delete mHorizontalBar;
 }
 
+void ZScrollTextWidget::appendText(const QString &text)
+{
+    mTextWidget->appendPlainText(text);
+}
+
+void ZScrollTextWidget::setVerticalValue(int value)
+{
+}
+
+void ZScrollTextWidget::setHorizontalValue(int value)
+{
+}
+
 void ZScrollTextWidget::initData()
 {
 
@@ -205,8 +220,8 @@ void ZScrollTextWidget::initConnect()
     connect(mTextWidget->verticalScrollBar(), SIGNAL(valueChanged(int)), mVerticalBar, SLOT(setValue(int)));
     connect(mHorizontalBar, SIGNAL(valueChanged(int)), mTextWidget->horizontalScrollBar(), SLOT(setValue(int)));
     connect(mTextWidget->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setHorizontalRange(int,int)));
-    connect(mTextWidget->horizontalScrollBar(), SIGNAL(sliderMoved(int)), mVerticalBar, SLOT(setValue(int)));
-    connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), mVerticalBar, SLOT(setValue(int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(sliderMoved(int)), mHorizontalBar, SLOT(setValue(int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), mHorizontalBar, SLOT(setValue(int)));
 
 }
 
@@ -247,7 +262,37 @@ ZFileWidget::~ZFileWidget()
 
 void ZFileWidget::initData()
 {
+    Status status = mPathDiffModel.status();
+    if(status == Same)
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QFile srcFile(srcPath);
+        QFile dstFile(dstPath);
 
+        ZFileDiff fileDiff(srcPath, dstPath);
+        mModelLst = fileDiff.execute();
+        ZFile::linesWithLine(&srcFile, mSrcLineLst);
+        ZFile::linesWithLine(&dstFile, mDstLineLst);
+    }
+    else if(status == Removed)
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QFile srcFile(srcPath);
+
+        ZFile::linesWithLine(&srcFile, mSrcLineLst);
+    }
+    else if(status == Added)
+    {
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QFile dstFile(dstPath);
+
+        ZFile::linesWithLine(&dstFile, mDstLineLst);
+    }
+    else
+    {
+        //do nothing
+    }
 }
 
 void ZFileWidget::initUI()
@@ -261,6 +306,18 @@ void ZFileWidget::initUI()
     mainLayout->addWidget(mDstScrollTextWidget);
 
     this->setLayout(mainLayout);
+
+    int srcLineCount = mSrcLineLst.size();
+    for(int i = 0;i < srcLineCount;i++)
+    {
+        mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
+    }
+
+    int dstLineCount = mDstLineLst.size();
+    for(int i = 0;i < dstLineCount;i++)
+    {
+        mDstScrollTextWidget->appendText(mDstLineLst[i]);
+    }
 }
 
 void ZFileWidget::initConnect()

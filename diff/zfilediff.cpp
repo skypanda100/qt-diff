@@ -1,6 +1,5 @@
 #include "zfilediff.h"
 #include "util/zfile.h"
-#include <QDebug>
 #include <QtMath>
 #include "env/zcons.h"
 
