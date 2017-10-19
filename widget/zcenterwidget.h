@@ -2,6 +2,7 @@
 #define ZCENTERWIDGET
 
 #include <QtWidgets>
+#include "diff/zpathdiffmodel.h"
 
 class ZTabBar : public QTabBar{
     Q_OBJECT
@@ -37,6 +38,9 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+
+private slots:
+    void onFileCompare(ZPathDiffModel pathDiffModel);
 
 private:
     void initData();

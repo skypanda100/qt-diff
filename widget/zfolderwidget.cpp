@@ -170,6 +170,7 @@ void ZFolderWidget::initConnect()
 {
     connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(searchClicked()));
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(searchClicked()));
+    connect(mTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
 }
 
 void ZFolderWidget::clearAll()
@@ -319,4 +320,11 @@ void ZFolderWidget::onProgress(int value, int maxValue)
         mMaxValue = maxValue;
     }
     update();
+}
+
+void ZFolderWidget::onDoubleClicked(const QModelIndex &index)
+{
+    int row = index.row();
+    ZPathDiffModel pathDiffModel = mPathModelLst[row];
+    emit fileCompare(pathDiffModel);
 }

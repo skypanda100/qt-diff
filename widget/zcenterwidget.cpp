@@ -1,5 +1,6 @@
 #include "zcenterwidget.h"
 #include "zfolderwidget.h"
+#include "zfilewidget.h"
 
 ZTabBar::ZTabBar(QWidget *parent)
     : QTabBar(parent)
@@ -79,6 +80,7 @@ void ZCenterWidget::closeTab(int index)
 void ZCenterWidget::folderComparison()
 {
     ZFolderWidget *folderWidget = new ZFolderWidget;
+    connect(folderWidget, SIGNAL(fileCompare(ZPathDiffModel)), this, SLOT(onFileCompare(ZPathDiffModel)));
     addTab(folderWidget, QIcon(":/icon/folder.png"), "Folder comparison");
 }
 
@@ -102,6 +104,12 @@ void ZCenterWidget::stopCompare()
 
 void ZCenterWidget::paintEvent(QPaintEvent *event){
     QTabWidget::paintEvent(event);
+}
+
+void ZCenterWidget::onFileCompare(ZPathDiffModel pathDiffModel)
+{
+    ZFileWidget *fileWidget = new ZFileWidget;
+    addTab(fileWidget, QIcon(":/icon/folder.png"), "File comparison");
 }
 
 void ZCenterWidget::initData()

@@ -18,6 +18,9 @@ public:
     void compare();
     void stopCompare();
 
+signals:
+    void fileCompare(ZPathDiffModel pathDiffModel);
+
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
 
@@ -34,6 +37,7 @@ private slots:
     void onDiffMessage(const QList<ZTreeItemModel> &itemModelList);
     void onDiffEnd();
     void onProgress(int value, int maxValue);
+    void onDoubleClicked(const QModelIndex & index);
 
 private:
     int mFileAdded;
