@@ -51,25 +51,27 @@ ZTextWidget::ZTextWidget(QWidget *parent)
 
 ZTextWidget::~ZTextWidget()
 {
-    delete lineNumberArea;
+    delete mLineNumberArea;
 }
 
 void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
-    QPainter painter(lineNumberArea);
+    QPainter painter(mLineNumberArea);
     painter.fillRect(event->rect(), QBrush(Qt::white));
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
+    mFirstVisibleBlockNo = blockNumber;
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
+    mBlockHeight = (int) blockBoundingRect(block).height();
 
     while(block.isValid() && top <= event->rect().bottom())
     {
         if(block.isVisible() && bottom >= event->rect().top())
         {
             QString number = QString::number(blockNumber + 1);
-            painter.drawText(10, top, lineNumberArea->width(), fontMetrics().height(),
+            painter.drawText(10, top, mLineNumberArea->width(), fontMetrics().height(),
                              Qt::AlignLeft, number);
         }
 
@@ -78,6 +80,7 @@ void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
     }
+    mLastVisibleBlockNo = blockNumber;
 }
 
 int ZTextWidget::lineNumberAreaWidth()
@@ -95,12 +98,51 @@ int ZTextWidget::lineNumberAreaWidth()
     return space;
 }
 
+bool ZTextWidget::isBlockContained(QList<int> blockNoLst)
+{
+    int minBlockNo = blockNoLst[0];
+    int maxBlockNo = blockNoLst[blockNoLst.size() - 1];
+    if(minBlockNo >= mLastVisibleBlockNo && maxBlockNo <= mFirstVisibleBlockNo)
+    {
+        return true;
+    }
+    return false;
+}
+
+QRect ZTextWidget::blockArea(QList<int> blockNoLst)
+{
+    int minBlockNo = blockNoLst[0];
+    int maxBlockNo = blockNoLst[blockNoLst.size() - 1];
+    int y = 0;
+    int height = 0;
+
+    if(minBlockNo < mFirstVisibleBlockNo)
+    {
+        y = this->rect().top();
+    }
+    else
+    {
+        y = (minBlockNo - mFirstVisibleBlockNo) * mBlockHeight + this->rect().top();
+    }
+
+    if(maxBlockNo > mLastVisibleBlockNo)
+    {
+        height = this->rect().bottom() - y;
+    }
+    else
+    {
+        height = this->rect().bottom() - (mLastVisibleBlockNo - maxBlockNo) * mBlockHeight;
+    }
+
+    return QRect(this->rect().x(), y, this->width(), height);
+}
+
 void ZTextWidget::resizeEvent(QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent(event);
 
     QRect cr = contentsRect();
-    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+    mLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 
 void ZTextWidget::updateLineNumberAreaWidth(int /*newBlockCount*/)
@@ -112,11 +154,11 @@ void ZTextWidget::updateLineNumberArea(const QRect &rect, int dy)
 {
     if(dy)
     {
-        lineNumberArea->scroll(0, dy);
+        mLineNumberArea->scroll(0, dy);
     }
     else
     {
-        lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+        mLineNumberArea->update(0, rect.y(), mLineNumberArea->width(), rect.height());
     }
 
     if(rect.contains(viewport()->rect()))
@@ -132,7 +174,7 @@ void ZTextWidget::initData()
 
 void ZTextWidget::initUI()
 {
-    lineNumberArea = new ZLineNumberWidget(this);
+    mLineNumberArea = new ZLineNumberWidget(this);
     verticalScrollBar()->setTracking(true);
 
     updateLineNumberAreaWidth(0);
@@ -171,6 +213,16 @@ void ZScrollTextWidget::setVerticalValue(int value)
 
 void ZScrollTextWidget::setHorizontalValue(int value)
 {
+}
+
+bool ZScrollTextWidget::isBlockContained(QList<int> blockNoLst)
+{
+    return mTextWidget->isBlockContained(blockNoLst);
+}
+
+QRect ZScrollTextWidget::blockArea(QList<int> blockNoLst)
+{
+    return mTextWidget->blockArea(blockNoLst);
 }
 
 void ZScrollTextWidget::initData()
@@ -260,6 +312,281 @@ ZFileWidget::~ZFileWidget()
     delete mDstScrollTextWidget;
 }
 
+void ZFileWidget::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+    QPainter painter;
+
+    int modelCount = mModelLst.size();
+    int srcIndex = 0;
+    int dstIndex = 0;
+    QList<int> srcBlockNoLst;
+    QList<int> dstBlockNoLst;
+    bool isModifiedBlockStart = false;
+    bool isRemovedBlockStart = false;
+    bool isAddedBlockStart = false;
+
+    for(int i = 0;i < modelCount;i++)
+    {
+        ZFileDiffModel model = mModelLst[i];
+        Status status = model.status();
+        if(status == Modified)
+        {
+            if(isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "1" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "2" << rect;
+
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "3" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "4" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(!isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+            }
+            srcBlockNoLst.append(srcIndex);
+            dstBlockNoLst.append(dstIndex);
+            srcIndex++;
+            dstIndex++;
+        }
+        else if(status == Removed)
+        {
+            if(isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "5" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "6" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "7" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "8" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(!isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+            }
+            srcBlockNoLst.append(srcIndex);
+            dstBlockNoLst.append(dstIndex);
+            srcIndex++;
+        }
+        else if(status == Added)
+        {
+            if(isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "9" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "10" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "11" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "12" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(!isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+            }
+            srcBlockNoLst.append(srcIndex);
+            dstBlockNoLst.append(dstIndex);
+            dstIndex++;
+        }
+        else
+        {
+            if(isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "13" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "14" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "15" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "6" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+            if(isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+                {
+                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "17" << rect;
+                }
+                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+                {
+                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+                    painter.fillRect(rect, QBrush(DIFF_CLR));
+                    qDebug() << "18" << rect;
+                }
+                srcBlockNoLst.clear();
+                dstBlockNoLst.clear();
+            }
+
+            srcIndex++;
+            dstIndex++;
+        }
+    }
+    if(isModifiedBlockStart)
+    {
+        isModifiedBlockStart = !isModifiedBlockStart;
+        if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+        {
+            QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+            painter.fillRect(rect, QBrush(DIFF_CLR));
+            qDebug() << "19" << rect;
+        }
+        if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+        {
+            QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+            painter.fillRect(rect, QBrush(DIFF_CLR));
+            qDebug() << "20" << rect;
+        }
+        srcBlockNoLst.clear();
+        dstBlockNoLst.clear();
+    }
+    if(isRemovedBlockStart)
+    {
+        isRemovedBlockStart = !isRemovedBlockStart;
+        if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+        {
+            QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+            painter.fillRect(rect, QBrush(DIFF_CLR));
+            qDebug() << "21" << rect;
+        }
+        if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+        {
+            QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+            painter.fillRect(rect, QBrush(DIFF_CLR));
+            qDebug() << "22" << rect;
+        }
+        srcBlockNoLst.clear();
+        dstBlockNoLst.clear();
+    }
+    if(isAddedBlockStart)
+    {
+        isAddedBlockStart = !isAddedBlockStart;
+        if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
+        {
+            QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
+            painter.fillRect(rect, QBrush(DIFF_CLR));
+            qDebug() << "23" << rect;
+        }
+        if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
+        {
+            QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
+            painter.fillRect(rect, QBrush(DIFF_CLR));
+            qDebug() << "24" << rect;
+        }
+        srcBlockNoLst.clear();
+        dstBlockNoLst.clear();
+    }
+}
+
 void ZFileWidget::initData()
 {
     Status status = mPathDiffModel.status();
@@ -270,8 +597,6 @@ void ZFileWidget::initData()
         QFile srcFile(srcPath);
         QFile dstFile(dstPath);
 
-        ZFileDiff fileDiff(srcPath, dstPath);
-        mModelLst = fileDiff.execute();
         ZFile::linesWithLine(&srcFile, mSrcLineLst);
         ZFile::linesWithLine(&dstFile, mDstLineLst);
     }
@@ -291,7 +616,15 @@ void ZFileWidget::initData()
     }
     else
     {
-        //do nothing
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QFile srcFile(srcPath);
+        QFile dstFile(dstPath);
+
+        ZFileDiff fileDiff(srcPath, dstPath);
+        mModelLst = fileDiff.execute();
+        ZFile::linesWithLine(&srcFile, mSrcLineLst);
+        ZFile::linesWithLine(&dstFile, mDstLineLst);
     }
 }
 

@@ -40,6 +40,8 @@ public:
     ~ZTextWidget();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
+    bool isBlockContained(QList<int> blockNoLst);
+    QRect blockArea(QList<int> blockNoLst);
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
@@ -54,7 +56,10 @@ private:
     void initConnect();
 
 private:
-    QWidget *lineNumberArea;
+    QWidget *mLineNumberArea;
+    int mFirstVisibleBlockNo;
+    int mLastVisibleBlockNo;
+    int mBlockHeight;
 };
 
 class ZScrollTextWidget : public QWidget
@@ -67,6 +72,8 @@ public:
     void appendText(const QString &text);
     void setVerticalValue(int value);
     void setHorizontalValue(int value);
+    bool isBlockContained(QList<int> blockNoLst);
+    QRect blockArea(QList<int> blockNoLst);
 
 private:
     void initData();
@@ -90,6 +97,9 @@ class ZFileWidget : public QWidget
 public:
     ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent = 0);
     ~ZFileWidget();
+
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
     void initData();

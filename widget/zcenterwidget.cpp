@@ -88,19 +88,26 @@ void ZCenterWidget::folderComparison()
 
 void ZCenterWidget::startOrRecompare()
 {
-    ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
-    if(widget != NULL)
+    if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
-        widget->compare();
+        ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+        if(widget != NULL)
+        {
+            widget->compare();
+        }
     }
 }
 
 void ZCenterWidget::stopCompare()
 {
-    ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
-    if(widget != NULL)
+    if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
-        widget->stopCompare();
+        ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+        if(widget != NULL)
+        {
+            widget->stopCompare();
+        }
+
     }
 }
 
