@@ -2,6 +2,10 @@
 #define ZFILEWIDGET
 
 #include <QtWidgets>
+#include "diff/zfilediff.h"
+#include "diff/zfilediffmodel.h"
+#include "diff/zpathdiff.h"
+#include "diff/zpathdiffmodel.h"
 
 class ZLineNumberWidget;
 class ZTextWidget;
@@ -80,7 +84,7 @@ class ZFileWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ZFileWidget(QWidget *parent = 0);
+    ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent = 0);
     ~ZFileWidget();
 
 private:
@@ -89,6 +93,7 @@ private:
     void initConnect();
 
 private:
+    ZPathDiffModel mPathDiffModel;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
 };

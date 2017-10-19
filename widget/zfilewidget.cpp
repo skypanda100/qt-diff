@@ -230,8 +230,9 @@ void ZScrollTextWidget::setHorizontalRange(int min, int max)
     mHorizontalBar->setRange(min, max);
 }
 
-ZFileWidget::ZFileWidget(QWidget *parent)
+ZFileWidget::ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent)
     : QWidget(parent)
+    , mPathDiffModel(pathDiffModel)
 {
     initData();
     initUI();

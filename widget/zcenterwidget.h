@@ -35,12 +35,10 @@ public slots:
     void folderComparison();
     void startOrRecompare();
     void stopCompare();
+    void fileCompare(ZPathDiffModel pathDiffModel);
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
-
-private slots:
-    void onFileCompare(ZPathDiffModel pathDiffModel);
 
 private:
     void initData();

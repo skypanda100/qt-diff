@@ -80,8 +80,10 @@ void ZCenterWidget::closeTab(int index)
 void ZCenterWidget::folderComparison()
 {
     ZFolderWidget *folderWidget = new ZFolderWidget;
-    connect(folderWidget, SIGNAL(fileCompare(ZPathDiffModel)), this, SLOT(onFileCompare(ZPathDiffModel)));
-    addTab(folderWidget, QIcon(":/icon/folder.png"), "Folder comparison");
+    folderWidget->setObjectName(OBJECT_FOLDER_COMPARISON);
+    connect(folderWidget, SIGNAL(fileCompare(ZPathDiffModel)), this, SLOT(fileCompare(ZPathDiffModel)));
+    int index = addTab(folderWidget, QIcon(":/icon/folder.png"), "Folder comparison");
+    this->setCurrentIndex(index);
 }
 
 void ZCenterWidget::startOrRecompare()
@@ -106,10 +108,12 @@ void ZCenterWidget::paintEvent(QPaintEvent *event){
     QTabWidget::paintEvent(event);
 }
 
-void ZCenterWidget::onFileCompare(ZPathDiffModel pathDiffModel)
+void ZCenterWidget::fileCompare(ZPathDiffModel pathDiffModel)
 {
-    ZFileWidget *fileWidget = new ZFileWidget;
-    addTab(fileWidget, QIcon(":/icon/folder.png"), "File comparison");
+    ZFileWidget *fileWidget = new ZFileWidget(pathDiffModel);
+    fileWidget->setObjectName(OBJECT_FILE_COMPARISON);
+    int index = addTab(fileWidget, QIcon(":/icon/file.png"), "File comparison");
+    this->setCurrentIndex(index);
 }
 
 void ZCenterWidget::initData()

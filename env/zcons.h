@@ -28,5 +28,8 @@ const QColor STATUS_CLR[4] =
     QColor(0, 128, 0)
 };
 
+const QString OBJECT_FOLDER_COMPARISON = "folder";
+const QString OBJECT_FILE_COMPARISON = "file";
+
 #endif // CONS
 
