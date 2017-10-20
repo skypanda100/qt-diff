@@ -32,6 +32,16 @@ bool ZDiffInfo::isLine() const
     return mIsLine;
 }
 
+void ZDiffInfo::setStatus(Status status)
+{
+    mStatus = status;
+}
+
+Status ZDiffInfo::status() const
+{
+    return mStatus;
+}
+
 ZLineNumberWidget::ZLineNumberWidget(ZTextWidget *parent)
     : QWidget(parent)
     , mTextWidget(parent)
@@ -95,18 +105,28 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
-    painter.setPen(QPen(DIFF_PEN_CLR));
-    painter.setBrush(QBrush(DIFF_BRUSH_CLR));
+    painter.setPen(Qt::NoPen);
     if(mTextWidget != NULL)
     {
         int diffCount = mDiffLst.size();
         for(int i = 0;i < diffCount;i++)
         {
             ZDiffInfo diffInfo = mDiffLst[i];
+            QColor color = STATUS_CLR[(int)diffInfo.status()];
+            color.setAlpha(50);
             if(mTextWidget->isBlockContained(diffInfo))
             {
                 QRectF rectf = mTextWidget->blockArea(diffInfo);
-                painter.drawRect(rectf);
+                if(diffInfo.isLine())
+                {
+                    painter.setPen(color);
+                    painter.drawLine(QPointF(rectf.x(), rectf.y()), QPointF(rectf.x() + rectf.width(), rectf.y()));
+                }
+                else
+                {
+                    painter.setBrush(QBrush(color));
+                    painter.drawRect(rectf);
+                }
             }
         }
     }
@@ -536,8 +556,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(false);
+                    srcDiffInfo.setStatus(Removed);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(true);
+                    dstDiffInfo.setStatus(Removed);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -552,8 +574,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(true);
+                    srcDiffInfo.setStatus(Added);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(false);
+                    dstDiffInfo.setStatus(Added);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -578,8 +602,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(false);
+                    srcDiffInfo.setStatus(Modified);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(false);
+                    dstDiffInfo.setStatus(Modified);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -593,9 +619,11 @@ void ZFileWidget::initData()
                     ZDiffInfo srcDiffInfo;
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
+                    srcDiffInfo.setLine(true);
+                    srcDiffInfo.setStatus(Added);
                     dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(true);
+                    dstDiffInfo.setLine(false);
+                    dstDiffInfo.setStatus(Added);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -619,8 +647,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(false);
+                    srcDiffInfo.setStatus(Modified);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(false);
+                    dstDiffInfo.setStatus(Modified);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -634,8 +664,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(false);
+                    srcDiffInfo.setStatus(Removed);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(true);
+                    dstDiffInfo.setStatus(Removed);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -659,8 +691,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(false);
+                    srcDiffInfo.setStatus(Modified);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(false);
+                    dstDiffInfo.setStatus(Modified);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -674,8 +708,10 @@ void ZFileWidget::initData()
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
                     srcDiffInfo.setLine(false);
+                    srcDiffInfo.setStatus(Removed);
                     dstDiffInfo.setDiffLst(dstDiffLst);
                     dstDiffInfo.setLine(true);
+                    dstDiffInfo.setStatus(Removed);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -688,9 +724,11 @@ void ZFileWidget::initData()
                     ZDiffInfo srcDiffInfo;
                     ZDiffInfo dstDiffInfo;
                     srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
+                    srcDiffInfo.setLine(true);
+                    srcDiffInfo.setStatus(Added);
                     dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(true);
+                    dstDiffInfo.setLine(false);
+                    dstDiffInfo.setStatus(Added);
 
                     mSrcDiffLst.append(srcDiffInfo);
                     mDstDiffLst.append(dstDiffInfo);
@@ -711,8 +749,10 @@ void ZFileWidget::initData()
             ZDiffInfo dstDiffInfo;
             srcDiffInfo.setDiffLst(srcDiffLst);
             srcDiffInfo.setLine(false);
+            srcDiffInfo.setStatus(Modified);
             dstDiffInfo.setDiffLst(dstDiffLst);
             dstDiffInfo.setLine(false);
+            dstDiffInfo.setStatus(Modified);
 
             mSrcDiffLst.append(srcDiffInfo);
             mDstDiffLst.append(dstDiffInfo);
@@ -727,8 +767,10 @@ void ZFileWidget::initData()
             ZDiffInfo dstDiffInfo;
             srcDiffInfo.setDiffLst(srcDiffLst);
             srcDiffInfo.setLine(false);
+            srcDiffInfo.setStatus(Removed);
             dstDiffInfo.setDiffLst(dstDiffLst);
             dstDiffInfo.setLine(true);
+            dstDiffInfo.setStatus(Removed);
 
             mSrcDiffLst.append(srcDiffInfo);
             mDstDiffLst.append(dstDiffInfo);
@@ -742,9 +784,11 @@ void ZFileWidget::initData()
             ZDiffInfo srcDiffInfo;
             ZDiffInfo dstDiffInfo;
             srcDiffInfo.setDiffLst(srcDiffLst);
-            srcDiffInfo.setLine(false);
+            srcDiffInfo.setLine(true);
+            srcDiffInfo.setStatus(Added);
             dstDiffInfo.setDiffLst(dstDiffLst);
-            dstDiffInfo.setLine(true);
+            dstDiffInfo.setLine(false);
+            dstDiffInfo.setStatus(Added);
 
             mSrcDiffLst.append(srcDiffInfo);
             mDstDiffLst.append(dstDiffInfo);

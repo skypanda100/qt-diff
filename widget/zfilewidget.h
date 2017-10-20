@@ -24,9 +24,13 @@ public:
     void setLine(bool isLine);
     bool isLine() const;
 
+    void setStatus(Status status);
+    Status status() const;
+
 private:
     QList<int> mDiffLst;
     bool mIsLine;
+    Status mStatus;
 };
 
 class ZLineNumberWidget : public QWidget

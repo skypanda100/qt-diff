@@ -31,8 +31,5 @@ const QColor STATUS_CLR[4] =
 const QString OBJECT_FOLDER_COMPARISON = "folder";
 const QString OBJECT_FILE_COMPARISON = "file";
 
-const QColor DIFF_BRUSH_CLR = QColor(0, 150, 0, 50);
-const QColor DIFF_PEN_CLR = QColor(0, 150, 0, 100);
-
 #endif // CONS
 
