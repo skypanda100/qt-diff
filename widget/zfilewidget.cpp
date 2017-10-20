@@ -88,12 +88,6 @@ ZDiffAreaWidget::~ZDiffAreaWidget()
 void ZDiffAreaWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
     mDiffLst = diffLst;
-    int diffCount = mDiffLst.size();
-    for(int i = 0;i < diffCount;i++)
-    {
-        ZDiffInfo diffInfo = mDiffLst[i];
-        qDebug() << (size_t)this << diffInfo.diffLst();
-    }
 }
 
 void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
@@ -211,27 +205,46 @@ QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
     qreal y2 = 0;
 
     QTextBlock block = firstVisibleBlock();
-    int firstBlockNo = block.blockNumber();
-    qreal blockHeight = blockBoundingRect(block).height();
+    int blockNumber = block.blockNumber();
+    qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+    qreal bottom = top + blockBoundingRect(block).height();
 
-    if(minBlockNo < firstBlockNo)
+    if(minBlockNo < mFirstVisibleBlockNo)
     {
-        minBlockNo = firstBlockNo;
+        minBlockNo = mFirstVisibleBlockNo;
     }
-    if(isLine)
+
+    if(maxBlockNo > mLastVisibleBlockNo)
     {
-        y1 = this->viewport()->y() + (minBlockNo - firstBlockNo) * blockHeight;
-        y2 += y1 + 1;
+        maxBlockNo = mLastVisibleBlockNo;
     }
-    else
+
+    while(block.isValid())
     {
-        qDebug() << firstBlockNo;
-        y1 = this->viewport()->y() + (minBlockNo - firstBlockNo) * blockHeight;
-        y2 = (maxBlockNo - minBlockNo + 1) * blockHeight + y1;
-        y2 = y2 > this->viewport()->rect().bottom() ? this->viewport()->rect().bottom() : y2;
+        if(minBlockNo == blockNumber)
+        {
+            y1 = blockBoundingGeometry(block).translated(contentOffset()).top();
+            if(isLine)
+            {
+                y2 = y1 + 1;
+                break;
+            }
+        }
+
+        if(maxBlockNo == blockNumber)
+        {
+            y2 = blockBoundingGeometry(block).translated(contentOffset()).top() + blockBoundingRect(block).height();
+            break;
+        }
+
+        block = block.next();
+        top = bottom;
+        bottom = top + blockBoundingRect(block).height();
+        ++blockNumber;
     }
 
     QPoint point = this->mapToParent(QPoint(this->viewport()->rect().x(), y1));
+
     return QRectF(point, QSize(this->width(), y2 - y1));
 }
 
@@ -501,7 +514,6 @@ void ZFileWidget::initData()
         ZFile::linesWithLine(&srcFile, mSrcLineLst);
         ZFile::linesWithLine(&dstFile, mDstLineLst);
 
-
         int modelCount = mModelLst.size();
         int srcIndex = 0;
         int dstIndex = 0;
@@ -511,7 +523,7 @@ void ZFileWidget::initData()
         bool isRemovedBlockStart = false;
         bool isAddedBlockStart = false;
 
-        for(int i = modelCount - 1;i >= 0;i--)
+        for(int i = modelCount - 2;i >= 0;i--)
         {
             ZFileDiffModel model = mModelLst[i];
             Status status = model.status();
@@ -692,6 +704,8 @@ void ZFileWidget::initData()
         }
         if(isModifiedBlockStart)
         {
+            srcIndex -= 1;
+            dstIndex -= 1;
             isModifiedBlockStart = !isModifiedBlockStart;
             ZDiffInfo srcDiffInfo;
             ZDiffInfo dstDiffInfo;
@@ -707,6 +721,7 @@ void ZFileWidget::initData()
         }
         if(isRemovedBlockStart)
         {
+            srcIndex -= 1;
             isRemovedBlockStart = !isRemovedBlockStart;
             ZDiffInfo srcDiffInfo;
             ZDiffInfo dstDiffInfo;
@@ -722,6 +737,7 @@ void ZFileWidget::initData()
         }
         if(isAddedBlockStart)
         {
+            dstIndex -= 1;
             isAddedBlockStart = !isAddedBlockStart;
             ZDiffInfo srcDiffInfo;
             ZDiffInfo dstDiffInfo;
