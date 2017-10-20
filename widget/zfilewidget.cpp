@@ -2,6 +2,36 @@
 #include "util/zfile.h"
 #include <QFile>
 
+ZDiffInfo::ZDiffInfo()
+{
+
+}
+
+ZDiffInfo::~ZDiffInfo()
+{
+
+}
+
+void ZDiffInfo::setDiffLst(QList<int> diffLst)
+{
+    mDiffLst = diffLst;
+}
+
+QList<int> ZDiffInfo::diffLst() const
+{
+    return mDiffLst;
+}
+
+void ZDiffInfo::setLine(bool isLine)
+{
+    mIsLine = isLine;
+}
+
+bool ZDiffInfo::isLine() const
+{
+    return mIsLine;
+}
+
 ZLineNumberWidget::ZLineNumberWidget(ZTextWidget *parent)
     : QWidget(parent)
     , mTextWidget(parent)
@@ -55,9 +85,15 @@ ZDiffAreaWidget::~ZDiffAreaWidget()
 
 }
 
-void ZDiffAreaWidget::setDiffList(QList<QList<int> > diffLst)
+void ZDiffAreaWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
     mDiffLst = diffLst;
+    int diffCount = mDiffLst.size();
+    for(int i = 0;i < diffCount;i++)
+    {
+        ZDiffInfo diffInfo = mDiffLst[i];
+        qDebug() << (size_t)this << diffInfo.diffLst();
+    }
 }
 
 void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
@@ -65,17 +101,18 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
-    painter.setBrush(QBrush(DIFF_CLR));
+    painter.setPen(QPen(DIFF_PEN_CLR));
+    painter.setBrush(QBrush(DIFF_BRUSH_CLR));
     if(mTextWidget != NULL)
     {
         int diffCount = mDiffLst.size();
         for(int i = 0;i < diffCount;i++)
         {
-            QList<int> diffLst = mDiffLst[i];
-            if(mTextWidget->isBlockContained(diffLst))
+            ZDiffInfo diffInfo = mDiffLst[i];
+            if(mTextWidget->isBlockContained(diffInfo))
             {
-                QRect rect = mTextWidget->blockArea(diffLst);
-                painter.drawRect(rect);
+                QRectF rectf = mTextWidget->blockArea(diffInfo);
+                painter.drawRect(rectf);
             }
         }
     }
@@ -116,10 +153,9 @@ void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
+    qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+    qreal bottom = top + blockBoundingRect(block).height();
     mFirstVisibleBlockNo = blockNumber;
-    int top = blockBoundingGeometry(block).translated(contentOffset()).top();
-    int bottom = top + (int) blockBoundingRect(block).height();
-    mBlockHeight = (int) blockBoundingRect(block).height();
 
     while(block.isValid() && top <= event->rect().bottom())
     {
@@ -132,10 +168,10 @@ void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
 
         block = block.next();
         top = bottom;
-        bottom = top + (int) blockBoundingRect(block).height();
+        bottom = top + blockBoundingRect(block).height();
         ++blockNumber;
     }
-    mLastVisibleBlockNo = blockNumber;
+    mLastVisibleBlockNo = blockNumber - 1;
 }
 
 int ZTextWidget::lineNumberAreaWidth()
@@ -153,8 +189,9 @@ int ZTextWidget::lineNumberAreaWidth()
     return space;
 }
 
-bool ZTextWidget::isBlockContained(QList<int> blockNoLst)
+bool ZTextWidget::isBlockContained(ZDiffInfo diffInfo)
 {
+    QList<int> blockNoLst = diffInfo.diffLst();
     int minBlockNo = blockNoLst[0];
     int maxBlockNo = blockNoLst[blockNoLst.size() - 1];
     if(minBlockNo <= mLastVisibleBlockNo && maxBlockNo >= mFirstVisibleBlockNo)
@@ -164,33 +201,38 @@ bool ZTextWidget::isBlockContained(QList<int> blockNoLst)
     return false;
 }
 
-QRect ZTextWidget::blockArea(QList<int> blockNoLst)
+QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
 {
+    QList<int> blockNoLst = diffInfo.diffLst();
+    bool isLine = diffInfo.isLine();
     int minBlockNo = blockNoLst[0];
     int maxBlockNo = blockNoLst[blockNoLst.size() - 1];
-    int y = 0;
-    int height = 0;
+    qreal y1 = 0;
+    qreal y2 = 0;
 
-    if(minBlockNo < mFirstVisibleBlockNo)
+    QTextBlock block = firstVisibleBlock();
+    int firstBlockNo = block.blockNumber();
+    qreal blockHeight = blockBoundingRect(block).height();
+
+    if(minBlockNo < firstBlockNo)
     {
-        y = this->viewport()->rect().top();
+        minBlockNo = firstBlockNo;
+    }
+    if(isLine)
+    {
+        y1 = this->viewport()->y() + (minBlockNo - firstBlockNo) * blockHeight;
+        y2 += y1 + 1;
     }
     else
     {
-        y = (minBlockNo - mFirstVisibleBlockNo) * mBlockHeight + this->viewport()->rect().top();
+        qDebug() << firstBlockNo;
+        y1 = this->viewport()->y() + (minBlockNo - firstBlockNo) * blockHeight;
+        y2 = (maxBlockNo - minBlockNo + 1) * blockHeight + y1;
+        y2 = y2 > this->viewport()->rect().bottom() ? this->viewport()->rect().bottom() : y2;
     }
 
-    if(maxBlockNo > mLastVisibleBlockNo)
-    {
-        height = this->viewport()->rect().bottom() - y;
-    }
-    else
-    {
-        height = this->viewport()->rect().bottom() - (mLastVisibleBlockNo - maxBlockNo) * mBlockHeight;
-    }
-
-    QPoint point = this->mapToParent(QPoint(this->viewport()->rect().x(), y));
-    return QRect(point, QSize(this->width(), height));
+    QPoint point = this->mapToParent(QPoint(this->viewport()->rect().x(), y1));
+    return QRectF(point, QSize(this->width(), y2 - y1));
 }
 
 void ZTextWidget::resizeEvent(QResizeEvent *event)
@@ -273,7 +315,7 @@ void ZScrollTextWidget::setHorizontalValue(int /*value*/)
 {
 }
 
-void ZScrollTextWidget::setDiffList(QList<QList<int> > diffLst)
+void ZScrollTextWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
     mAboveWidget->setDiffList(diffLst);
 }
@@ -410,8 +452,15 @@ void ZFileWidget::initData()
         }
         dstDiffLst.append(0);
 
-        mSrcDiffLst.append(srcDiffLst);
-        mDstDiffLst.append(dstDiffLst);
+        ZDiffInfo srcDiffInfo;
+        ZDiffInfo dstDiffInfo;
+        srcDiffInfo.setDiffLst(srcDiffLst);
+        srcDiffInfo.setLine(false);
+        dstDiffInfo.setDiffLst(dstDiffLst);
+        dstDiffInfo.setLine(true);
+
+        mSrcDiffLst.append(srcDiffInfo);
+        mDstDiffLst.append(dstDiffInfo);
     }
     else if(status == Added)
     {
@@ -430,8 +479,15 @@ void ZFileWidget::initData()
             dstDiffLst.append(i);
         }
 
-        mSrcDiffLst.append(srcDiffLst);
-        mDstDiffLst.append(dstDiffLst);
+        ZDiffInfo srcDiffInfo;
+        ZDiffInfo dstDiffInfo;
+        srcDiffInfo.setDiffLst(srcDiffLst);
+        srcDiffInfo.setLine(true);
+        dstDiffInfo.setDiffLst(dstDiffLst);
+        dstDiffInfo.setLine(false);
+
+        mSrcDiffLst.append(srcDiffInfo);
+        mDstDiffLst.append(dstDiffInfo);
     }
     else
     {
@@ -455,7 +511,7 @@ void ZFileWidget::initData()
         bool isRemovedBlockStart = false;
         bool isAddedBlockStart = false;
 
-        for(int i = 0;i < modelCount;i++)
+        for(int i = modelCount - 1;i >= 0;i--)
         {
             ZFileDiffModel model = mModelLst[i];
             Status status = model.status();
@@ -464,16 +520,31 @@ void ZFileWidget::initData()
                 if(isRemovedBlockStart)
                 {
                     isRemovedBlockStart = !isRemovedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(true);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
+
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
                 if(isAddedBlockStart)
                 {
                     isAddedBlockStart = !isAddedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(true);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(false);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
@@ -491,16 +562,31 @@ void ZFileWidget::initData()
                 if(isModifiedBlockStart)
                 {
                     isModifiedBlockStart = !isModifiedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(false);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
+
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
                 if(isAddedBlockStart)
                 {
                     isAddedBlockStart = !isAddedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(true);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
@@ -517,16 +603,30 @@ void ZFileWidget::initData()
                 if(isModifiedBlockStart)
                 {
                     isModifiedBlockStart = !isModifiedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(false);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
                 if(isRemovedBlockStart)
                 {
                     isRemovedBlockStart = !isRemovedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(true);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
@@ -543,24 +643,45 @@ void ZFileWidget::initData()
                 if(isModifiedBlockStart)
                 {
                     isModifiedBlockStart = !isModifiedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(false);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
                 if(isRemovedBlockStart)
                 {
                     isRemovedBlockStart = !isRemovedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(true);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
                 if(isAddedBlockStart)
                 {
                     isAddedBlockStart = !isAddedBlockStart;
-                    mSrcDiffLst.append(srcDiffLst);
-                    mDstDiffLst.append(dstDiffLst);
+                    ZDiffInfo srcDiffInfo;
+                    ZDiffInfo dstDiffInfo;
+                    srcDiffInfo.setDiffLst(srcDiffLst);
+                    srcDiffInfo.setLine(false);
+                    dstDiffInfo.setDiffLst(dstDiffLst);
+                    dstDiffInfo.setLine(true);
+
+                    mSrcDiffLst.append(srcDiffInfo);
+                    mDstDiffLst.append(dstDiffInfo);
                     srcDiffLst.clear();
                     dstDiffLst.clear();
                 }
@@ -572,24 +693,45 @@ void ZFileWidget::initData()
         if(isModifiedBlockStart)
         {
             isModifiedBlockStart = !isModifiedBlockStart;
-            mSrcDiffLst.append(srcDiffLst);
-            mDstDiffLst.append(dstDiffLst);
+            ZDiffInfo srcDiffInfo;
+            ZDiffInfo dstDiffInfo;
+            srcDiffInfo.setDiffLst(srcDiffLst);
+            srcDiffInfo.setLine(false);
+            dstDiffInfo.setDiffLst(dstDiffLst);
+            dstDiffInfo.setLine(false);
+
+            mSrcDiffLst.append(srcDiffInfo);
+            mDstDiffLst.append(dstDiffInfo);
             srcDiffLst.clear();
             dstDiffLst.clear();
         }
         if(isRemovedBlockStart)
         {
             isRemovedBlockStart = !isRemovedBlockStart;
-            mSrcDiffLst.append(srcDiffLst);
-            mDstDiffLst.append(dstDiffLst);
+            ZDiffInfo srcDiffInfo;
+            ZDiffInfo dstDiffInfo;
+            srcDiffInfo.setDiffLst(srcDiffLst);
+            srcDiffInfo.setLine(false);
+            dstDiffInfo.setDiffLst(dstDiffLst);
+            dstDiffInfo.setLine(true);
+
+            mSrcDiffLst.append(srcDiffInfo);
+            mDstDiffLst.append(dstDiffInfo);
             srcDiffLst.clear();
             dstDiffLst.clear();
         }
         if(isAddedBlockStart)
         {
             isAddedBlockStart = !isAddedBlockStart;
-            mSrcDiffLst.append(srcDiffLst);
-            mDstDiffLst.append(dstDiffLst);
+            ZDiffInfo srcDiffInfo;
+            ZDiffInfo dstDiffInfo;
+            srcDiffInfo.setDiffLst(srcDiffLst);
+            srcDiffInfo.setLine(false);
+            dstDiffInfo.setDiffLst(dstDiffLst);
+            dstDiffInfo.setLine(true);
+
+            mSrcDiffLst.append(srcDiffInfo);
+            mDstDiffLst.append(dstDiffInfo);
             srcDiffLst.clear();
             dstDiffLst.clear();
         }

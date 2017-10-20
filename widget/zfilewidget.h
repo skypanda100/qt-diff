@@ -12,6 +12,23 @@ class ZDiffAreaWidget;
 class ZTextWidget;
 class ZFileWidget;
 
+class ZDiffInfo
+{
+public:
+    ZDiffInfo();
+    ~ZDiffInfo();
+
+    void setDiffLst(QList<int> diffLst);
+    QList<int> diffLst() const;
+
+    void setLine(bool isLine);
+    bool isLine() const;
+
+private:
+    QList<int> mDiffLst;
+    bool mIsLine;
+};
+
 class ZLineNumberWidget : public QWidget
 {
     Q_OBJECT
@@ -39,7 +56,7 @@ class ZDiffAreaWidget : public QWidget
 public:
     ZDiffAreaWidget(ZTextWidget *textWidget = 0, QWidget *parent = 0);
     ~ZDiffAreaWidget();
-    void setDiffList(QList< QList<int> > diffLst);
+    void setDiffList(QList<ZDiffInfo> diffLst);
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
@@ -50,7 +67,7 @@ private:
     void initConnect();
 
 private:
-    QList< QList<int> > mDiffLst;
+    QList<ZDiffInfo> mDiffLst;
     ZTextWidget *mTextWidget;
 };
 
@@ -62,8 +79,8 @@ public:
     ~ZTextWidget();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
-    bool isBlockContained(QList<int> blockNoLst);
-    QRect blockArea(QList<int> blockNoLst);
+    bool isBlockContained(ZDiffInfo diffInfo);
+    QRectF blockArea(ZDiffInfo diffInfo);
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
@@ -81,7 +98,6 @@ private:
     QWidget *mLineNumberArea;
     int mFirstVisibleBlockNo;
     int mLastVisibleBlockNo;
-    int mBlockHeight;
 };
 
 class ZScrollTextWidget : public QWidget
@@ -94,7 +110,7 @@ public:
     void appendText(const QString &text);
     void setVerticalValue(int value);
     void setHorizontalValue(int value);
-    void setDiffList(QList< QList<int> > diffLst);
+    void setDiffList(QList<ZDiffInfo> diffLst);
 
 private:
     void initData();
@@ -134,8 +150,8 @@ private:
     QList<ZFileDiffModel> mModelLst;
     QList<QString> mSrcLineLst;
     QList<QString> mDstLineLst;
-    QList< QList<int> > mSrcDiffLst;
-    QList< QList<int> > mDstDiffLst;
+    QList<ZDiffInfo> mSrcDiffLst;
+    QList<ZDiffInfo> mDstDiffLst;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
 };
