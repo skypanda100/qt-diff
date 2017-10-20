@@ -166,7 +166,7 @@ ZTextWidget::~ZTextWidget()
 void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(mLineNumberArea);
-    painter.fillRect(event->rect(), QBrush(Qt::white));
+    painter.fillRect(event->rect(), QBrush(LINE_NUMBER_AREA));
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
@@ -266,9 +266,9 @@ QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
         ++blockNumber;
     }
 
-    QPoint point(this->viewport()->rect().x() + mLineNumberArea->width(), y1);
+    QPoint point(this->viewport()->rect().x(), y1);
 
-    return QRectF(point, QSize(this->width() - mLineNumberArea->width(), y2 - y1));
+    return QRectF(point, QSize(this->width(), y2 - y1));
 }
 
 void ZTextWidget::resizeEvent(QResizeEvent *event)
@@ -354,6 +354,19 @@ void ZScrollTextWidget::setHorizontalValue(int /*value*/)
 void ZScrollTextWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
     mAboveWidget->setDiffList(diffLst);
+}
+
+bool ZScrollTextWidget::isBlockContained(ZDiffInfo diffInfo)
+{
+    return mTextWidget->isBlockContained(diffInfo);
+}
+
+QRectF ZScrollTextWidget::blockArea(ZDiffInfo diffInfo)
+{
+    QRectF rectf = mTextWidget->blockArea(diffInfo);
+    QPoint startPoint = QPoint((int)rectf.x(), (int)rectf.y());
+    startPoint = mTextWidget->mapToParent(startPoint);
+    return QRectF(startPoint, rectf.size());
 }
 
 void ZScrollTextWidget::initData()
@@ -456,6 +469,57 @@ ZFileWidget::~ZFileWidget()
 void ZFileWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
+
+    int srcDiffCount = mSrcDiffLst.size();
+    int dstDiffCount = mDstDiffLst.size();
+    if(srcDiffCount != dstDiffCount)
+    {
+        return;
+    }
+    QPainter painter(this);
+
+    for(int i = 0;i < srcDiffCount;i++)
+    {
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(Qt::NoBrush);
+        ZDiffInfo srcDiffInfo = mSrcDiffLst[i];
+        ZDiffInfo dstDiffInfo = mDstDiffLst[i];
+        QColor color = STATUS_CLR[(int)srcDiffInfo.status()];
+        color.setAlpha(50);
+        if(mSrcScrollTextWidget->isBlockContained(srcDiffInfo)
+                || mDstScrollTextWidget->isBlockContained(dstDiffInfo))
+        {
+            QRectF srcRectf = mSrcScrollTextWidget->blockArea(srcDiffInfo);
+            QRectF dstRectf = mDstScrollTextWidget->blockArea(dstDiffInfo);
+
+            QPoint srcStartPoint = QPoint(srcRectf.x(), srcRectf.y());
+            QPoint dstStartPoint = QPoint(dstRectf.x(), dstRectf.y());
+            srcStartPoint = mSrcScrollTextWidget->mapToParent(srcStartPoint);
+            dstStartPoint = mDstScrollTextWidget->mapToParent(dstStartPoint);
+            if(srcDiffInfo.isLine())
+            {
+                srcStartPoint = QPoint(srcStartPoint.x() + srcRectf.width()
+                                       , srcStartPoint.y());
+            }
+            else
+            {
+                srcStartPoint = QPoint(srcStartPoint.x() + srcRectf.width()
+                                       , srcStartPoint.y() + srcRectf.height() / 2);
+            }
+            if(dstDiffInfo.isLine())
+            {
+                dstStartPoint = QPoint(dstStartPoint.x()
+                                       , srcStartPoint.y());
+            }
+            else
+            {
+                dstStartPoint = QPoint(dstStartPoint.x()
+                                       , dstStartPoint.y() + dstRectf.height() / 2);
+            }
+
+            painter.drawLine(srcStartPoint, dstStartPoint);
+        }
+    }
 }
 
 void ZFileWidget::initData()

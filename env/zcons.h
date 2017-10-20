@@ -31,5 +31,6 @@ const QColor STATUS_CLR[4] =
 const QString OBJECT_FOLDER_COMPARISON = "folder";
 const QString OBJECT_FILE_COMPARISON = "file";
 
+const QColor LINE_NUMBER_AREA = QColor(230, 230, 230);
 #endif // CONS
 

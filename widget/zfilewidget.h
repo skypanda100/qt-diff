@@ -115,6 +115,8 @@ public:
     void setVerticalValue(int value);
     void setHorizontalValue(int value);
     void setDiffList(QList<ZDiffInfo> diffLst);
+    bool isBlockContained(ZDiffInfo diffInfo);
+    QRectF blockArea(ZDiffInfo diffInfo);
 
 private:
     void initData();
