@@ -105,27 +105,30 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
-    painter.setPen(Qt::NoPen);
     if(mTextWidget != NULL)
     {
         int diffCount = mDiffLst.size();
         for(int i = 0;i < diffCount;i++)
         {
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(Qt::NoBrush);
             ZDiffInfo diffInfo = mDiffLst[i];
             QColor color = STATUS_CLR[(int)diffInfo.status()];
             color.setAlpha(50);
             if(mTextWidget->isBlockContained(diffInfo))
             {
                 QRectF rectf = mTextWidget->blockArea(diffInfo);
+                QPoint startPoint = QPoint((int)rectf.x(), (int)rectf.y());
+                startPoint = mTextWidget->mapToParent(startPoint);
                 if(diffInfo.isLine())
                 {
                     painter.setPen(color);
-                    painter.drawLine(QPointF(rectf.x(), rectf.y()), QPointF(rectf.x() + rectf.width(), rectf.y()));
+                    painter.drawLine(startPoint, QPointF(startPoint.x() + rectf.width(), startPoint.y()));
                 }
                 else
                 {
                     painter.setBrush(QBrush(color));
-                    painter.drawRect(rectf);
+                    painter.drawRect(QRectF(startPoint, QSizeF(rectf.width(), rectf.height())));
                 }
             }
         }
@@ -263,9 +266,9 @@ QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
         ++blockNumber;
     }
 
-    QPoint point = this->mapToParent(QPoint(this->viewport()->rect().x(), y1));
+    QPoint point(this->viewport()->rect().x() + mLineNumberArea->width(), y1);
 
-    return QRectF(point, QSize(this->width(), y2 - y1));
+    return QRectF(point, QSize(this->width() - mLineNumberArea->width(), y2 - y1));
 }
 
 void ZTextWidget::resizeEvent(QResizeEvent *event)
