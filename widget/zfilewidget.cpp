@@ -41,6 +41,61 @@ void ZLineNumberWidget::initConnect()
 
 }
 
+ZDiffAreaWidget::ZDiffAreaWidget(ZTextWidget *textWidget, QWidget *parent)
+    : QWidget(parent)
+    , mTextWidget(textWidget)
+{
+    initData();
+    initUI();
+    initConnect();
+}
+
+ZDiffAreaWidget::~ZDiffAreaWidget()
+{
+
+}
+
+void ZDiffAreaWidget::setDiffList(QList<QList<int> > diffLst)
+{
+    mDiffLst = diffLst;
+}
+
+void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+
+    QPainter painter(this);
+    painter.setBrush(QBrush(DIFF_CLR));
+    if(mTextWidget != NULL)
+    {
+        int diffCount = mDiffLst.size();
+        for(int i = 0;i < diffCount;i++)
+        {
+            QList<int> diffLst = mDiffLst[i];
+            if(mTextWidget->isBlockContained(diffLst))
+            {
+                QRect rect = mTextWidget->blockArea(diffLst);
+                painter.drawRect(rect);
+            }
+        }
+    }
+}
+
+void ZDiffAreaWidget::initData()
+{
+
+}
+
+void ZDiffAreaWidget::initUI()
+{
+
+}
+
+void ZDiffAreaWidget::initConnect()
+{
+
+}
+
 ZTextWidget::ZTextWidget(QWidget *parent)
     : QPlainTextEdit(parent)
 {
@@ -62,7 +117,7 @@ void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     mFirstVisibleBlockNo = blockNumber;
-    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
+    int top = blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
     mBlockHeight = (int) blockBoundingRect(block).height();
 
@@ -118,28 +173,24 @@ QRect ZTextWidget::blockArea(QList<int> blockNoLst)
 
     if(minBlockNo < mFirstVisibleBlockNo)
     {
-        y = this->rect().top();
+        y = this->viewport()->rect().top();
     }
     else
     {
-        y = (minBlockNo - mFirstVisibleBlockNo) * mBlockHeight + this->rect().top();
+        y = (minBlockNo - mFirstVisibleBlockNo) * mBlockHeight + this->viewport()->rect().top();
     }
 
     if(maxBlockNo > mLastVisibleBlockNo)
     {
-        height = this->rect().bottom() - y;
+        height = this->viewport()->rect().bottom() - y;
     }
     else
     {
-        height = this->rect().bottom() - (mLastVisibleBlockNo - maxBlockNo) * mBlockHeight;
+        height = this->viewport()->rect().bottom() - (mLastVisibleBlockNo - maxBlockNo) * mBlockHeight;
     }
 
-    return QRect(this->rect().x(), y, this->width(), height);
-}
-
-void ZTextWidget::setDiffList(QList<QList<int> > diffLst)
-{
-    mDiffLst = diffLst;
+    QPoint point = this->mapToParent(QPoint(this->viewport()->rect().x(), y));
+    return QRect(point, QSize(this->width(), height));
 }
 
 void ZTextWidget::resizeEvent(QResizeEvent *event)
@@ -148,24 +199,6 @@ void ZTextWidget::resizeEvent(QResizeEvent *event)
 
     QRect cr = contentsRect();
     mLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
-}
-
-void ZTextWidget::paintEvent(QPaintEvent *e)
-{
-    QPlainTextEdit::paintEvent(e);
-    QPainter painter_p(this->viewport());
-    painter_p.setPen(Qt::NoPen);
-    painter_p.setBrush(QBrush(DIFF_CLR));
-    int diffCount = mDiffLst.size();
-    for(int i = 0;i < diffCount;i++)
-    {
-        QList<int> diffLst = mDiffLst[i];
-        if(isBlockContained(diffLst))
-        {
-            QRect rect = blockArea(diffLst);
-            painter_p.drawRect(rect);
-        }
-    }
 }
 
 void ZTextWidget::updateLineNumberAreaWidth(int /*newBlockCount*/)
@@ -223,6 +256,8 @@ ZScrollTextWidget::~ZScrollTextWidget()
     delete mTextWidget;
     delete mVerticalBar;
     delete mHorizontalBar;
+    delete mBelowWidget;
+    delete mAboveWidget;
 }
 
 void ZScrollTextWidget::appendText(const QString &text)
@@ -230,17 +265,17 @@ void ZScrollTextWidget::appendText(const QString &text)
     mTextWidget->appendPlainText(text);
 }
 
-void ZScrollTextWidget::setVerticalValue(int value)
+void ZScrollTextWidget::setVerticalValue(int /*value*/)
 {
 }
 
-void ZScrollTextWidget::setHorizontalValue(int value)
+void ZScrollTextWidget::setHorizontalValue(int /*value*/)
 {
 }
 
 void ZScrollTextWidget::setDiffList(QList<QList<int> > diffLst)
 {
-    mTextWidget->setDiffList(diffLst);
+    mAboveWidget->setDiffList(diffLst);
 }
 
 void ZScrollTextWidget::initData()
@@ -265,21 +300,31 @@ void ZScrollTextWidget::initUI()
     mHorizontalBar->setFixedHeight(20);
     mHorizontalBar->setVisible(false);
 
-    QGridLayout *mainLayout =new QGridLayout;
-    mainLayout->setSpacing(0);
+    QGridLayout *gridLayout =new QGridLayout;
+    gridLayout->setSpacing(0);
     if(mVerticalAlignment == Qt::AlignLeft)
     {
-        mainLayout->addWidget(mVerticalBar, 0, 0);
-        mainLayout->addWidget(mTextWidget, 0, 1);
-        mainLayout->addWidget(mHorizontalBar, 1, 1);
+        gridLayout->addWidget(mVerticalBar, 0, 0);
+        gridLayout->addWidget(mTextWidget, 0, 1);
+        gridLayout->addWidget(mHorizontalBar, 1, 1);
     }
     else
     {
-        mainLayout->addWidget(mTextWidget, 0, 0);
-        mainLayout->addWidget(mVerticalBar, 0, 1);
-        mainLayout->addWidget(mHorizontalBar, 1, 0);
+        gridLayout->addWidget(mTextWidget, 0, 0);
+        gridLayout->addWidget(mVerticalBar, 0, 1);
+        gridLayout->addWidget(mHorizontalBar, 1, 0);
     }
-    this->setLayout(mainLayout);
+    mBelowWidget = new QWidget;
+    mBelowWidget->setLayout(gridLayout);
+
+    mAboveWidget = new ZDiffAreaWidget(mTextWidget);
+    mAboveWidget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+
+    QStackedLayout *stackedLayout = new QStackedLayout;
+    stackedLayout->setStackingMode(QStackedLayout::StackAll);
+    stackedLayout->addWidget(mBelowWidget);
+    stackedLayout->addWidget(mAboveWidget);
+    this->setLayout(stackedLayout);
 }
 
 void ZScrollTextWidget::initConnect()

@@ -8,6 +8,7 @@
 #include "diff/zpathdiffmodel.h"
 
 class ZLineNumberWidget;
+class ZDiffAreaWidget;
 class ZTextWidget;
 class ZFileWidget;
 
@@ -32,6 +33,27 @@ private:
     ZTextWidget *mTextWidget;
 };
 
+class ZDiffAreaWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    ZDiffAreaWidget(ZTextWidget *textWidget = 0, QWidget *parent = 0);
+    ~ZDiffAreaWidget();
+    void setDiffList(QList< QList<int> > diffLst);
+
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+
+private:
+    void initData();
+    void initUI();
+    void initConnect();
+
+private:
+    QList< QList<int> > mDiffLst;
+    ZTextWidget *mTextWidget;
+};
+
 class ZTextWidget : public QPlainTextEdit
 {
     Q_OBJECT
@@ -42,11 +64,9 @@ public:
     int lineNumberAreaWidth();
     bool isBlockContained(QList<int> blockNoLst);
     QRect blockArea(QList<int> blockNoLst);
-    void setDiffList(QList< QList<int> > diffLst);
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
-    void paintEvent(QPaintEvent *e) Q_DECL_OVERRIDE;
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
@@ -62,7 +82,6 @@ private:
     int mFirstVisibleBlockNo;
     int mLastVisibleBlockNo;
     int mBlockHeight;
-    QList< QList<int> > mDiffLst;
 };
 
 class ZScrollTextWidget : public QWidget
@@ -91,6 +110,8 @@ private:
     ZTextWidget *mTextWidget;
     QScrollBar *mVerticalBar;
     QScrollBar *mHorizontalBar;
+    QWidget *mBelowWidget;
+    ZDiffAreaWidget *mAboveWidget;
 };
 
 class ZFileWidget : public QWidget
