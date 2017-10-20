@@ -102,7 +102,7 @@ bool ZTextWidget::isBlockContained(QList<int> blockNoLst)
 {
     int minBlockNo = blockNoLst[0];
     int maxBlockNo = blockNoLst[blockNoLst.size() - 1];
-    if(minBlockNo >= mLastVisibleBlockNo && maxBlockNo <= mFirstVisibleBlockNo)
+    if(minBlockNo <= mLastVisibleBlockNo && maxBlockNo >= mFirstVisibleBlockNo)
     {
         return true;
     }
@@ -137,12 +137,35 @@ QRect ZTextWidget::blockArea(QList<int> blockNoLst)
     return QRect(this->rect().x(), y, this->width(), height);
 }
 
+void ZTextWidget::setDiffList(QList<QList<int> > diffLst)
+{
+    mDiffLst = diffLst;
+}
+
 void ZTextWidget::resizeEvent(QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent(event);
 
     QRect cr = contentsRect();
     mLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+
+void ZTextWidget::paintEvent(QPaintEvent *e)
+{
+    QPlainTextEdit::paintEvent(e);
+    QPainter painter_p(this->viewport());
+    painter_p.setPen(Qt::NoPen);
+    painter_p.setBrush(QBrush(DIFF_CLR));
+    int diffCount = mDiffLst.size();
+    for(int i = 0;i < diffCount;i++)
+    {
+        QList<int> diffLst = mDiffLst[i];
+        if(isBlockContained(diffLst))
+        {
+            QRect rect = blockArea(diffLst);
+            painter_p.drawRect(rect);
+        }
+    }
 }
 
 void ZTextWidget::updateLineNumberAreaWidth(int /*newBlockCount*/)
@@ -215,14 +238,9 @@ void ZScrollTextWidget::setHorizontalValue(int value)
 {
 }
 
-bool ZScrollTextWidget::isBlockContained(QList<int> blockNoLst)
+void ZScrollTextWidget::setDiffList(QList<QList<int> > diffLst)
 {
-    return mTextWidget->isBlockContained(blockNoLst);
-}
-
-QRect ZScrollTextWidget::blockArea(QList<int> blockNoLst)
-{
-    return mTextWidget->blockArea(blockNoLst);
+    mTextWidget->setDiffList(diffLst);
 }
 
 void ZScrollTextWidget::initData()
@@ -315,276 +333,6 @@ ZFileWidget::~ZFileWidget()
 void ZFileWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
-    QPainter painter;
-
-    int modelCount = mModelLst.size();
-    int srcIndex = 0;
-    int dstIndex = 0;
-    QList<int> srcBlockNoLst;
-    QList<int> dstBlockNoLst;
-    bool isModifiedBlockStart = false;
-    bool isRemovedBlockStart = false;
-    bool isAddedBlockStart = false;
-
-    for(int i = 0;i < modelCount;i++)
-    {
-        ZFileDiffModel model = mModelLst[i];
-        Status status = model.status();
-        if(status == Modified)
-        {
-            if(isRemovedBlockStart)
-            {
-                isRemovedBlockStart = !isRemovedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "1" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "2" << rect;
-
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(isAddedBlockStart)
-            {
-                isAddedBlockStart = !isAddedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "3" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "4" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(!isModifiedBlockStart)
-            {
-                isModifiedBlockStart = !isModifiedBlockStart;
-            }
-            srcBlockNoLst.append(srcIndex);
-            dstBlockNoLst.append(dstIndex);
-            srcIndex++;
-            dstIndex++;
-        }
-        else if(status == Removed)
-        {
-            if(isModifiedBlockStart)
-            {
-                isModifiedBlockStart = !isModifiedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "5" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "6" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(isAddedBlockStart)
-            {
-                isAddedBlockStart = !isAddedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "7" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "8" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(!isRemovedBlockStart)
-            {
-                isRemovedBlockStart = !isRemovedBlockStart;
-            }
-            srcBlockNoLst.append(srcIndex);
-            dstBlockNoLst.append(dstIndex);
-            srcIndex++;
-        }
-        else if(status == Added)
-        {
-            if(isModifiedBlockStart)
-            {
-                isModifiedBlockStart = !isModifiedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "9" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "10" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(isRemovedBlockStart)
-            {
-                isRemovedBlockStart = !isRemovedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "11" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "12" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(!isAddedBlockStart)
-            {
-                isAddedBlockStart = !isAddedBlockStart;
-            }
-            srcBlockNoLst.append(srcIndex);
-            dstBlockNoLst.append(dstIndex);
-            dstIndex++;
-        }
-        else
-        {
-            if(isModifiedBlockStart)
-            {
-                isModifiedBlockStart = !isModifiedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "13" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "14" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(isRemovedBlockStart)
-            {
-                isRemovedBlockStart = !isRemovedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "15" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "6" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-            if(isAddedBlockStart)
-            {
-                isAddedBlockStart = !isAddedBlockStart;
-                if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-                {
-                    QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "17" << rect;
-                }
-                if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-                {
-                    QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-                    painter.fillRect(rect, QBrush(DIFF_CLR));
-                    qDebug() << "18" << rect;
-                }
-                srcBlockNoLst.clear();
-                dstBlockNoLst.clear();
-            }
-
-            srcIndex++;
-            dstIndex++;
-        }
-    }
-    if(isModifiedBlockStart)
-    {
-        isModifiedBlockStart = !isModifiedBlockStart;
-        if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-        {
-            QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-            painter.fillRect(rect, QBrush(DIFF_CLR));
-            qDebug() << "19" << rect;
-        }
-        if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-        {
-            QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-            painter.fillRect(rect, QBrush(DIFF_CLR));
-            qDebug() << "20" << rect;
-        }
-        srcBlockNoLst.clear();
-        dstBlockNoLst.clear();
-    }
-    if(isRemovedBlockStart)
-    {
-        isRemovedBlockStart = !isRemovedBlockStart;
-        if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-        {
-            QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-            painter.fillRect(rect, QBrush(DIFF_CLR));
-            qDebug() << "21" << rect;
-        }
-        if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-        {
-            QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-            painter.fillRect(rect, QBrush(DIFF_CLR));
-            qDebug() << "22" << rect;
-        }
-        srcBlockNoLst.clear();
-        dstBlockNoLst.clear();
-    }
-    if(isAddedBlockStart)
-    {
-        isAddedBlockStart = !isAddedBlockStart;
-        if(mSrcScrollTextWidget->isBlockContained(srcBlockNoLst))
-        {
-            QRect rect = mSrcScrollTextWidget->blockArea(srcBlockNoLst);
-            painter.fillRect(rect, QBrush(DIFF_CLR));
-            qDebug() << "23" << rect;
-        }
-        if(mDstScrollTextWidget->isBlockContained(dstBlockNoLst))
-        {
-            QRect rect = mDstScrollTextWidget->blockArea(dstBlockNoLst);
-            painter.fillRect(rect, QBrush(DIFF_CLR));
-            qDebug() << "24" << rect;
-        }
-        srcBlockNoLst.clear();
-        dstBlockNoLst.clear();
-    }
 }
 
 void ZFileWidget::initData()
@@ -606,6 +354,19 @@ void ZFileWidget::initData()
         QFile srcFile(srcPath);
 
         ZFile::linesWithLine(&srcFile, mSrcLineLst);
+
+        QList<int> srcDiffLst;
+        QList<int> dstDiffLst;
+
+        int srcLineCount = mSrcLineLst.size();
+        for(int i = 0;i < srcLineCount;i++)
+        {
+            srcDiffLst.append(i);
+        }
+        dstDiffLst.append(0);
+
+        mSrcDiffLst.append(srcDiffLst);
+        mDstDiffLst.append(dstDiffLst);
     }
     else if(status == Added)
     {
@@ -613,6 +374,19 @@ void ZFileWidget::initData()
         QFile dstFile(dstPath);
 
         ZFile::linesWithLine(&dstFile, mDstLineLst);
+
+        QList<int> srcDiffLst;
+        QList<int> dstDiffLst;
+
+        srcDiffLst.append(0);
+        int dstLineCount = mDstLineLst.size();
+        for(int i = 0;i < dstLineCount;i++)
+        {
+            dstDiffLst.append(i);
+        }
+
+        mSrcDiffLst.append(srcDiffLst);
+        mDstDiffLst.append(dstDiffLst);
     }
     else
     {
@@ -625,6 +399,155 @@ void ZFileWidget::initData()
         mModelLst = fileDiff.execute();
         ZFile::linesWithLine(&srcFile, mSrcLineLst);
         ZFile::linesWithLine(&dstFile, mDstLineLst);
+
+
+        int modelCount = mModelLst.size();
+        int srcIndex = 0;
+        int dstIndex = 0;
+        QList<int> srcDiffLst;
+        QList<int> dstDiffLst;
+        bool isModifiedBlockStart = false;
+        bool isRemovedBlockStart = false;
+        bool isAddedBlockStart = false;
+
+        for(int i = 0;i < modelCount;i++)
+        {
+            ZFileDiffModel model = mModelLst[i];
+            Status status = model.status();
+            if(status == Modified)
+            {
+                if(isRemovedBlockStart)
+                {
+                    isRemovedBlockStart = !isRemovedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(isAddedBlockStart)
+                {
+                    isAddedBlockStart = !isAddedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(!isModifiedBlockStart)
+                {
+                    isModifiedBlockStart = !isModifiedBlockStart;
+                }
+                srcDiffLst.append(srcIndex);
+                dstDiffLst.append(dstIndex);
+                srcIndex++;
+                dstIndex++;
+            }
+            else if(status == Removed)
+            {
+                if(isModifiedBlockStart)
+                {
+                    isModifiedBlockStart = !isModifiedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(isAddedBlockStart)
+                {
+                    isAddedBlockStart = !isAddedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(!isRemovedBlockStart)
+                {
+                    isRemovedBlockStart = !isRemovedBlockStart;
+                }
+                srcDiffLst.append(srcIndex);
+                dstDiffLst.append(dstIndex);
+                srcIndex++;
+            }
+            else if(status == Added)
+            {
+                if(isModifiedBlockStart)
+                {
+                    isModifiedBlockStart = !isModifiedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(isRemovedBlockStart)
+                {
+                    isRemovedBlockStart = !isRemovedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(!isAddedBlockStart)
+                {
+                    isAddedBlockStart = !isAddedBlockStart;
+                }
+                srcDiffLst.append(srcIndex);
+                dstDiffLst.append(dstIndex);
+                dstIndex++;
+            }
+            else
+            {
+                if(isModifiedBlockStart)
+                {
+                    isModifiedBlockStart = !isModifiedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(isRemovedBlockStart)
+                {
+                    isRemovedBlockStart = !isRemovedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+                if(isAddedBlockStart)
+                {
+                    isAddedBlockStart = !isAddedBlockStart;
+                    mSrcDiffLst.append(srcDiffLst);
+                    mDstDiffLst.append(dstDiffLst);
+                    srcDiffLst.clear();
+                    dstDiffLst.clear();
+                }
+
+                srcIndex++;
+                dstIndex++;
+            }
+        }
+        if(isModifiedBlockStart)
+        {
+            isModifiedBlockStart = !isModifiedBlockStart;
+            mSrcDiffLst.append(srcDiffLst);
+            mDstDiffLst.append(dstDiffLst);
+            srcDiffLst.clear();
+            dstDiffLst.clear();
+        }
+        if(isRemovedBlockStart)
+        {
+            isRemovedBlockStart = !isRemovedBlockStart;
+            mSrcDiffLst.append(srcDiffLst);
+            mDstDiffLst.append(dstDiffLst);
+            srcDiffLst.clear();
+            dstDiffLst.clear();
+        }
+        if(isAddedBlockStart)
+        {
+            isAddedBlockStart = !isAddedBlockStart;
+            mSrcDiffLst.append(srcDiffLst);
+            mDstDiffLst.append(dstDiffLst);
+            srcDiffLst.clear();
+            dstDiffLst.clear();
+        }
     }
 }
 
@@ -651,6 +574,10 @@ void ZFileWidget::initUI()
     {
         mDstScrollTextWidget->appendText(mDstLineLst[i]);
     }
+
+    mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
+    mDstScrollTextWidget->setDiffList(mDstDiffLst);
+
 }
 
 void ZFileWidget::initConnect()

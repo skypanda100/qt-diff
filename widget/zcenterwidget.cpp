@@ -72,9 +72,18 @@ void ZCenterWidget::closeTab(int index)
         return;
     }
 
-    ZFolderWidget *widget = (ZFolderWidget *)(this->widget(index));
-    removeTab(index);
-    delete widget;
+    if(QString::compare(this->widget(index)->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
+    {
+        ZFolderWidget *widget = (ZFolderWidget *)(this->widget(index));
+        removeTab(index);
+        delete widget;
+    }
+    else
+    {
+        ZFileWidget *widget = (ZFileWidget *)(this->widget(index));
+        removeTab(index);
+        delete widget;
+    }
 }
 
 void ZCenterWidget::folderComparison()
@@ -88,6 +97,10 @@ void ZCenterWidget::folderComparison()
 
 void ZCenterWidget::startOrRecompare()
 {
+    if(this->currentWidget() == NULL)
+    {
+        return;
+    }
     if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
         ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
@@ -100,6 +113,10 @@ void ZCenterWidget::startOrRecompare()
 
 void ZCenterWidget::stopCompare()
 {
+    if(this->currentWidget() == NULL)
+    {
+        return;
+    }
     if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
         ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());

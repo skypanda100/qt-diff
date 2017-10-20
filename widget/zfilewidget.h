@@ -42,9 +42,11 @@ public:
     int lineNumberAreaWidth();
     bool isBlockContained(QList<int> blockNoLst);
     QRect blockArea(QList<int> blockNoLst);
+    void setDiffList(QList< QList<int> > diffLst);
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *e) Q_DECL_OVERRIDE;
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
@@ -60,6 +62,7 @@ private:
     int mFirstVisibleBlockNo;
     int mLastVisibleBlockNo;
     int mBlockHeight;
+    QList< QList<int> > mDiffLst;
 };
 
 class ZScrollTextWidget : public QWidget
@@ -72,8 +75,7 @@ public:
     void appendText(const QString &text);
     void setVerticalValue(int value);
     void setHorizontalValue(int value);
-    bool isBlockContained(QList<int> blockNoLst);
-    QRect blockArea(QList<int> blockNoLst);
+    void setDiffList(QList< QList<int> > diffLst);
 
 private:
     void initData();
@@ -111,6 +113,8 @@ private:
     QList<ZFileDiffModel> mModelLst;
     QList<QString> mSrcLineLst;
     QList<QString> mDstLineLst;
+    QList< QList<int> > mSrcDiffLst;
+    QList< QList<int> > mDstDiffLst;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
 };
