@@ -1,5 +1,6 @@
-# Folder comparison
-![folder comparison](/screenshot/1.png "example 1")
+# ScreenShot
+* Folder comparison
+![folder comparison](/screenshot/1.png)
 
-# File comparison
-![file comparison](/screenshot/2.png "example 2")
+* File comparison
+![file comparison](/screenshot/2.png)
