@@ -4,7 +4,7 @@
 
 ZDiffInfo::ZDiffInfo()
 {
-
+    this->setStatus(Same);
 }
 
 ZDiffInfo::~ZDiffInfo()
@@ -607,8 +607,10 @@ void ZFileWidget::initData()
         ZDiffInfo dstDiffInfo;
         srcDiffInfo.setDiffLst(srcDiffLst);
         srcDiffInfo.setLine(false);
+        srcDiffInfo.setStatus(Removed);
         dstDiffInfo.setDiffLst(dstDiffLst);
         dstDiffInfo.setLine(true);
+        dstDiffInfo.setStatus(Removed);
 
         mSrcDiffLst.append(srcDiffInfo);
         mDstDiffLst.append(dstDiffInfo);
@@ -634,8 +636,10 @@ void ZFileWidget::initData()
         ZDiffInfo dstDiffInfo;
         srcDiffInfo.setDiffLst(srcDiffLst);
         srcDiffInfo.setLine(true);
+        srcDiffInfo.setStatus(Added);
         dstDiffInfo.setDiffLst(dstDiffLst);
         dstDiffInfo.setLine(false);
+        dstDiffInfo.setStatus(Added);
 
         mSrcDiffLst.append(srcDiffInfo);
         mDstDiffLst.append(dstDiffInfo);
