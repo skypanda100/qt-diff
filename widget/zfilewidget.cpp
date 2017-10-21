@@ -164,11 +164,11 @@ ZTextWidget::~ZTextWidget()
     delete mLineNumberArea;
 }
 
-void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
+void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent */*event*/)
 {
     QPainter painter(mLineNumberArea);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.fillRect(event->rect(), QBrush(LINE_NUMBER_AREA));
+    painter.fillRect(this->rect(), QBrush(LINE_NUMBER_AREA));
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
@@ -176,9 +176,9 @@ void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
     qreal bottom = top + blockBoundingRect(block).height();
     mFirstVisibleBlockNo = blockNumber;
 
-    while(block.isValid() && top <= event->rect().bottom())
+    while(block.isValid() && top <= this->rect().bottom())
     {
-        if(block.isVisible() && bottom >= event->rect().top())
+        if(block.isVisible() && bottom >= this->rect().top())
         {
             QString number = QString::number(blockNumber + 1);
             painter.drawText(10, top, mLineNumberArea->width(), fontMetrics().height(),
@@ -468,7 +468,6 @@ void ZScrollTextWidget::onCursorPositionChanged()
 {
     emit mTextWidget->verticalScrollBar()->valueChanged(mTextWidget->verticalScrollBar()->value());
     emit mTextWidget->horizontalScrollBar()->valueChanged(mTextWidget->horizontalScrollBar()->value());
-    this->parentWidget()->update();
 }
 
 ZFileWidget::ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent)
@@ -538,7 +537,6 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
                                        , dstStartPoint.y() + dstRectf.height() / 2);
             }
 
-            qDebug() << i << srcStartPoint << dstStartPoint;
             painter.setPen(STATUS_CLR[(int)srcDiffInfo.status()]);
             painter.drawLine(srcStartPoint, dstStartPoint);
         }
