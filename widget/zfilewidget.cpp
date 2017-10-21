@@ -210,6 +210,8 @@ int ZTextWidget::lineNumberAreaWidth()
 
 bool ZTextWidget::isBlockContained(ZDiffInfo diffInfo)
 {
+    updateBlockNo();
+
     QList<int> blockNoLst = diffInfo.diffLst();
     int minBlockNo = blockNoLst[0];
     int maxBlockNo = blockNoLst[blockNoLst.size() - 1];
@@ -222,6 +224,8 @@ bool ZTextWidget::isBlockContained(ZDiffInfo diffInfo)
 
 QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
 {
+    updateBlockNo();
+
     QList<int> blockNoLst = diffInfo.diffLst();
     bool isLine = diffInfo.isLine();
     int minBlockNo = blockNoLst[0];
@@ -238,10 +242,18 @@ QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
     {
         minBlockNo = mFirstVisibleBlockNo;
     }
+    else if(minBlockNo > mLastVisibleBlockNo)
+    {
+        minBlockNo = mLastVisibleBlockNo;
+    }
 
     if(maxBlockNo > mLastVisibleBlockNo)
     {
         maxBlockNo = mLastVisibleBlockNo;
+    }
+    else if(maxBlockNo < mFirstVisibleBlockNo)
+    {
+        maxBlockNo = mFirstVisibleBlockNo;
     }
 
     while(block.isValid())
@@ -320,6 +332,24 @@ void ZTextWidget::initConnect()
 {
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineNumberArea(QRect, int)));
+}
+
+void ZTextWidget::updateBlockNo()
+{
+    QTextBlock block = firstVisibleBlock();
+    int blockNumber = block.blockNumber();
+    qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+    qreal bottom = top + blockBoundingRect(block).height();
+    mFirstVisibleBlockNo = blockNumber;
+
+    while(block.isValid() && top <= this->rect().bottom())
+    {
+        block = block.next();
+        top = bottom;
+        bottom = top + blockBoundingRect(block).height();
+        ++blockNumber;
+    }
+    mLastVisibleBlockNo = blockNumber - 1;
 }
 
 ZScrollTextWidget::ZScrollTextWidget(Qt::Alignment verticalAlignment, QWidget *parent)
@@ -537,7 +567,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
                                        , dstStartPoint.y() + dstRectf.height() / 2);
             }
 
-            painter.setPen(STATUS_CLR[(int)srcDiffInfo.status()]);
+            painter.setPen(color);
             painter.drawLine(srcStartPoint, dstStartPoint);
         }
     }

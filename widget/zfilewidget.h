@@ -97,6 +97,7 @@ private:
     void initData();
     void initUI();
     void initConnect();
+    void updateBlockNo();
 
 private:
     QWidget *mLineNumberArea;
