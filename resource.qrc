@@ -5,5 +5,8 @@
         <file>icon/search.png</file>
         <file>icon/stop.png</file>
         <file>icon/file.png</file>
+        <file>font/Helvetica.ttf</file>
+        <file>font/Helvetica-Bold.ttf</file>
+        <file>font/Helvetica-Light.ttf</file>
     </qresource>
 </RCC>

@@ -23,14 +23,17 @@ const QString STATUS_STR[4] =
 const QColor STATUS_CLR[4] =
 {
     QColor(0, 0, 0),
-    QColor(43, 84, 208),
-    QColor(126, 0, 0),
-    QColor(0, 128, 0)
+    QColor(52, 135, 234),
+    QColor(204, 55, 29),
+    QColor(25, 122, 31)
 };
+
+const int STATUS_CLR_ALPHA = 100;
 
 const QString OBJECT_FOLDER_COMPARISON = "folder";
 const QString OBJECT_FILE_COMPARISON = "file";
 
 const QColor LINE_NUMBER_AREA = QColor(230, 230, 230);
+
 #endif // CONS
 

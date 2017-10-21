@@ -115,7 +115,6 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
             painter.setBrush(Qt::NoBrush);
             ZDiffInfo diffInfo = mDiffLst[i];
             QColor color = STATUS_CLR[(int)diffInfo.status()];
-            color.setAlpha(50);
             if(mTextWidget->isBlockContained(diffInfo))
             {
                 QRectF rectf = mTextWidget->blockArea(diffInfo);
@@ -128,6 +127,7 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
                 }
                 else
                 {
+                    color.setAlpha(STATUS_CLR_ALPHA);
                     painter.setBrush(QBrush(color));
                     painter.drawRect(QRectF(startPoint, QSizeF(rectf.width(), rectf.height())));
                 }
@@ -535,7 +535,6 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
         ZDiffInfo srcDiffInfo = mSrcDiffLst[i];
         ZDiffInfo dstDiffInfo = mDstDiffLst[i];
         QColor color = STATUS_CLR[(int)srcDiffInfo.status()];
-        color.setAlpha(50);
         if(mSrcScrollTextWidget->isBlockContained(srcDiffInfo)
                 || mDstScrollTextWidget->isBlockContained(dstDiffInfo))
         {

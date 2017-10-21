@@ -6,11 +6,16 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-//    int id = QFontDatabase::addApplicationFont(":/font/times_new_roman.fon");
-//    qDebug() << QFontDatabase::applicationFontFamilies(id);
-//    QFont font;
-//    font.setFamily("Helvetica-Condensed-Black-Se");
-//    qApp->setFont(font);
+    int id = QFontDatabase::addApplicationFont(":/font/Helvetica.ttf");
+    qDebug() << QFontDatabase::applicationFontFamilies(id);
+    id = QFontDatabase::addApplicationFont(":/font/Helvetica-Light.ttf");
+    qDebug() << QFontDatabase::applicationFontFamilies(id);
+    id = QFontDatabase::addApplicationFont(":/font/Helvetica-Bold.ttf");
+    qDebug() << QFontDatabase::applicationFontFamilies(id);
+
+    QFont font;
+    font.setFamily("Helvetica");
+    qApp->setFont(font);
 
     MainWindow w;
     w.show();
