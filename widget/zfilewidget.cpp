@@ -105,6 +105,7 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
     if(mTextWidget != NULL)
     {
         int diffCount = mDiffLst.size();
@@ -166,6 +167,7 @@ ZTextWidget::~ZTextWidget()
 void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(mLineNumberArea);
+    painter.setRenderHint(QPainter::Antialiasing, true);
     painter.fillRect(event->rect(), QBrush(LINE_NUMBER_AREA));
 
     QTextBlock block = firstVisibleBlock();
@@ -369,6 +371,12 @@ QRectF ZScrollTextWidget::blockArea(ZDiffInfo diffInfo)
     return QRectF(startPoint, rectf.size());
 }
 
+void ZScrollTextWidget::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+    this->parentWidget()->update();
+}
+
 void ZScrollTextWidget::initData()
 {
 
@@ -477,6 +485,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
         return;
     }
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     for(int i = 0;i < srcDiffCount;i++)
     {
@@ -509,7 +518,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
             if(dstDiffInfo.isLine())
             {
                 dstStartPoint = QPoint(dstStartPoint.x()
-                                       , srcStartPoint.y());
+                                       , dstStartPoint.y());
             }
             else
             {
@@ -517,9 +526,11 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
                                        , dstStartPoint.y() + dstRectf.height() / 2);
             }
 
+            painter.setPen(STATUS_CLR[(int)srcDiffInfo.status()]);
             painter.drawLine(srcStartPoint, dstStartPoint);
         }
     }
+
 }
 
 void ZFileWidget::initData()
