@@ -112,8 +112,6 @@ public:
     ~ZScrollTextWidget();
 
     void appendText(const QString &text);
-    void setVerticalValue(int value);
-    void setHorizontalValue(int value);
     void setDiffList(QList<ZDiffInfo> diffLst);
     bool isBlockContained(ZDiffInfo diffInfo);
     QRectF blockArea(ZDiffInfo diffInfo);
@@ -129,6 +127,9 @@ private:
 private slots:
     void setVerticalRange(int min, int max);
     void setHorizontalRange(int min, int max);
+    void onVerticalValueChange(int value);
+    void onHorizontablValueChanged(int value);
+    void onCursorPositionChanged();
 
 private:
     Qt::Alignment mVerticalAlignment;

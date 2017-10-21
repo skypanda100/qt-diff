@@ -345,14 +345,6 @@ void ZScrollTextWidget::appendText(const QString &text)
     mTextWidget->appendPlainText(text);
 }
 
-void ZScrollTextWidget::setVerticalValue(int /*value*/)
-{
-}
-
-void ZScrollTextWidget::setHorizontalValue(int /*value*/)
-{
-}
-
 void ZScrollTextWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
     mAboveWidget->setDiffList(diffLst);
@@ -374,7 +366,6 @@ QRectF ZScrollTextWidget::blockArea(ZDiffInfo diffInfo)
 void ZScrollTextWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
-    this->parentWidget()->update();
 }
 
 void ZScrollTextWidget::initData()
@@ -430,13 +421,15 @@ void ZScrollTextWidget::initConnect()
 {
     connect(mVerticalBar, SIGNAL(valueChanged(int)), mTextWidget->verticalScrollBar(), SLOT(setValue(int)));
     connect(mTextWidget->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setVerticalRange(int,int)));
-    connect(mTextWidget->verticalScrollBar(), SIGNAL(sliderMoved(int)), mVerticalBar, SLOT(setValue(int)));
-    connect(mTextWidget->verticalScrollBar(), SIGNAL(valueChanged(int)), mVerticalBar, SLOT(setValue(int)));
+    connect(mTextWidget->verticalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(onVerticalValueChange(int)));
+    connect(mTextWidget->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onVerticalValueChange(int)));
+
     connect(mHorizontalBar, SIGNAL(valueChanged(int)), mTextWidget->horizontalScrollBar(), SLOT(setValue(int)));
     connect(mTextWidget->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setHorizontalRange(int,int)));
-    connect(mTextWidget->horizontalScrollBar(), SIGNAL(sliderMoved(int)), mHorizontalBar, SLOT(setValue(int)));
-    connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), mHorizontalBar, SLOT(setValue(int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(onHorizontablValueChanged(int)));
+    connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onHorizontablValueChanged(int)));
 
+    connect(mTextWidget, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
 }
 
 void ZScrollTextWidget::setVerticalRange(int min, int max)
@@ -457,6 +450,25 @@ void ZScrollTextWidget::setHorizontalRange(int min, int max)
     }
     mHorizontalBar->setValue(max);
     mHorizontalBar->setRange(min, max);
+}
+
+void ZScrollTextWidget::onVerticalValueChange(int value)
+{
+    mVerticalBar->setValue(value);
+    this->parentWidget()->update();
+}
+
+void ZScrollTextWidget::onHorizontablValueChanged(int value)
+{
+    mHorizontalBar->setValue(value);
+    this->parentWidget()->update();
+}
+
+void ZScrollTextWidget::onCursorPositionChanged()
+{
+    emit mTextWidget->verticalScrollBar()->valueChanged(mTextWidget->verticalScrollBar()->value());
+    emit mTextWidget->horizontalScrollBar()->valueChanged(mTextWidget->horizontalScrollBar()->value());
+    this->parentWidget()->update();
 }
 
 ZFileWidget::ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent)
@@ -526,6 +538,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
                                        , dstStartPoint.y() + dstRectf.height() / 2);
             }
 
+            qDebug() << i << srcStartPoint << dstStartPoint;
             painter.setPen(STATUS_CLR[(int)srcDiffInfo.status()]);
             painter.drawLine(srcStartPoint, dstStartPoint);
         }
