@@ -25,6 +25,9 @@ private:
     void initUI();
     void initConnect();
 
+private slots:
+    void onScrollValueChanged(int value);
+
 private:
     ZPathDiffModel mPathDiffModel;
     QList<ZFileDiffModel> mModelLst;

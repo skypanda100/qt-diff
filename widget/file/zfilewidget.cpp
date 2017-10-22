@@ -453,5 +453,44 @@ void ZFileWidget::initUI()
 
 void ZFileWidget::initConnect()
 {
+    connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
+    connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
+}
 
+void ZFileWidget::onScrollValueChanged(int value)
+{
+    QObject *sender = this->sender();
+    Status status = mPathDiffModel.status();
+    int modelCount = mModelLst.size();
+    int srcLineCount = mSrcLineLst.size();
+    int dstLineCount = mDstLineLst.size();
+    int lineCount = srcLineCount;
+    ZScrollTextWidget *scrollTextWidget = NULL;
+
+    if(sender == mSrcScrollTextWidget)
+    {
+        lineCount = srcLineCount;
+        scrollTextWidget = mDstScrollTextWidget;
+    }
+    else
+    {
+        lineCount = dstLineCount;
+        scrollTextWidget = mSrcScrollTextWidget;
+    }
+
+    if(status == Modified)
+    {
+        qreal ratio = (qreal)value / lineCount;
+        int value = (int)(modelCount * ratio);
+        scrollTextWidget->onScrollValueChange(value);
+    }
+    else if(status == Same)
+    {
+        scrollTextWidget->onScrollValueChange(value);
+
+    }
+    else
+    {
+
+    }
 }

@@ -17,6 +17,12 @@ public:
     bool isBlockContained(ZDiffInfo diffInfo);
     QRectF blockArea(ZDiffInfo diffInfo);
 
+signals:
+    void scrollValueChange(int value);
+
+public slots:
+    void onScrollValueChange(int value);
+
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
@@ -28,9 +34,9 @@ private:
 private slots:
     void setVerticalRange(int min, int max);
     void setHorizontalRange(int min, int max);
+    void onCursorPositionChanged();
     void onVerticalValueChange(int value);
     void onHorizontablValueChanged(int value);
-    void onCursorPositionChanged();
 
 private:
     Qt::Alignment mVerticalAlignment;
