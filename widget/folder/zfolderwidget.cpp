@@ -1,5 +1,5 @@
 #include "zfolderwidget.h"
-#include "tree/ztreemodel.h"
+#include "widget/tree/ztreemodel.h"
 #include <QMetaType>
 #include <QtMath>
 

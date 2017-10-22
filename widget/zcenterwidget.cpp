@@ -1,6 +1,6 @@
 #include "zcenterwidget.h"
-#include "zfolderwidget.h"
-#include "zfilewidget.h"
+#include "widget/folder/zfolderwidget.h"
+#include "widget/file/zfilewidget.h"
 
 ZTabBar::ZTabBar(QWidget *parent)
     : QTabBar(parent)

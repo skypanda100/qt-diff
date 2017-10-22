@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     widget/tree/ztreeitem.cpp \
     widget/ztopwidget.cpp \
     widget/zcenterwidget.cpp \
-    widget/zfolderwidget.cpp \
     diff/zfilediff.cpp \
     diff/zfilediffmodel.cpp \
     diff/zpathdiffmodel.cpp \
@@ -28,7 +27,13 @@ SOURCES += main.cpp\
     widget/tree/ztreeitemmodel.cpp \
     widget/zbottomwidget.cpp \
     util/zhash.cpp \
-    widget/zfilewidget.cpp
+    widget/folder/zfolderwidget.cpp \
+    widget/file/zfilewidget.cpp \
+    widget/file/zdiffinfo.cpp \
+    widget/file/zlinenumberwidget.cpp \
+    widget/file/zdiffareawidget.cpp \
+    widget/file/ztextwidget.cpp \
+    widget/file/zscrolltextwidget.cpp
 
 HEADERS  += mainwindow.h \
     util/zfile.h \
@@ -36,7 +41,6 @@ HEADERS  += mainwindow.h \
     widget/tree/ztreeitem.h \
     widget/ztopwidget.h \
     widget/zcenterwidget.h \
-    widget/zfolderwidget.h \
     diff/zfilediffmodel.h \
     diff/zfilediff.h \
     diff/zpathdiffmodel.h \
@@ -46,7 +50,13 @@ HEADERS  += mainwindow.h \
     widget/zbottomwidget.h \
     env/zcons.h \
     util/zhash.h \
-    widget/zfilewidget.h
+    widget/folder/zfolderwidget.h \
+    widget/file/zfilewidget.h \
+    widget/file/zdiffinfo.h \
+    widget/file/zlinenumberwidget.h \
+    widget/file/zdiffareawidget.h \
+    widget/file/ztextwidget.h \
+    widget/file/zscrolltextwidget.h
 
 RESOURCES += \
     resource.qrc
