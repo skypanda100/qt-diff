@@ -461,27 +461,23 @@ void ZFileWidget::onScrollValueChanged(int value)
 {
     QObject *sender = this->sender();
     Status status = mPathDiffModel.status();
-    int modelCount = mModelLst.size();
     int srcLineCount = mSrcLineLst.size();
     int dstLineCount = mDstLineLst.size();
     int lineCount = srcLineCount;
-    ZScrollTextWidget *scrollTextWidget = NULL;
+    int oLineCount = dstLineCount;
+    ZScrollTextWidget *scrollTextWidget = mDstScrollTextWidget;
 
-    if(sender == mSrcScrollTextWidget)
-    {
-        lineCount = srcLineCount;
-        scrollTextWidget = mDstScrollTextWidget;
-    }
-    else
+    if(sender == mDstScrollTextWidget)
     {
         lineCount = dstLineCount;
+        oLineCount = srcLineCount;
         scrollTextWidget = mSrcScrollTextWidget;
     }
 
     if(status == Modified)
     {
         qreal ratio = (qreal)value / lineCount;
-        int value = (int)(modelCount * ratio);
+        int value = (int)(oLineCount * ratio);
         scrollTextWidget->onScrollValueChange(value);
     }
     else if(status == Same)
