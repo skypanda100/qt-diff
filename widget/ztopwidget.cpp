@@ -27,21 +27,21 @@ void ZTopWidget::initUI()
     mFolderButton->setIcon(folderIcon);
     mFolderButton->setText("New folder\ncomparison");
     mFolderButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mFolderButton->setFixedSize(QSize(80, 100));
+    mFolderButton->setFixedSize(QSize(100, 100));
 
     mRefreshButton = new QToolButton;
     QIcon refreshIcon(":/icon/refresh.png");
     mRefreshButton->setIcon(refreshIcon);
     mRefreshButton->setText("Start or\nrecompare");
     mRefreshButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mRefreshButton->setFixedSize(QSize(80, 100));
+    mRefreshButton->setFixedSize(QSize(100, 100));
 
     mStopButton = new QToolButton;
     QIcon stopIcon(":/icon/stop.png");
     mStopButton->setIcon(stopIcon);
     mStopButton->setText("Stop");
     mStopButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mStopButton->setFixedSize(QSize(80, 100));
+    mStopButton->setFixedSize(QSize(100, 100));
 
     this->addWidget(mFolderButton);
     this->addWidget(mRefreshButton);

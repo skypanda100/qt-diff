@@ -6,15 +6,17 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    int id = QFontDatabase::addApplicationFont(":/font/Helvetica.ttf");
+    int id = QFontDatabase::addApplicationFont(":/font/Helvetica/Helvetica.ttf");
     qDebug() << QFontDatabase::applicationFontFamilies(id);
-    id = QFontDatabase::addApplicationFont(":/font/Helvetica-Light.ttf");
+    id = QFontDatabase::addApplicationFont(":/font/Helvetica/Helvetica-Light.ttf");
     qDebug() << QFontDatabase::applicationFontFamilies(id);
-    id = QFontDatabase::addApplicationFont(":/font/Helvetica-Bold.ttf");
+    id = QFontDatabase::addApplicationFont(":/font/Helvetica/Helvetica-Bold.ttf");
+    qDebug() << QFontDatabase::applicationFontFamilies(id);
+    id = QFontDatabase::addApplicationFont(":/font/MicrosoftYaHei/msyh.TTF");
     qDebug() << QFontDatabase::applicationFontFamilies(id);
 
     QFont font;
-    font.setFamily("Helvetica");
+    font.setFamily("Microsoft YaHei");
     qApp->setFont(font);
 
     MainWindow w;
