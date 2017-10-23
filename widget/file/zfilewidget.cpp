@@ -28,7 +28,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
         return;
     }
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
 
     for(int i = 0;i < srcDiffCount;i++)
     {

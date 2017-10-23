@@ -44,7 +44,10 @@ private:
     QScrollBar *mVerticalBar;
     QScrollBar *mHorizontalBar;
     QWidget *mBelowWidget;
-    ZDiffAreaWidget *mAboveWidget;
+    ZDiffAreaWidget *mDiffAreaWidget;
+    QWidget *mVerticalWidget;
+    QWidget *mHorizontalWidget;
+    QWidget *mAboveWidget;
 };
 
 #endif // ZSCROLLTEXTWIDGET

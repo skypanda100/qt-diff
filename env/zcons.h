@@ -35,5 +35,7 @@ const QString OBJECT_FILE_COMPARISON = "file";
 
 const QColor LINE_NUMBER_AREA = QColor(230, 230, 230);
 
+const int SCROLL_BAR_WIDTH = 20;
+
 #endif // CONS
 

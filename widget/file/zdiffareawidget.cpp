@@ -24,7 +24,7 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
     if(mTextWidget != NULL)
     {
         int diffCount = mDiffLst.size();
@@ -39,6 +39,7 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
                 QRectF rectf = mTextWidget->blockArea(diffInfo);
                 QPoint startPoint = QPoint((int)rectf.x(), (int)rectf.y());
                 startPoint = mTextWidget->mapToParent(startPoint);
+                startPoint = this->mapFromParent(startPoint);
                 if(diffInfo.isLine())
                 {
                     painter.setPen(color);

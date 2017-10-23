@@ -15,6 +15,9 @@ ZScrollTextWidget::~ZScrollTextWidget()
     delete mVerticalBar;
     delete mHorizontalBar;
     delete mBelowWidget;
+    delete mDiffAreaWidget;
+    delete mVerticalWidget;
+    delete mHorizontalWidget;
     delete mAboveWidget;
 }
 
@@ -25,7 +28,7 @@ void ZScrollTextWidget::appendText(const QString &text)
 
 void ZScrollTextWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
-    mAboveWidget->setDiffList(diffLst);
+    mDiffAreaWidget->setDiffList(diffLst);
 }
 
 bool ZScrollTextWidget::isBlockContained(ZDiffInfo diffInfo)
@@ -61,31 +64,52 @@ void ZScrollTextWidget::initUI()
     mTextWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     mVerticalBar = new QScrollBar(Qt::Vertical, this);
-    mVerticalBar->setFixedWidth(20);
-    mVerticalBar->setVisible(false);
+    mVerticalBar->setFixedWidth(SCROLL_BAR_WIDTH);
 
     mHorizontalBar = new QScrollBar(Qt::Horizontal, this);
-    mHorizontalBar->setFixedHeight(20);
-    mHorizontalBar->setVisible(false);
+    mHorizontalBar->setFixedHeight(SCROLL_BAR_WIDTH);
 
-    QGridLayout *gridLayout =new QGridLayout;
-    gridLayout->setSpacing(0);
+    QGridLayout *belowGridLayout =new QGridLayout;
+    belowGridLayout->setSpacing(0);
     if(mVerticalAlignment == Qt::AlignLeft)
     {
-        gridLayout->addWidget(mVerticalBar, 0, 0);
-        gridLayout->addWidget(mTextWidget, 0, 1);
-        gridLayout->addWidget(mHorizontalBar, 1, 1);
+        belowGridLayout->addWidget(mVerticalBar, 0, 0);
+        belowGridLayout->addWidget(mTextWidget, 0, 1);
+        belowGridLayout->addWidget(mHorizontalBar, 1, 1);
     }
     else
     {
-        gridLayout->addWidget(mTextWidget, 0, 0);
-        gridLayout->addWidget(mVerticalBar, 0, 1);
-        gridLayout->addWidget(mHorizontalBar, 1, 0);
+        belowGridLayout->addWidget(mTextWidget, 0, 0);
+        belowGridLayout->addWidget(mVerticalBar, 0, 1);
+        belowGridLayout->addWidget(mHorizontalBar, 1, 0);
     }
     mBelowWidget = new QWidget;
-    mBelowWidget->setLayout(gridLayout);
+    mBelowWidget->setLayout(belowGridLayout);
 
-    mAboveWidget = new ZDiffAreaWidget(mTextWidget);
+    mDiffAreaWidget = new ZDiffAreaWidget(mTextWidget);
+
+    mVerticalWidget = new QWidget;
+    mVerticalWidget->setFixedWidth(SCROLL_BAR_WIDTH);
+
+    mHorizontalWidget = new QWidget;
+    mHorizontalWidget->setFixedHeight(SCROLL_BAR_WIDTH);
+
+    QGridLayout *aboveGridLayout =new QGridLayout;
+    aboveGridLayout->setSpacing(0);
+    if(mVerticalAlignment == Qt::AlignLeft)
+    {
+        aboveGridLayout->addWidget(mVerticalWidget, 0, 0);
+        aboveGridLayout->addWidget(mDiffAreaWidget, 0, 1);
+        aboveGridLayout->addWidget(mHorizontalWidget, 1, 1);
+    }
+    else
+    {
+        aboveGridLayout->addWidget(mDiffAreaWidget, 0, 0);
+        aboveGridLayout->addWidget(mVerticalWidget, 0, 1);
+        aboveGridLayout->addWidget(mHorizontalWidget, 1, 0);
+    }
+    mAboveWidget = new QWidget;
+    mAboveWidget->setLayout(aboveGridLayout);
     mAboveWidget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
 
     QStackedLayout *stackedLayout = new QStackedLayout;
@@ -112,20 +136,12 @@ void ZScrollTextWidget::initConnect()
 
 void ZScrollTextWidget::setVerticalRange(int min, int max)
 {
-    if(!mVerticalBar->isVisible())
-    {
-        mVerticalBar->setVisible(true);
-    }
     mVerticalBar->setValue(max);
     mVerticalBar->setRange(min, max);
 }
 
 void ZScrollTextWidget::setHorizontalRange(int min, int max)
 {
-    if(!mHorizontalBar->isVisible())
-    {
-        mHorizontalBar->setVisible(true);
-    }
     mHorizontalBar->setValue(max);
     mHorizontalBar->setRange(min, max);
 }
