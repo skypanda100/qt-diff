@@ -37,7 +37,7 @@ const QColor LINE_NUMBER_AREA = QColor(230, 230, 230);
 
 const int SCROLL_BAR_WIDTH = 20;
 
-const int OVERVIEW_DIFF_AREA_WIDTH = 12;
+const int OVERVIEW_DIFF_AREA_WIDTH = 16;
 
 const int OVERVIEW_DIFF_AREA_MARGIN = 4;
 

@@ -98,6 +98,50 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
     }
 }
 
+void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        QPoint point = event->pos();
+        int srcDiffAreaCount = mSrcDiffAreaLst.size();
+        for(int i = 0;i < srcDiffAreaCount;i++)
+        {
+            ZDiffArea diffArea = mSrcDiffAreaLst[i];
+            int startX = diffArea.startX();
+            int startY = diffArea.startY() * (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mSrcScrollTextWidget->y();
+            int endX = diffArea.endX();
+            int endY = diffArea.endY() * (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mSrcScrollTextWidget->y();
+            QRect rect(QPoint(startX, startY), QPoint(endX, endY));
+            if(rect.contains(point))
+            {
+                int blockNo = (float)(point.y() - mSrcScrollTextWidget->y()) / (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH)
+                        * mSrcLineLst.size();
+                qDebug() << blockNo << point.y() - mSrcScrollTextWidget->y() << mSrcLineLst.size();
+                mSrcScrollTextWidget->onScrollValueChange(blockNo);
+                return;
+            }
+        }
+
+        int dstDiffAreaCount = mDstDiffAreaLst.size();
+        for(int i = 0;i < dstDiffAreaCount;i++)
+        {
+            ZDiffArea diffArea = mDstDiffAreaLst[i];
+            int startX = diffArea.startX() + this->width();
+            int startY = diffArea.startY() * (mDstScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mDstScrollTextWidget->y();
+            int endX = diffArea.endX() + this->width();
+            int endY = diffArea.endY() * (mDstScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mDstScrollTextWidget->y();
+            QRect rect(QPoint(startX, startY), QPoint(endX, endY));
+            if(rect.contains(point))
+            {
+                int blockNo = (float)(point.y() - mDstScrollTextWidget->y()) / (mDstScrollTextWidget->height() - SCROLL_BAR_WIDTH)
+                        * mDstLineLst.size();
+                mDstScrollTextWidget->onScrollValueChange(blockNo);
+                return;
+            }
+        }
+    }
+}
+
 void ZFileWidget::initData()
 {
     clearData();
