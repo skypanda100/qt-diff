@@ -144,7 +144,61 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
 void ZFileWidget::initData()
 {
     clearData();
+    getLineFromFile();
+    getDiffInfo();
+    getDiffArea();
+}
 
+void ZFileWidget::initUI()
+{
+    mSrcScrollTextWidget = new ZScrollTextWidget(Qt::AlignLeft);
+    mDstScrollTextWidget = new ZScrollTextWidget(Qt::AlignRight);
+    this->setContentsMargins(OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH);
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->addWidget(mSrcScrollTextWidget);
+    mainLayout->addSpacing(20);
+    mainLayout->addWidget(mDstScrollTextWidget);
+
+    this->setLayout(mainLayout);
+
+    int srcLineCount = mSrcLineLst.size();
+    for(int i = 0;i < srcLineCount;i++)
+    {
+        mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
+    }
+
+    int dstLineCount = mDstLineLst.size();
+    for(int i = 0;i < dstLineCount;i++)
+    {
+        mDstScrollTextWidget->appendText(mDstLineLst[i]);
+    }
+
+    mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
+    mDstScrollTextWidget->setDiffList(mDstDiffLst);
+
+}
+
+void ZFileWidget::initConnect()
+{
+    connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
+    connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
+}
+
+void ZFileWidget::clearData()
+{
+    mModelLst.clear();
+    mSrcLineLst.clear();
+    mDstLineLst.clear();
+    mSrcDiffLst.clear();
+    mDstDiffLst.clear();
+    mSrcDiffAreaLst.clear();
+    mDstDiffAreaLst.clear();
+}
+
+void ZFileWidget::getLineFromFile()
+{
     Status status = mPathDiffModel.status();
     if(status == Same)
     {
@@ -162,7 +216,34 @@ void ZFileWidget::initData()
         QFile srcFile(srcPath);
 
         ZFile::linesWithLine(&srcFile, mSrcLineLst);
+    }
+    else if(status == Added)
+    {
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QFile dstFile(dstPath);
 
+        ZFile::linesWithLine(&dstFile, mDstLineLst);
+    }
+    else
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QFile srcFile(srcPath);
+        QFile dstFile(dstPath);
+
+        ZFile::linesWithLine(&srcFile, mSrcLineLst);
+        ZFile::linesWithLine(&dstFile, mDstLineLst);
+    }
+}
+
+void ZFileWidget::getDiffInfo()
+{
+    Status status = mPathDiffModel.status();
+    if(status == Same)
+    {
+    }
+    else if(status == Removed)
+    {
         QList<int> srcDiffLst;
         QList<int> dstDiffLst;
 
@@ -187,11 +268,6 @@ void ZFileWidget::initData()
     }
     else if(status == Added)
     {
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        QFile dstFile(dstPath);
-
-        ZFile::linesWithLine(&dstFile, mDstLineLst);
-
         QList<int> srcDiffLst;
         QList<int> dstDiffLst;
 
@@ -218,13 +294,9 @@ void ZFileWidget::initData()
     {
         QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
         QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        QFile srcFile(srcPath);
-        QFile dstFile(dstPath);
 
         ZFileDiff fileDiff(srcPath, dstPath);
         mModelLst = fileDiff.execute();
-        ZFile::linesWithLine(&srcFile, mSrcLineLst);
-        ZFile::linesWithLine(&dstFile, mDstLineLst);
 
         int modelCount = mModelLst.size();
         int srcIndex = 0;
@@ -488,7 +560,10 @@ void ZFileWidget::initData()
             dstDiffLst.clear();
         }
     }
+}
 
+void ZFileWidget::getDiffArea()
+{
     int srcLineCount = mSrcLineLst.size();
     int srcDiffCount = mSrcDiffLst.size();
     for(int i = 0;i < srcDiffCount;i++)
@@ -532,54 +607,6 @@ void ZFileWidget::initData()
         diffArea.setEndY((float)endLineNo / dstLineCount);
         mDstDiffAreaLst.append(diffArea);
     }
-}
-
-void ZFileWidget::initUI()
-{
-    mSrcScrollTextWidget = new ZScrollTextWidget(Qt::AlignLeft);
-    mDstScrollTextWidget = new ZScrollTextWidget(Qt::AlignRight);
-    this->setContentsMargins(OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH);
-    QHBoxLayout *mainLayout = new QHBoxLayout;
-    mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->addWidget(mSrcScrollTextWidget);
-    mainLayout->addSpacing(20);
-    mainLayout->addWidget(mDstScrollTextWidget);
-
-    this->setLayout(mainLayout);
-
-    int srcLineCount = mSrcLineLst.size();
-    for(int i = 0;i < srcLineCount;i++)
-    {
-        mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
-    }
-
-    int dstLineCount = mDstLineLst.size();
-    for(int i = 0;i < dstLineCount;i++)
-    {
-        mDstScrollTextWidget->appendText(mDstLineLst[i]);
-    }
-
-    mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
-    mDstScrollTextWidget->setDiffList(mDstDiffLst);
-
-}
-
-void ZFileWidget::initConnect()
-{
-    connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
-    connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
-}
-
-void ZFileWidget::clearData()
-{
-    mModelLst.clear();
-    mSrcLineLst.clear();
-    mDstLineLst.clear();
-    mSrcDiffLst.clear();
-    mDstDiffLst.clear();
-    mSrcDiffAreaLst.clear();
-    mDstDiffAreaLst.clear();
 }
 
 void ZFileWidget::onScrollValueChanged(int value)

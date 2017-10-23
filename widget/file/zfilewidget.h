@@ -27,6 +27,9 @@ private:
     void initUI();
     void initConnect();
     void clearData();
+    void getLineFromFile();
+    void getDiffInfo();
+    void getDiffArea();
 
 private slots:
     void onScrollValueChanged(int value);

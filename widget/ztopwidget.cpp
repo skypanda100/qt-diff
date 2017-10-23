@@ -25,28 +25,28 @@ void ZTopWidget::initUI()
     mFolderButton = new QToolButton;
     QIcon folderIcon(":/icon/folder.png");
     mFolderButton->setIcon(folderIcon);
-    mFolderButton->setText("New folder\ncomparison");
-    mFolderButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mFolderButton->setFixedSize(QSize(100, 100));
+    mFolderButton->setToolTip("New folder comparison");
+    mFolderButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+//    mFolderButton->setFixedSize(QSize(50, 50));
 
     mRefreshButton = new QToolButton;
     QIcon refreshIcon(":/icon/refresh.png");
     mRefreshButton->setIcon(refreshIcon);
-    mRefreshButton->setText("Start or\nrecompare");
-    mRefreshButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mRefreshButton->setFixedSize(QSize(100, 100));
+    mRefreshButton->setToolTip("Start or recompare");
+    mRefreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+//    mRefreshButton->setFixedSize(QSize(50, 50));
 
     mStopButton = new QToolButton;
     QIcon stopIcon(":/icon/stop.png");
     mStopButton->setIcon(stopIcon);
-    mStopButton->setText("Stop");
-    mStopButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mStopButton->setFixedSize(QSize(100, 100));
+    mStopButton->setToolTip("Stop");
+    mStopButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+//    mStopButton->setFixedSize(QSize(50, 50));
 
     this->addWidget(mFolderButton);
     this->addWidget(mRefreshButton);
     this->addWidget(mStopButton);
-    this->setIconSize(QSize(60, 60));
+    this->setIconSize(QSize(50, 50));
 }
 
 void ZTopWidget::initConnect()
