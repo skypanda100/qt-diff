@@ -11,6 +11,7 @@ ZTopWidget::ZTopWidget(QWidget *parent)
 ZTopWidget::~ZTopWidget()
 {
     delete mFolderButton;
+    delete mFileButton;
     delete mRefreshButton;
     delete mStopButton;
 }
@@ -25,25 +26,33 @@ void ZTopWidget::initUI()
     mFolderButton = new QToolButton;
     QIcon folderIcon(":/icon/folder.png");
     mFolderButton->setIcon(folderIcon);
-    mFolderButton->setToolTip("New folder comparison");
-    mFolderButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-//    mFolderButton->setFixedSize(QSize(50, 50));
+    mFolderButton->setText("New folder\ncomparison");
+    mFolderButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mFolderButton->setFixedSize(QSize(95, 95));
+
+    mFileButton = new QToolButton;
+    QIcon fileIcon(":/icon/file.png");
+    mFileButton->setIcon(fileIcon);
+    mFileButton->setText("New file\ncomparison");
+    mFileButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mFileButton->setFixedSize(QSize(95, 95));
 
     mRefreshButton = new QToolButton;
     QIcon refreshIcon(":/icon/refresh.png");
     mRefreshButton->setIcon(refreshIcon);
-    mRefreshButton->setToolTip("Start or recompare");
-    mRefreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-//    mRefreshButton->setFixedSize(QSize(50, 50));
+    mRefreshButton->setText("Start or\nrecompare");
+    mRefreshButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mRefreshButton->setFixedSize(QSize(95, 95));
 
     mStopButton = new QToolButton;
     QIcon stopIcon(":/icon/stop.png");
     mStopButton->setIcon(stopIcon);
-    mStopButton->setToolTip("Stop");
-    mStopButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-//    mStopButton->setFixedSize(QSize(50, 50));
+    mStopButton->setText("Stop");
+    mStopButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mStopButton->setFixedSize(QSize(95, 95));
 
     this->addWidget(mFolderButton);
+    this->addWidget(mFileButton);
     this->addWidget(mRefreshButton);
     this->addWidget(mStopButton);
     this->setIconSize(QSize(50, 50));

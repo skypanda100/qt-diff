@@ -29,7 +29,7 @@ void MainWindow::initUI()
     this->setCentralWidget(mCenterWidget);
 
     mBottomWidget = new ZBottomWidget;
-    this->setStatusBar(mBottomWidget);
+//    this->setStatusBar(mBottomWidget);
 }
 
 void MainWindow::initConnect()

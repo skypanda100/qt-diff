@@ -21,6 +21,7 @@ private:
 
 private:
     QToolButton *mFolderButton;
+    QToolButton *mFileButton;
     QToolButton *mRefreshButton;
     QToolButton *mStopButton;
 };
