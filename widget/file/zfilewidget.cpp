@@ -28,7 +28,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
         return;
     }
     QPainter painter(this);
-//    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     for(int i = 0;i < srcDiffCount;i++)
     {
@@ -73,7 +73,7 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
     }
 
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(200, 0, 0, 200));
+    painter.setBrush(OVERVIEW_DIFF_AREA_CLR);
 
     int srcDiffAreaCount = mSrcDiffAreaLst.size();
     for(int i = 0;i < srcDiffAreaCount;i++)
@@ -116,7 +116,6 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
             {
                 int blockNo = (float)(point.y() - mSrcScrollTextWidget->y()) / (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH)
                         * mSrcLineLst.size();
-                qDebug() << blockNo << point.y() - mSrcScrollTextWidget->y() << mSrcLineLst.size();
                 mSrcScrollTextWidget->onScrollValueChange(blockNo);
                 return;
             }

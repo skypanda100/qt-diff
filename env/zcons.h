@@ -41,5 +41,7 @@ const int OVERVIEW_DIFF_AREA_WIDTH = 16;
 
 const int OVERVIEW_DIFF_AREA_MARGIN = 4;
 
+const QColor OVERVIEW_DIFF_AREA_CLR = QColor(200, 0, 0, 150);
+
 #endif // CONS
 
