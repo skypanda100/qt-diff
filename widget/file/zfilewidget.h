@@ -9,6 +9,7 @@
 #include "diff/zpathdiffmodel.h"
 #include "zdiffinfo.h"
 #include "zscrolltextwidget.h"
+#include "zdiffarea.h"
 
 class ZFileWidget : public QWidget
 {
@@ -24,6 +25,7 @@ private:
     void initData();
     void initUI();
     void initConnect();
+    void clearData();
 
 private slots:
     void onScrollValueChanged(int value);
@@ -35,6 +37,8 @@ private:
     QList<QString> mDstLineLst;
     QList<ZDiffInfo> mSrcDiffLst;
     QList<ZDiffInfo> mDstDiffLst;
+    QList<ZDiffArea> mSrcDiffAreaLst;
+    QList<ZDiffArea> mDstDiffAreaLst;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
 };

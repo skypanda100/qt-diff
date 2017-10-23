@@ -67,16 +67,41 @@ void ZFileWidget::paintEvent(QPaintEvent *event)
                 dstStartPoint = QPoint(dstStartPoint.x()
                                        , dstStartPoint.y() + dstRectf.height() / 2);
             }
-
             painter.setPen(color);
             painter.drawLine(srcStartPoint, dstStartPoint);
         }
     }
 
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor(200, 0, 0, 200));
+
+    int srcDiffAreaCount = mSrcDiffAreaLst.size();
+    for(int i = 0;i < srcDiffAreaCount;i++)
+    {
+        ZDiffArea diffArea = mSrcDiffAreaLst[i];
+        int startX = diffArea.startX();
+        int startY = diffArea.startY() * (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mSrcScrollTextWidget->y();
+        int endX = diffArea.endX();
+        int endY = diffArea.endY() * (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mSrcScrollTextWidget->y();
+        painter.drawRect(QRect(QPoint(startX, startY), QPoint(endX, endY)));
+    }
+
+    int dstDiffAreaCount = mDstDiffAreaLst.size();
+    for(int i = 0;i < dstDiffAreaCount;i++)
+    {
+        ZDiffArea diffArea = mDstDiffAreaLst[i];
+        int startX = diffArea.startX() + this->width();
+        int startY = diffArea.startY() * (mDstScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mDstScrollTextWidget->y();
+        int endX = diffArea.endX() + this->width();
+        int endY = diffArea.endY() * (mDstScrollTextWidget->height() - SCROLL_BAR_WIDTH) + mDstScrollTextWidget->y();
+        painter.drawRect(QRect(QPoint(startX, startY), QPoint(endX, endY)));
+    }
 }
 
 void ZFileWidget::initData()
 {
+    clearData();
+
     Status status = mPathDiffModel.status();
     if(status == Same)
     {
@@ -420,16 +445,62 @@ void ZFileWidget::initData()
             dstDiffLst.clear();
         }
     }
+
+    int srcLineCount = mSrcLineLst.size();
+    int srcDiffCount = mSrcDiffLst.size();
+    for(int i = 0;i < srcDiffCount;i++)
+    {
+        ZDiffInfo diffInfo = mSrcDiffLst[i];
+        QList<int> diffLst = diffInfo.diffLst();
+        int diffCount = diffLst.size();
+        int startLineNo = 0;
+        int endLineNo = 0;
+        if(diffCount > 0)
+        {
+            startLineNo = diffLst[0] + 1;
+            endLineNo = diffLst[diffCount - 1] + 1;
+        }
+        ZDiffArea diffArea;
+        diffArea.setStartX(OVERVIEW_DIFF_AREA_MARGIN);
+        diffArea.setStartY((float)startLineNo / srcLineCount);
+        diffArea.setEndX(OVERVIEW_DIFF_AREA_WIDTH - OVERVIEW_DIFF_AREA_MARGIN);
+        diffArea.setEndY((float)endLineNo / srcLineCount);
+        mSrcDiffAreaLst.append(diffArea);
+    }
+
+    int dstLineCount = mDstLineLst.size();
+    int dstDiffCount = mDstDiffLst.size();
+    for(int i = 0;i < dstDiffCount;i++)
+    {
+        ZDiffInfo diffInfo = mDstDiffLst[i];
+        QList<int> diffLst = diffInfo.diffLst();
+        int diffCount = diffLst.size();
+        int startLineNo = 0;
+        int endLineNo = 0;
+        if(diffCount > 0)
+        {
+            startLineNo = diffLst[0] + 1;
+            endLineNo = diffLst[diffCount - 1] + 1;
+        }
+        ZDiffArea diffArea;
+        diffArea.setStartX(-1 * (OVERVIEW_DIFF_AREA_WIDTH - OVERVIEW_DIFF_AREA_MARGIN));
+        diffArea.setStartY((float)startLineNo / dstLineCount);
+        diffArea.setEndX(-OVERVIEW_DIFF_AREA_MARGIN);
+        diffArea.setEndY((float)endLineNo / dstLineCount);
+        mDstDiffAreaLst.append(diffArea);
+    }
 }
 
 void ZFileWidget::initUI()
 {
     mSrcScrollTextWidget = new ZScrollTextWidget(Qt::AlignLeft);
     mDstScrollTextWidget = new ZScrollTextWidget(Qt::AlignRight);
-
+    this->setContentsMargins(OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH);
     QHBoxLayout *mainLayout = new QHBoxLayout;
+    mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addWidget(mSrcScrollTextWidget);
-    mainLayout->addSpacing(30);
+    mainLayout->addSpacing(20);
     mainLayout->addWidget(mDstScrollTextWidget);
 
     this->setLayout(mainLayout);
@@ -455,6 +526,17 @@ void ZFileWidget::initConnect()
 {
     connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
+}
+
+void ZFileWidget::clearData()
+{
+    mModelLst.clear();
+    mSrcLineLst.clear();
+    mDstLineLst.clear();
+    mSrcDiffLst.clear();
+    mDstDiffLst.clear();
+    mSrcDiffAreaLst.clear();
+    mDstDiffAreaLst.clear();
 }
 
 void ZFileWidget::onScrollValueChanged(int value)

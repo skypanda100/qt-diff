@@ -56,6 +56,8 @@ void ZScrollTextWidget::initData()
 
 void ZScrollTextWidget::initUI()
 {
+    this->setContentsMargins(0, 0, 0, 0);
+
     mTextWidget = new ZTextWidget;
     mTextWidget->setLineWrapMode(QPlainTextEdit::NoWrap);
     mTextWidget->verticalScrollBar()->setTracking(true);
@@ -71,6 +73,7 @@ void ZScrollTextWidget::initUI()
 
     QGridLayout *belowGridLayout =new QGridLayout;
     belowGridLayout->setSpacing(0);
+    belowGridLayout->setContentsMargins(0, 0, 0, 0);
     if(mVerticalAlignment == Qt::AlignLeft)
     {
         belowGridLayout->addWidget(mVerticalBar, 0, 0);
@@ -96,6 +99,7 @@ void ZScrollTextWidget::initUI()
 
     QGridLayout *aboveGridLayout =new QGridLayout;
     aboveGridLayout->setSpacing(0);
+    aboveGridLayout->setContentsMargins(0, 0, 0, 0);
     if(mVerticalAlignment == Qt::AlignLeft)
     {
         aboveGridLayout->addWidget(mVerticalWidget, 0, 0);
@@ -113,6 +117,8 @@ void ZScrollTextWidget::initUI()
     mAboveWidget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
 
     QStackedLayout *stackedLayout = new QStackedLayout;
+    stackedLayout->setSpacing(0);
+    stackedLayout->setContentsMargins(0, 0, 0, 0);
     stackedLayout->setStackingMode(QStackedLayout::StackAll);
     stackedLayout->addWidget(mBelowWidget);
     stackedLayout->addWidget(mAboveWidget);
