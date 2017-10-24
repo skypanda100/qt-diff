@@ -168,8 +168,8 @@ void ZFolderWidget::initUI()
 
 void ZFolderWidget::initConnect()
 {
-    connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(searchClicked()));
-    connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(searchClicked()));
+    connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
+    connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
 }
 
@@ -255,7 +255,7 @@ void ZFolderWidget::updateInfo()
                         , mLineAdded + mLineRemoved + mLineModified));
 }
 
-void ZFolderWidget::searchClicked()
+void ZFolderWidget::onSearchClicked()
 {
     QObject *object = this->sender();
     if(object == mSearchButtonSrc)

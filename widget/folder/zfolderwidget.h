@@ -33,7 +33,7 @@ private:
     void updateInfo();
 
 private slots:
-    void searchClicked();
+    void onSearchClicked();
     void onDiffMessage(const QList<ZTreeItemModel> &itemModelList);
     void onDiffEnd();
     void onProgress(int value, int maxValue);

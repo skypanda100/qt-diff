@@ -13,6 +13,10 @@ ZFileWidget::ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent)
 
 ZFileWidget::~ZFileWidget()
 {
+    delete mPathEditSrc;
+    delete mSearchButtonSrc;
+    delete mPathEditDst;
+    delete mSearchButtonDst;
     delete mSrcScrollTextWidget;
     delete mDstScrollTextWidget;
 }
@@ -151,15 +155,47 @@ void ZFileWidget::initData()
 
 void ZFileWidget::initUI()
 {
+    this->setContentsMargins(OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH);
+
+    mPathEditSrc = new QLineEdit;
+    mPathEditSrc->setPlaceholderText("File");
+    mSearchButtonSrc = new QPushButton;
+    mSearchButtonSrc->setIcon(QIcon(":/icon/search.png"));
+    mSearchButtonSrc->setToolTip("search");
+
+    mPathEditDst = new QLineEdit;
+    mPathEditDst->setPlaceholderText("File");
+    mSearchButtonDst = new QPushButton;
+    mSearchButtonDst->setIcon(QIcon(":/icon/search.png"));
+    mSearchButtonDst->setToolTip("search");
+
     mSrcScrollTextWidget = new ZScrollTextWidget(Qt::AlignLeft);
     mDstScrollTextWidget = new ZScrollTextWidget(Qt::AlignRight);
-    this->setContentsMargins(OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH, OVERVIEW_DIFF_AREA_WIDTH);
+
+    QHBoxLayout *srcHLayout = new QHBoxLayout;
+    srcHLayout->addWidget(mPathEditSrc);
+    srcHLayout->addWidget(mSearchButtonSrc);
+
+    QHBoxLayout *dstHLayout = new QHBoxLayout;
+    dstHLayout->addWidget(mPathEditDst);
+    dstHLayout->addWidget(mSearchButtonDst);
+
+    QVBoxLayout *srcVLayout = new QVBoxLayout;
+    srcVLayout->setSpacing(5);
+    srcVLayout->addLayout(srcHLayout);
+    srcVLayout->addWidget(mSrcScrollTextWidget);
+
+    QVBoxLayout *dstVLayout = new QVBoxLayout;
+    dstVLayout->setSpacing(5);
+    dstVLayout->addLayout(dstHLayout);
+    dstVLayout->addWidget(mDstScrollTextWidget);
+
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->addWidget(mSrcScrollTextWidget);
+    mainLayout->addLayout(srcVLayout);
     mainLayout->addSpacing(20);
-    mainLayout->addWidget(mDstScrollTextWidget);
+    mainLayout->addLayout(dstVLayout);
 
     this->setLayout(mainLayout);
 
@@ -178,10 +214,13 @@ void ZFileWidget::initUI()
     mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
     mDstScrollTextWidget->setDiffList(mDstDiffLst);
 
+    setFilePath();
 }
 
 void ZFileWidget::initConnect()
 {
+    connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
+    connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
 }
@@ -195,6 +234,35 @@ void ZFileWidget::clearData()
     mDstDiffLst.clear();
     mSrcDiffAreaLst.clear();
     mDstDiffAreaLst.clear();
+}
+
+void ZFileWidget::setFilePath()
+{
+    Status status = mPathDiffModel.status();
+    if(status == Same)
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        mPathEditSrc->setText(srcPath);
+        mPathEditDst->setText(dstPath);
+    }
+    else if(status == Removed)
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        mPathEditSrc->setText(srcPath);
+    }
+    else if(status == Added)
+    {
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        mPathEditDst->setText(dstPath);
+    }
+    else
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        mPathEditSrc->setText(srcPath);
+        mPathEditDst->setText(dstPath);
+    }
 }
 
 void ZFileWidget::getLineFromFile()
@@ -640,5 +708,30 @@ void ZFileWidget::onScrollValueChanged(int value)
     else
     {
 
+    }
+}
+
+void ZFileWidget::onSearchClicked()
+{
+    QObject *object = this->sender();
+    if(object == mSearchButtonSrc)
+    {
+        QString currentFile = mPathEditSrc->text().isEmpty() ? QDir::currentPath() : mPathEditSrc->text();
+        QString file = QFileDialog::getOpenFileName(this,
+                                   tr("search"), currentFile);
+        if(!file.isEmpty())
+        {
+            mPathEditSrc->setText(file);
+        }
+    }
+    else
+    {
+        QString currentFile = mPathEditDst->text().isEmpty() ? QDir::currentPath() : mPathEditDst->text();
+        QString file = QFileDialog::getOpenFileName(this,
+                                   tr("search"), currentFile);
+        if(!file.isEmpty())
+        {
+            mPathEditDst->setText(file);
+        }
     }
 }

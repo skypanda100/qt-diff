@@ -27,12 +27,14 @@ private:
     void initUI();
     void initConnect();
     void clearData();
+    void setFilePath();
     void getLineFromFile();
     void getDiffInfo();
     void getDiffArea();
 
 private slots:
     void onScrollValueChanged(int value);
+    void onSearchClicked();
 
 private:
     ZPathDiffModel mPathDiffModel;
@@ -43,6 +45,10 @@ private:
     QList<ZDiffInfo> mDstDiffLst;
     QList<ZDiffArea> mSrcDiffAreaLst;
     QList<ZDiffArea> mDstDiffAreaLst;
+    QLineEdit *mPathEditSrc;
+    QPushButton *mSearchButtonSrc;
+    QLineEdit *mPathEditDst;
+    QPushButton *mSearchButtonDst;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
 };
