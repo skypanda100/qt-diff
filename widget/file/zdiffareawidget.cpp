@@ -17,6 +17,7 @@ ZDiffAreaWidget::~ZDiffAreaWidget()
 void ZDiffAreaWidget::setDiffList(QList<ZDiffInfo> diffLst)
 {
     mDiffLst = diffLst;
+    update();
 }
 
 void ZDiffAreaWidget::paintEvent(QPaintEvent *event)

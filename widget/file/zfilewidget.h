@@ -30,15 +30,18 @@ private:
     void clearData();
     void setFilePath();
     void setTempFile();
+    void resetTempFile();
     void getLineFromFile();
     void getDiffInfo();
     void getDiffArea();
     void setText();
+    void setDiffInfo();
 
 private slots:
     void onScrollValueChanged(int value);
     void onSearchClicked();
     void onTimeout();
+    void onTextChanged();
 
 private:
     ZPathDiffModel mPathDiffModel;

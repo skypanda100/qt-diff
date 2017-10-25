@@ -152,6 +152,10 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
 void ZFileWidget::initData()
 {
     mTimer = new QTimer(this);
+    setTempFile();
+    getLineFromFile();
+    getDiffInfo();
+    getDiffArea();
 }
 
 void ZFileWidget::initUI()
@@ -201,8 +205,8 @@ void ZFileWidget::initUI()
     this->setLayout(mainLayout);
 
     setFilePath();
-
-    mTimer->start(SHOW_DIFF_DELAY);
+    setText();
+    setDiffInfo();
 }
 
 void ZFileWidget::initConnect()
@@ -212,12 +216,12 @@ void ZFileWidget::initConnect()
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
+    connect(mSrcScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
+    connect(mDstScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 
 void ZFileWidget::clearData()
 {
-    mSrcScrollTextWidget->clearText();
-    mDstScrollTextWidget->clearText();
     mModelLst.clear();
     mSrcLineLst.clear();
     mDstLineLst.clear();
@@ -308,6 +312,15 @@ void ZFileWidget::setTempFile()
         mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
         mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
     }
+}
+
+void ZFileWidget::resetTempFile()
+{
+    QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
+    QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
+
+    mSrcScrollTextWidget->setTextToFile(srcPath);
+    mDstScrollTextWidget->setTextToFile(dstPath);
 }
 
 void ZFileWidget::getLineFromFile()
@@ -736,6 +749,10 @@ void ZFileWidget::setText()
         mDstScrollTextWidget->appendText(mDstLineLst[i]);
     }
 
+}
+
+void ZFileWidget::setDiffInfo()
+{
     mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
     mDstScrollTextWidget->setDiffList(mDstDiffLst);
 }
@@ -802,11 +819,20 @@ void ZFileWidget::onSearchClicked()
 void ZFileWidget::onTimeout()
 {
     mTimer->stop();
-
     clearData();
-    setTempFile();
+    resetTempFile();
     getLineFromFile();
     getDiffInfo();
     getDiffArea();
-    setText();
+    setDiffInfo();
+    update();
+}
+
+void ZFileWidget::onTextChanged()
+{
+    if(mTimer->isActive())
+    {
+        mTimer->stop();
+    }
+    mTimer->start(SHOW_DIFF_DELAY);
 }

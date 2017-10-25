@@ -49,6 +49,13 @@ void ZScrollTextWidget::clearText()
     mTextWidget->clear();
 }
 
+void ZScrollTextWidget::setTextToFile(const QString &path)
+{
+    QTextDocumentWriter writer(path);
+    writer.setFormat("plaintext");
+    writer.write(mTextWidget->document());
+}
+
 void ZScrollTextWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
@@ -143,6 +150,7 @@ void ZScrollTextWidget::initConnect()
     connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onHorizontablValueChanged(int)));
 
     connect(mTextWidget, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
+    connect(mTextWidget, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
 }
 
 void ZScrollTextWidget::setVerticalRange(int min, int max)

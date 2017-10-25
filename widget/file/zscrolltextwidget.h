@@ -17,9 +17,11 @@ public:
     bool isBlockContained(ZDiffInfo diffInfo);
     QRectF blockArea(ZDiffInfo diffInfo);
     void clearText();
+    void setTextToFile(const QString &path);
 
 signals:
     void scrollValueChange(int value);
+    void textChanged();
 
 public slots:
     void onScrollValueChange(int value);
