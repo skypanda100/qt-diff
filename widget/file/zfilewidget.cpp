@@ -644,45 +644,36 @@ void ZFileWidget::setDiffInfo()
 
 void ZFileWidget::onScrollValueChanged(int value)
 {
-//    QObject *sender = this->sender();
-//    int diffCount = mModelLst.size() - 1;
-//    int diffIndex = 0;
-//    int oValue = 0;
-//    if(sender == mSrcScrollTextWidget)
-//    {
-
-//        for(int i = diffCount;i >= 0;i--)
-//        {
-//            ZFileDiffModel fileDiffModel = mModelLst[i];
-//            if(fileDiffModel.status() == Added)
-//            {
-//                oValue++;
-//                continue;
-//            }
-//            if(fileDiffModel.status() != Removed)
-//            {
-//                oValue
-//            }
-//            value--;
-//            if(value == 0)
-//            {
-//                break;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        for(int i = diffCount;i >= value;i--)
-//        {
-//            ZFileDiffModel fileDiffModel = mModelLst[i];
-//            if(fileDiffModel.status() == Removed)
-//            {
-//                continue;
-//            }
-//            diffIndex++;
-//        }
-//    }
-//    scrollTextWidget->onScrollValueChangedWithoutSignal(value);
+    QObject *sender = this->sender();
+    int modelCount = mModelLst.size();
+    int srcIndex = 0;
+    int dstIndex = 0;
+    Status srcStatus = Added;
+    Status dstStatus = Removed;
+    ZScrollTextWidget *dstScrollTextWidget = mDstScrollTextWidget;
+    if(sender == mDstScrollTextWidget)
+    {
+        srcStatus = Removed;
+        dstStatus = Added;
+        dstScrollTextWidget = mSrcScrollTextWidget;
+    }
+    for(int i = modelCount - 1;i >= 0;i--)
+    {
+        ZFileDiffModel fileDiffModel = mModelLst[i];
+        if(fileDiffModel.status() != srcStatus)
+        {
+            srcIndex++;
+        }
+        if(fileDiffModel.status() != dstStatus)
+        {
+            dstIndex++;
+        }
+        if(value == srcIndex)
+        {
+            break;
+        }
+    }
+    dstScrollTextWidget->onScrollValueChangedWithoutSignal(dstIndex);
 }
 
 void ZFileWidget::onSearchClicked()
