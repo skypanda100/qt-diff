@@ -73,9 +73,9 @@ bool ZFileDiff::hasDifference()
     mDiffRectRows = ZFile::linesWithHash(mFileSrc, mHashSrcLst);
     mDiffRectCols = ZFile::linesWithHash(mFileDst, mHashDstLst);
 
-    if(mDiffRectRows == -1 || mDiffRectCols == -1)
+    if(mDiffRectRows == -1 && mDiffRectCols == -1)
     {
-        return true;
+        return false;
     }
     else if(mDiffRectRows != mDiffRectCols)
     {
@@ -114,16 +114,8 @@ bool ZFileDiff::hasDifference()
 
 bool ZFileDiff::initRect()
 {
-    if(mDiffRectRows == -1 || mDiffRectCols == -1)
-    {
-        return false;
-    }
-    else
-    {
-        mDiffRectRows += 1;
-        mDiffRectCols += 1;
-    }
-
+    mDiffRectRows += 1;
+    mDiffRectCols += 1;
     mDiffRect = new int*[mDiffRectRows];
     for(int i = 0;i < mDiffRectRows;i++)
     {

@@ -233,85 +233,28 @@ void ZFileWidget::clearData()
 
 void ZFileWidget::setFilePath()
 {
-    Status status = mPathDiffModel.status();
-    if(status == Same)
-    {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        mPathEditSrc->setText(srcPath);
-        mPathEditDst->setText(dstPath);
-    }
-    else if(status == Removed)
-    {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        mPathEditSrc->setText(srcPath);
-    }
-    else if(status == Added)
-    {
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        mPathEditDst->setText(dstPath);
-    }
-    else
-    {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        mPathEditSrc->setText(srcPath);
-        mPathEditDst->setText(dstPath);
-    }
+    QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+    QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+    mPathEditSrc->setText(srcPath);
+    mPathEditDst->setText(dstPath);
 }
 
 void ZFileWidget::setTempFile()
 {
     mPathDiffModel.deleteTempFile();
 
-    Status status = mPathDiffModel.status();
     QString tempDir = QDir::tempPath();
-    if(status == Same)
-    {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
-        QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
-        qDebug() << srcTempFilePath << dstTempFilePath;
-        QFile::copy(srcPath, srcTempFilePath);
-        QFile::copy(dstPath, dstTempFilePath);
-        QFileInfo srcTempFileInfo(srcTempFilePath);
-        QFileInfo dstTempFileInfo(dstTempFilePath);
-        mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
-        mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
-    }
-    else if(status == Removed)
-    {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
-        qDebug() << srcTempFilePath;
-        QFile::copy(srcPath, srcTempFilePath);
-        QFileInfo srcTempFileInfo(srcTempFilePath);
-        mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
-    }
-    else if(status == Added)
-    {
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
-        qDebug() << dstTempFilePath;
-        QFile::copy(dstPath, dstTempFilePath);
-        QFileInfo dstTempFileInfo(dstTempFilePath);
-        mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
-    }
-    else
-    {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
-        QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
-        QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
-        qDebug() << srcTempFilePath << dstTempFilePath;
-        QFile::copy(srcPath, srcTempFilePath);
-        QFile::copy(dstPath, dstTempFilePath);
-        QFileInfo srcTempFileInfo(srcTempFilePath);
-        QFileInfo dstTempFileInfo(dstTempFilePath);
-        mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
-        mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
-    }
+    QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+    QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+    QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+    QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+    qDebug() << srcTempFilePath << dstTempFilePath;
+    QFile::copy(srcPath, srcTempFilePath);
+    QFile::copy(dstPath, dstTempFilePath);
+    QFileInfo srcTempFileInfo(srcTempFilePath);
+    QFileInfo dstTempFileInfo(dstTempFilePath);
+    mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
+    mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
 }
 
 void ZFileWidget::resetTempFile()
@@ -325,61 +268,252 @@ void ZFileWidget::resetTempFile()
 
 void ZFileWidget::getLineFromFile()
 {
-    Status status = mPathDiffModel.status();
-    if(status == Same)
-    {
-        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
-        QFile srcFile(srcPath);
-        QFile dstFile(dstPath);
+    QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
+    QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
+    QFile srcFile(srcPath);
+    QFile dstFile(dstPath);
 
-        ZFile::linesWithLine(&srcFile, mSrcLineLst);
-        ZFile::linesWithLine(&dstFile, mDstLineLst);
-    }
-    else if(status == Removed)
-    {
-        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
-        QFile srcFile(srcPath);
-
-        ZFile::linesWithLine(&srcFile, mSrcLineLst);
-    }
-    else if(status == Added)
-    {
-        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
-        QFile dstFile(dstPath);
-
-        ZFile::linesWithLine(&dstFile, mDstLineLst);
-    }
-    else
-    {
-        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
-        QFile srcFile(srcPath);
-        QFile dstFile(dstPath);
-
-        ZFile::linesWithLine(&srcFile, mSrcLineLst);
-        ZFile::linesWithLine(&dstFile, mDstLineLst);
-    }
+    ZFile::linesWithLine(&srcFile, mSrcLineLst);
+    ZFile::linesWithLine(&dstFile, mDstLineLst);
 }
 
 void ZFileWidget::getDiffInfo()
 {
-    Status status = mPathDiffModel.status();
-    if(status == Same)
-    {
-    }
-    else if(status == Removed)
-    {
-        QList<int> srcDiffLst;
-        QList<int> dstDiffLst;
+    QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
+    QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
 
-        int srcLineCount = mSrcLineLst.size();
-        for(int i = 0;i < srcLineCount;i++)
+    ZFileDiff fileDiff(srcPath, dstPath);
+    mModelLst = fileDiff.execute();
+
+    int modelCount = mModelLst.size();
+    int srcIndex = 0;
+    int dstIndex = 0;
+    QList<int> srcDiffLst;
+    QList<int> dstDiffLst;
+    bool isModifiedBlockStart = false;
+    bool isRemovedBlockStart = false;
+    bool isAddedBlockStart = false;
+
+    for(int i = modelCount - 2;i >= 0;i--)
+    {
+        ZFileDiffModel model = mModelLst[i];
+        Status status = model.status();
+        if(status == Modified)
         {
-            srcDiffLst.append(i);
-        }
-        dstDiffLst.append(0);
+            if(isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(false);
+                srcDiffInfo.setStatus(Removed);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(true);
+                dstDiffInfo.setStatus(Removed);
 
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(true);
+                srcDiffInfo.setStatus(Added);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(false);
+                dstDiffInfo.setStatus(Added);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(!isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+            }
+            srcDiffLst.append(srcIndex);
+            dstDiffLst.append(dstIndex);
+            srcIndex++;
+            dstIndex++;
+        }
+        else if(status == Removed)
+        {
+            if(isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(false);
+                srcDiffInfo.setStatus(Modified);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(false);
+                dstDiffInfo.setStatus(Modified);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(true);
+                srcDiffInfo.setStatus(Added);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(false);
+                dstDiffInfo.setStatus(Added);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(!isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+            }
+            srcDiffLst.append(srcIndex);
+            dstDiffLst.append(dstIndex);
+            srcIndex++;
+        }
+        else if(status == Added)
+        {
+            if(isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(false);
+                srcDiffInfo.setStatus(Modified);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(false);
+                dstDiffInfo.setStatus(Modified);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(false);
+                srcDiffInfo.setStatus(Removed);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(true);
+                dstDiffInfo.setStatus(Removed);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(!isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+            }
+            srcDiffLst.append(srcIndex);
+            dstDiffLst.append(dstIndex);
+            dstIndex++;
+        }
+        else
+        {
+            if(isModifiedBlockStart)
+            {
+                isModifiedBlockStart = !isModifiedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(false);
+                srcDiffInfo.setStatus(Modified);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(false);
+                dstDiffInfo.setStatus(Modified);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(isRemovedBlockStart)
+            {
+                isRemovedBlockStart = !isRemovedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(false);
+                srcDiffInfo.setStatus(Removed);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(true);
+                dstDiffInfo.setStatus(Removed);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+            if(isAddedBlockStart)
+            {
+                isAddedBlockStart = !isAddedBlockStart;
+                ZDiffInfo srcDiffInfo;
+                ZDiffInfo dstDiffInfo;
+                srcDiffInfo.setDiffLst(srcDiffLst);
+                srcDiffInfo.setLine(true);
+                srcDiffInfo.setStatus(Added);
+                dstDiffInfo.setDiffLst(dstDiffLst);
+                dstDiffInfo.setLine(false);
+                dstDiffInfo.setStatus(Added);
+
+                mSrcDiffLst.append(srcDiffInfo);
+                mDstDiffLst.append(dstDiffInfo);
+                srcDiffLst.clear();
+                dstDiffLst.clear();
+            }
+
+            srcIndex++;
+            dstIndex++;
+        }
+    }
+    if(isModifiedBlockStart)
+    {
+        srcIndex -= 1;
+        dstIndex -= 1;
+        isModifiedBlockStart = !isModifiedBlockStart;
+        ZDiffInfo srcDiffInfo;
+        ZDiffInfo dstDiffInfo;
+        srcDiffInfo.setDiffLst(srcDiffLst);
+        srcDiffInfo.setLine(false);
+        srcDiffInfo.setStatus(Modified);
+        dstDiffInfo.setDiffLst(dstDiffLst);
+        dstDiffInfo.setLine(false);
+        dstDiffInfo.setStatus(Modified);
+
+        mSrcDiffLst.append(srcDiffInfo);
+        mDstDiffLst.append(dstDiffInfo);
+        srcDiffLst.clear();
+        dstDiffLst.clear();
+    }
+    if(isRemovedBlockStart)
+    {
+        srcIndex -= 1;
+        isRemovedBlockStart = !isRemovedBlockStart;
         ZDiffInfo srcDiffInfo;
         ZDiffInfo dstDiffInfo;
         srcDiffInfo.setDiffLst(srcDiffLst);
@@ -391,19 +525,13 @@ void ZFileWidget::getDiffInfo()
 
         mSrcDiffLst.append(srcDiffInfo);
         mDstDiffLst.append(dstDiffInfo);
+        srcDiffLst.clear();
+        dstDiffLst.clear();
     }
-    else if(status == Added)
+    if(isAddedBlockStart)
     {
-        QList<int> srcDiffLst;
-        QList<int> dstDiffLst;
-
-        srcDiffLst.append(0);
-        int dstLineCount = mDstLineLst.size();
-        for(int i = 0;i < dstLineCount;i++)
-        {
-            dstDiffLst.append(i);
-        }
-
+        dstIndex -= 1;
+        isAddedBlockStart = !isAddedBlockStart;
         ZDiffInfo srcDiffInfo;
         ZDiffInfo dstDiffInfo;
         srcDiffInfo.setDiffLst(srcDiffLst);
@@ -415,276 +543,8 @@ void ZFileWidget::getDiffInfo()
 
         mSrcDiffLst.append(srcDiffInfo);
         mDstDiffLst.append(dstDiffInfo);
-    }
-    else
-    {
-        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
-
-        ZFileDiff fileDiff(srcPath, dstPath);
-        mModelLst = fileDiff.execute();
-
-        int modelCount = mModelLst.size();
-        int srcIndex = 0;
-        int dstIndex = 0;
-        QList<int> srcDiffLst;
-        QList<int> dstDiffLst;
-        bool isModifiedBlockStart = false;
-        bool isRemovedBlockStart = false;
-        bool isAddedBlockStart = false;
-
-        for(int i = modelCount - 2;i >= 0;i--)
-        {
-            ZFileDiffModel model = mModelLst[i];
-            Status status = model.status();
-            if(status == Modified)
-            {
-                if(isRemovedBlockStart)
-                {
-                    isRemovedBlockStart = !isRemovedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
-                    srcDiffInfo.setStatus(Removed);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(true);
-                    dstDiffInfo.setStatus(Removed);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(isAddedBlockStart)
-                {
-                    isAddedBlockStart = !isAddedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(true);
-                    srcDiffInfo.setStatus(Added);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(false);
-                    dstDiffInfo.setStatus(Added);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(!isModifiedBlockStart)
-                {
-                    isModifiedBlockStart = !isModifiedBlockStart;
-                }
-                srcDiffLst.append(srcIndex);
-                dstDiffLst.append(dstIndex);
-                srcIndex++;
-                dstIndex++;
-            }
-            else if(status == Removed)
-            {
-                if(isModifiedBlockStart)
-                {
-                    isModifiedBlockStart = !isModifiedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
-                    srcDiffInfo.setStatus(Modified);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(false);
-                    dstDiffInfo.setStatus(Modified);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(isAddedBlockStart)
-                {
-                    isAddedBlockStart = !isAddedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(true);
-                    srcDiffInfo.setStatus(Added);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(false);
-                    dstDiffInfo.setStatus(Added);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(!isRemovedBlockStart)
-                {
-                    isRemovedBlockStart = !isRemovedBlockStart;
-                }
-                srcDiffLst.append(srcIndex);
-                dstDiffLst.append(dstIndex);
-                srcIndex++;
-            }
-            else if(status == Added)
-            {
-                if(isModifiedBlockStart)
-                {
-                    isModifiedBlockStart = !isModifiedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
-                    srcDiffInfo.setStatus(Modified);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(false);
-                    dstDiffInfo.setStatus(Modified);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(isRemovedBlockStart)
-                {
-                    isRemovedBlockStart = !isRemovedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
-                    srcDiffInfo.setStatus(Removed);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(true);
-                    dstDiffInfo.setStatus(Removed);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(!isAddedBlockStart)
-                {
-                    isAddedBlockStart = !isAddedBlockStart;
-                }
-                srcDiffLst.append(srcIndex);
-                dstDiffLst.append(dstIndex);
-                dstIndex++;
-            }
-            else
-            {
-                if(isModifiedBlockStart)
-                {
-                    isModifiedBlockStart = !isModifiedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
-                    srcDiffInfo.setStatus(Modified);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(false);
-                    dstDiffInfo.setStatus(Modified);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(isRemovedBlockStart)
-                {
-                    isRemovedBlockStart = !isRemovedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(false);
-                    srcDiffInfo.setStatus(Removed);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(true);
-                    dstDiffInfo.setStatus(Removed);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-                if(isAddedBlockStart)
-                {
-                    isAddedBlockStart = !isAddedBlockStart;
-                    ZDiffInfo srcDiffInfo;
-                    ZDiffInfo dstDiffInfo;
-                    srcDiffInfo.setDiffLst(srcDiffLst);
-                    srcDiffInfo.setLine(true);
-                    srcDiffInfo.setStatus(Added);
-                    dstDiffInfo.setDiffLst(dstDiffLst);
-                    dstDiffInfo.setLine(false);
-                    dstDiffInfo.setStatus(Added);
-
-                    mSrcDiffLst.append(srcDiffInfo);
-                    mDstDiffLst.append(dstDiffInfo);
-                    srcDiffLst.clear();
-                    dstDiffLst.clear();
-                }
-
-                srcIndex++;
-                dstIndex++;
-            }
-        }
-        if(isModifiedBlockStart)
-        {
-            srcIndex -= 1;
-            dstIndex -= 1;
-            isModifiedBlockStart = !isModifiedBlockStart;
-            ZDiffInfo srcDiffInfo;
-            ZDiffInfo dstDiffInfo;
-            srcDiffInfo.setDiffLst(srcDiffLst);
-            srcDiffInfo.setLine(false);
-            srcDiffInfo.setStatus(Modified);
-            dstDiffInfo.setDiffLst(dstDiffLst);
-            dstDiffInfo.setLine(false);
-            dstDiffInfo.setStatus(Modified);
-
-            mSrcDiffLst.append(srcDiffInfo);
-            mDstDiffLst.append(dstDiffInfo);
-            srcDiffLst.clear();
-            dstDiffLst.clear();
-        }
-        if(isRemovedBlockStart)
-        {
-            srcIndex -= 1;
-            isRemovedBlockStart = !isRemovedBlockStart;
-            ZDiffInfo srcDiffInfo;
-            ZDiffInfo dstDiffInfo;
-            srcDiffInfo.setDiffLst(srcDiffLst);
-            srcDiffInfo.setLine(false);
-            srcDiffInfo.setStatus(Removed);
-            dstDiffInfo.setDiffLst(dstDiffLst);
-            dstDiffInfo.setLine(true);
-            dstDiffInfo.setStatus(Removed);
-
-            mSrcDiffLst.append(srcDiffInfo);
-            mDstDiffLst.append(dstDiffInfo);
-            srcDiffLst.clear();
-            dstDiffLst.clear();
-        }
-        if(isAddedBlockStart)
-        {
-            dstIndex -= 1;
-            isAddedBlockStart = !isAddedBlockStart;
-            ZDiffInfo srcDiffInfo;
-            ZDiffInfo dstDiffInfo;
-            srcDiffInfo.setDiffLst(srcDiffLst);
-            srcDiffInfo.setLine(true);
-            srcDiffInfo.setStatus(Added);
-            dstDiffInfo.setDiffLst(dstDiffLst);
-            dstDiffInfo.setLine(false);
-            dstDiffInfo.setStatus(Added);
-
-            mSrcDiffLst.append(srcDiffInfo);
-            mDstDiffLst.append(dstDiffInfo);
-            srcDiffLst.clear();
-            dstDiffLst.clear();
-        }
+        srcDiffLst.clear();
+        dstDiffLst.clear();
     }
 }
 
