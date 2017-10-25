@@ -1,8 +1,8 @@
 #include "zrand.h"
 #include <QMutex>
-#include <QTime>
+#include <QDateTime>
 
-static uint seed = QTime::currentTime().elapsed();
+static uint seed = QDateTime::currentDateTime().toTime_t();
 static QMutex mutex;
 
 ZRand::ZRand()

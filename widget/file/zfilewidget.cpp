@@ -14,6 +14,9 @@ ZFileWidget::ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent)
 
 ZFileWidget::~ZFileWidget()
 {
+    mTimer->stop();
+    delete mTimer;
+
     delete mPathEditSrc;
     delete mSearchButtonSrc;
     delete mPathEditDst;
@@ -148,11 +151,7 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void ZFileWidget::initData()
 {
-    clearData();
-    setTempFile();
-    getLineFromFile();
-    getDiffInfo();
-    getDiffArea();
+    mTimer = new QTimer(this);
 }
 
 void ZFileWidget::initUI()
@@ -201,26 +200,14 @@ void ZFileWidget::initUI()
 
     this->setLayout(mainLayout);
 
-    int srcLineCount = mSrcLineLst.size();
-    for(int i = 0;i < srcLineCount;i++)
-    {
-        mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
-    }
-
-    int dstLineCount = mDstLineLst.size();
-    for(int i = 0;i < dstLineCount;i++)
-    {
-        mDstScrollTextWidget->appendText(mDstLineLst[i]);
-    }
-
-    mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
-    mDstScrollTextWidget->setDiffList(mDstDiffLst);
-
     setFilePath();
+
+    mTimer->start(SHOW_DIFF_DELAY);
 }
 
 void ZFileWidget::initConnect()
 {
+    connect(mTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
@@ -229,6 +216,8 @@ void ZFileWidget::initConnect()
 
 void ZFileWidget::clearData()
 {
+    mSrcScrollTextWidget->clearText();
+    mDstScrollTextWidget->clearText();
     mModelLst.clear();
     mSrcLineLst.clear();
     mDstLineLst.clear();
@@ -269,6 +258,8 @@ void ZFileWidget::setFilePath()
 
 void ZFileWidget::setTempFile()
 {
+    mPathDiffModel.deleteTempFile();
+
     Status status = mPathDiffModel.status();
     QString tempDir = QDir::tempPath();
     if(status == Same)
@@ -731,6 +722,24 @@ void ZFileWidget::getDiffArea()
     }
 }
 
+void ZFileWidget::setText()
+{
+    int srcLineCount = mSrcLineLst.size();
+    for(int i = 0;i < srcLineCount;i++)
+    {
+        mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
+    }
+
+    int dstLineCount = mDstLineLst.size();
+    for(int i = 0;i < dstLineCount;i++)
+    {
+        mDstScrollTextWidget->appendText(mDstLineLst[i]);
+    }
+
+    mSrcScrollTextWidget->setDiffList(mSrcDiffLst);
+    mDstScrollTextWidget->setDiffList(mDstDiffLst);
+}
+
 void ZFileWidget::onScrollValueChanged(int value)
 {
     QObject *sender = this->sender();
@@ -788,4 +797,16 @@ void ZFileWidget::onSearchClicked()
             mPathEditDst->setText(file);
         }
     }
+}
+
+void ZFileWidget::onTimeout()
+{
+    mTimer->stop();
+
+    clearData();
+    setTempFile();
+    getLineFromFile();
+    getDiffInfo();
+    getDiffArea();
+    setText();
 }

@@ -44,6 +44,11 @@ QRectF ZScrollTextWidget::blockArea(ZDiffInfo diffInfo)
     return QRectF(startPoint, rectf.size());
 }
 
+void ZScrollTextWidget::clearText()
+{
+    mTextWidget->clear();
+}
+
 void ZScrollTextWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);

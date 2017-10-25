@@ -25,6 +25,8 @@ public:
     QFileInfo dstTempFileInfo() const;
     void setDstTempFileInfo(const QFileInfo &dstTempFileInfo);
 
+    void deleteTempFile();
+
 private:
     QFileInfo mSrcFileInfo;
     QFileInfo mDstFileInfo;

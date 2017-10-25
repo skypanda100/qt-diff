@@ -7,7 +7,7 @@ ZPathDiffModel::ZPathDiffModel()
 
 ZPathDiffModel::~ZPathDiffModel()
 {
-
+    deleteTempFile();
 }
 
 QFileInfo ZPathDiffModel::srcFileInfo() const
@@ -58,4 +58,17 @@ QFileInfo ZPathDiffModel::dstTempFileInfo() const
 void ZPathDiffModel::setDstTempFileInfo(const QFileInfo &dstTempFileInfo)
 {
     mDstTempFileInfo = dstTempFileInfo;
+}
+
+void ZPathDiffModel::deleteTempFile()
+{
+    if(mSrcTempFileInfo.isFile())
+    {
+        QFile::remove(mSrcTempFileInfo.absoluteFilePath());
+    }
+
+    if(mDstTempFileInfo.isFile())
+    {
+        QFile::remove(mDstTempFileInfo.absoluteFilePath());
+    }
 }

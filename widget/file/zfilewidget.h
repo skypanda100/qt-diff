@@ -10,6 +10,7 @@
 #include "zdiffinfo.h"
 #include "zscrolltextwidget.h"
 #include "zdiffarea.h"
+#include <QTimer>
 
 class ZFileWidget : public QWidget
 {
@@ -32,10 +33,12 @@ private:
     void getLineFromFile();
     void getDiffInfo();
     void getDiffArea();
+    void setText();
 
 private slots:
     void onScrollValueChanged(int value);
     void onSearchClicked();
+    void onTimeout();
 
 private:
     ZPathDiffModel mPathDiffModel;
@@ -52,6 +55,8 @@ private:
     QPushButton *mSearchButtonDst;
     ZScrollTextWidget *mSrcScrollTextWidget;
     ZScrollTextWidget *mDstScrollTextWidget;
+
+    QTimer *mTimer;
 };
 
 #endif // ZFILEWIDGET

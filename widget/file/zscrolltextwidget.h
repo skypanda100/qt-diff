@@ -16,6 +16,7 @@ public:
     void setDiffList(QList<ZDiffInfo> diffLst);
     bool isBlockContained(ZDiffInfo diffInfo);
     QRectF blockArea(ZDiffInfo diffInfo);
+    void clearText();
 
 signals:
     void scrollValueChange(int value);
