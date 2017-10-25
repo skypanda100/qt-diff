@@ -167,7 +167,6 @@ void ZScrollTextWidget::setHorizontalRange(int min, int max)
 
 void ZScrollTextWidget::onVerticalValueChange(int value)
 {
-    emit scrollValueChange(value);
     mVerticalBar->setValue(value);
     this->parentWidget()->update();
 }

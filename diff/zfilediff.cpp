@@ -79,6 +79,9 @@ bool ZFileDiff::hasDifference()
     }
     else if(mDiffRectRows != mDiffRectCols)
     {
+        mDiffRectRows = mDiffRectRows == -1 ? 0 : mDiffRectRows;
+        mDiffRectCols = mDiffRectCols == -1 ? 0 : mDiffRectCols;
+
         return true;
     }
     else

@@ -20,7 +20,6 @@ public:
     void setTextToFile(const QString &path);
 
 signals:
-    void scrollValueChange(int value);
     void textChanged();
 
 public slots:

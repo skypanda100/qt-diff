@@ -171,6 +171,11 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
+void ZFileWidget::wheelEvent(QWheelEvent *event)
+{
+    event->ignore();
+}
+
 void ZFileWidget::initData()
 {
     mTimer = new QTimer(this);
@@ -236,8 +241,6 @@ void ZFileWidget::initConnect()
     connect(mTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
-    connect(mSrcScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
-    connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mSrcScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(mDstScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(mPathEditSrc, SIGNAL(returnPressed()), this, SLOT(compare()));
