@@ -240,6 +240,8 @@ void ZFileWidget::initConnect()
     connect(mDstScrollTextWidget, SIGNAL(scrollValueChange(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mSrcScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(mDstScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
+    connect(mPathEditSrc, SIGNAL(returnPressed()), this, SLOT(compare()));
+    connect(mPathEditDst, SIGNAL(returnPressed()), this, SLOT(compare()));
 }
 
 void ZFileWidget::clearData()

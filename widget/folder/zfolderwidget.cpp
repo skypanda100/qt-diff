@@ -171,6 +171,8 @@ void ZFolderWidget::initConnect()
     connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
+    connect(mPathEditSrc, SIGNAL(returnPressed()), this, SLOT(compare()));
+    connect(mPathEditDst, SIGNAL(returnPressed()), this, SLOT(compare()));
 }
 
 void ZFolderWidget::clearAll()

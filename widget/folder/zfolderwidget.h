@@ -15,6 +15,7 @@ public:
     ZFolderWidget(QWidget *parent = 0);
     ~ZFolderWidget();
 
+public slots:
     void compare();
     void stopCompare();
 
