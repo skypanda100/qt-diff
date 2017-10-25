@@ -143,6 +143,21 @@ void ZTextWidget::resizeEvent(QResizeEvent *event)
     mLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 
+void ZTextWidget::wheelEvent(QWheelEvent *event)
+{
+    int numDegrees = event->delta() / 8;
+    int numSteps = qAbs(numDegrees / 15);
+    if(numDegrees > 0)
+    {
+        emit scrollValueChanged(this->verticalScrollBar()->value() - numSteps);
+    }
+    else
+    {
+        emit scrollValueChanged(this->verticalScrollBar()->value() + numSteps);
+    }
+    event->accept();
+}
+
 void ZTextWidget::updateLineNumberAreaWidth(int /*newBlockCount*/)
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);

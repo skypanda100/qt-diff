@@ -139,41 +139,39 @@ void ZScrollTextWidget::initUI()
 
 void ZScrollTextWidget::initConnect()
 {
-    connect(mVerticalBar, SIGNAL(valueChanged(int)), mTextWidget->verticalScrollBar(), SLOT(setValue(int)));
+    connect(mVerticalBar, SIGNAL(valueChanged(int)), this, SLOT(onVerticalValueChanged(int)));
     connect(mTextWidget->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setVerticalRange(int,int)));
-    connect(mTextWidget->verticalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(onVerticalValueChange(int)));
-    connect(mTextWidget->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onVerticalValueChange(int)));
 
-    connect(mHorizontalBar, SIGNAL(valueChanged(int)), mTextWidget->horizontalScrollBar(), SLOT(setValue(int)));
+    connect(mHorizontalBar, SIGNAL(valueChanged(int)), this, SLOT(onHorizontablValueChanged(int)));
     connect(mTextWidget->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(setHorizontalRange(int,int)));
-    connect(mTextWidget->horizontalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(onHorizontablValueChanged(int)));
-    connect(mTextWidget->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onHorizontablValueChanged(int)));
 
+    connect(mTextWidget, SIGNAL(scrollValueChanged(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mTextWidget, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
     connect(mTextWidget, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
 }
 
 void ZScrollTextWidget::setVerticalRange(int min, int max)
 {
-    mVerticalBar->setValue(max);
     mVerticalBar->setRange(min, max);
 }
 
 void ZScrollTextWidget::setHorizontalRange(int min, int max)
 {
-    mHorizontalBar->setValue(max);
     mHorizontalBar->setRange(min, max);
 }
 
-void ZScrollTextWidget::onVerticalValueChange(int value)
+void ZScrollTextWidget::onVerticalValueChanged(int value)
 {
+    emit scrollValueChanged(value);
     mVerticalBar->setValue(value);
+    mTextWidget->verticalScrollBar()->setValue(value);
     this->parentWidget()->update();
 }
 
 void ZScrollTextWidget::onHorizontablValueChanged(int value)
 {
     mHorizontalBar->setValue(value);
+    mTextWidget->horizontalScrollBar()->setValue(value);
     this->parentWidget()->update();
 }
 
@@ -183,8 +181,14 @@ void ZScrollTextWidget::onCursorPositionChanged()
     emit mTextWidget->horizontalScrollBar()->valueChanged(mTextWidget->horizontalScrollBar()->value());
 }
 
-void ZScrollTextWidget::onScrollValueChange(int value)
+void ZScrollTextWidget::onScrollValueChanged(int value)
+{
+    onVerticalValueChanged(value);
+}
+
+void ZScrollTextWidget::onScrollValueChangedWithoutSignal(int value)
 {
     mVerticalBar->setValue(value);
-//    this->parentWidget()->update();
+    mTextWidget->verticalScrollBar()->setValue(value);
+    this->parentWidget()->update();
 }

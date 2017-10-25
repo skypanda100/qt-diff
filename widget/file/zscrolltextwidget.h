@@ -21,9 +21,10 @@ public:
 
 signals:
     void textChanged();
+    void scrollValueChanged(int value);
 
 public slots:
-    void onScrollValueChange(int value);
+    void onScrollValueChangedWithoutSignal(int value);
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
@@ -37,8 +38,9 @@ private slots:
     void setVerticalRange(int min, int max);
     void setHorizontalRange(int min, int max);
     void onCursorPositionChanged();
-    void onVerticalValueChange(int value);
+    void onVerticalValueChanged(int value);
     void onHorizontablValueChanged(int value);
+    void onScrollValueChanged(int value);
 
 private:
     Qt::Alignment mVerticalAlignment;

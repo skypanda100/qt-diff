@@ -15,8 +15,12 @@ public:
     bool isBlockContained(ZDiffInfo diffInfo);
     QRectF blockArea(ZDiffInfo diffInfo);
 
+signals:
+    void scrollValueChanged(int value);
+
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);

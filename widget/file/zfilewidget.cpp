@@ -146,7 +146,7 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
             {
                 int blockNo = (float)(point.y() - mSrcScrollTextWidget->y()) / (mSrcScrollTextWidget->height() - SCROLL_BAR_WIDTH)
                         * mSrcLineLst.size();
-                mSrcScrollTextWidget->onScrollValueChange(blockNo);
+                mSrcScrollTextWidget->onScrollValueChangedWithoutSignal(blockNo);
                 return;
             }
         }
@@ -164,16 +164,11 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
             {
                 int blockNo = (float)(point.y() - mDstScrollTextWidget->y()) / (mDstScrollTextWidget->height() - SCROLL_BAR_WIDTH)
                         * mDstLineLst.size();
-                mDstScrollTextWidget->onScrollValueChange(blockNo);
+                mDstScrollTextWidget->onScrollValueChangedWithoutSignal(blockNo);
                 return;
             }
         }
     }
-}
-
-void ZFileWidget::wheelEvent(QWheelEvent *event)
-{
-    event->ignore();
 }
 
 void ZFileWidget::initData()
@@ -241,6 +236,8 @@ void ZFileWidget::initConnect()
     connect(mTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     connect(mSearchButtonSrc, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
     connect(mSearchButtonDst, SIGNAL(clicked()), this, SLOT(onSearchClicked()));
+    connect(mSrcScrollTextWidget, SIGNAL(scrollValueChanged(int)), this, SLOT(onScrollValueChanged(int)));
+    connect(mDstScrollTextWidget, SIGNAL(scrollValueChanged(int)), this, SLOT(onScrollValueChanged(int)));
     connect(mSrcScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(mDstScrollTextWidget, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(mPathEditSrc, SIGNAL(returnPressed()), this, SLOT(compare()));
@@ -629,13 +626,14 @@ void ZFileWidget::setText()
     {
         mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
     }
+    mSrcScrollTextWidget->onScrollValueChangedWithoutSignal(srcLineCount);
 
     int dstLineCount = mDstLineLst.size();
     for(int i = 0;i < dstLineCount;i++)
     {
         mDstScrollTextWidget->appendText(mDstLineLst[i]);
     }
-
+    mDstScrollTextWidget->onScrollValueChangedWithoutSignal(dstLineCount);
 }
 
 void ZFileWidget::setDiffInfo()
@@ -646,36 +644,45 @@ void ZFileWidget::setDiffInfo()
 
 void ZFileWidget::onScrollValueChanged(int value)
 {
-    QObject *sender = this->sender();
-    Status status = mPathDiffModel.status();
-    int srcLineCount = mSrcLineLst.size();
-    int dstLineCount = mDstLineLst.size();
-    int lineCount = srcLineCount;
-    int oLineCount = dstLineCount;
-    ZScrollTextWidget *scrollTextWidget = mDstScrollTextWidget;
+//    QObject *sender = this->sender();
+//    int diffCount = mModelLst.size() - 1;
+//    int diffIndex = 0;
+//    int oValue = 0;
+//    if(sender == mSrcScrollTextWidget)
+//    {
 
-    if(sender == mDstScrollTextWidget)
-    {
-        lineCount = dstLineCount;
-        oLineCount = srcLineCount;
-        scrollTextWidget = mSrcScrollTextWidget;
-    }
-
-    if(status == Modified)
-    {
-        qreal ratio = (qreal)value / lineCount;
-        int value = (int)(oLineCount * ratio);
-        scrollTextWidget->onScrollValueChange(value);
-    }
-    else if(status == Same)
-    {
-        scrollTextWidget->onScrollValueChange(value);
-
-    }
-    else
-    {
-
-    }
+//        for(int i = diffCount;i >= 0;i--)
+//        {
+//            ZFileDiffModel fileDiffModel = mModelLst[i];
+//            if(fileDiffModel.status() == Added)
+//            {
+//                oValue++;
+//                continue;
+//            }
+//            if(fileDiffModel.status() != Removed)
+//            {
+//                oValue
+//            }
+//            value--;
+//            if(value == 0)
+//            {
+//                break;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        for(int i = diffCount;i >= value;i--)
+//        {
+//            ZFileDiffModel fileDiffModel = mModelLst[i];
+//            if(fileDiffModel.status() == Removed)
+//            {
+//                continue;
+//            }
+//            diffIndex++;
+//        }
+//    }
+//    scrollTextWidget->onScrollValueChangedWithoutSignal(value);
 }
 
 void ZFileWidget::onSearchClicked()
