@@ -28,6 +28,7 @@ private:
     void initConnect();
     void clearData();
     void setFilePath();
+    void setTempFile();
     void getLineFromFile();
     void getDiffInfo();
     void getDiffArea();

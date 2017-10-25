@@ -39,3 +39,23 @@ void ZPathDiffModel::setStatus(Status status)
 {
     mStatus = status;
 }
+
+QFileInfo ZPathDiffModel::srcTempFileInfo() const
+{
+    return mSrcTempFileInfo;
+}
+
+void ZPathDiffModel::setSrcTempFileInfo(const QFileInfo &srcTempFileInfo)
+{
+    mSrcTempFileInfo = srcTempFileInfo;
+}
+
+QFileInfo ZPathDiffModel::dstTempFileInfo() const
+{
+    return mDstTempFileInfo;
+}
+
+void ZPathDiffModel::setDstTempFileInfo(const QFileInfo &dstTempFileInfo)
+{
+    mDstTempFileInfo = dstTempFileInfo;
+}

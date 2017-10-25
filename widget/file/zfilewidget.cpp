@@ -1,5 +1,6 @@
 #include "zfilewidget.h"
 #include "util/zfile.h"
+#include "util/zrand.h"
 #include <QFile>
 
 ZFileWidget::ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent)
@@ -148,6 +149,7 @@ void ZFileWidget::mouseReleaseEvent(QMouseEvent *event)
 void ZFileWidget::initData()
 {
     clearData();
+    setTempFile();
     getLineFromFile();
     getDiffInfo();
     getDiffArea();
@@ -265,13 +267,65 @@ void ZFileWidget::setFilePath()
     }
 }
 
+void ZFileWidget::setTempFile()
+{
+    Status status = mPathDiffModel.status();
+    QString tempDir = QDir::tempPath();
+    if(status == Same)
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+        QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+        qDebug() << srcTempFilePath << dstTempFilePath;
+        QFile::copy(srcPath, srcTempFilePath);
+        QFile::copy(dstPath, dstTempFilePath);
+        QFileInfo srcTempFileInfo(srcTempFilePath);
+        QFileInfo dstTempFileInfo(dstTempFilePath);
+        mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
+        mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
+    }
+    else if(status == Removed)
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+        qDebug() << srcTempFilePath;
+        QFile::copy(srcPath, srcTempFilePath);
+        QFileInfo srcTempFileInfo(srcTempFilePath);
+        mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
+    }
+    else if(status == Added)
+    {
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+        qDebug() << dstTempFilePath;
+        QFile::copy(dstPath, dstTempFilePath);
+        QFileInfo dstTempFileInfo(dstTempFilePath);
+        mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
+    }
+    else
+    {
+        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString srcTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+        QString dstTempFilePath = QString("%1%2%3").arg(tempDir).arg(QDir::separator()).arg(ZRand::randString());
+        qDebug() << srcTempFilePath << dstTempFilePath;
+        QFile::copy(srcPath, srcTempFilePath);
+        QFile::copy(dstPath, dstTempFilePath);
+        QFileInfo srcTempFileInfo(srcTempFilePath);
+        QFileInfo dstTempFileInfo(dstTempFilePath);
+        mPathDiffModel.setSrcTempFileInfo(srcTempFileInfo);
+        mPathDiffModel.setDstTempFileInfo(dstTempFileInfo);
+    }
+}
+
 void ZFileWidget::getLineFromFile()
 {
     Status status = mPathDiffModel.status();
     if(status == Same)
     {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
         QFile srcFile(srcPath);
         QFile dstFile(dstPath);
 
@@ -280,22 +334,22 @@ void ZFileWidget::getLineFromFile()
     }
     else if(status == Removed)
     {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
+        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
         QFile srcFile(srcPath);
 
         ZFile::linesWithLine(&srcFile, mSrcLineLst);
     }
     else if(status == Added)
     {
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
         QFile dstFile(dstPath);
 
         ZFile::linesWithLine(&dstFile, mDstLineLst);
     }
     else
     {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
         QFile srcFile(srcPath);
         QFile dstFile(dstPath);
 
@@ -360,8 +414,8 @@ void ZFileWidget::getDiffInfo()
     }
     else
     {
-        QString srcPath = mPathDiffModel.srcFileInfo().absoluteFilePath();
-        QString dstPath = mPathDiffModel.dstFileInfo().absoluteFilePath();
+        QString srcPath = mPathDiffModel.srcTempFileInfo().absoluteFilePath();
+        QString dstPath = mPathDiffModel.dstTempFileInfo().absoluteFilePath();
 
         ZFileDiff fileDiff(srcPath, dstPath);
         mModelLst = fileDiff.execute();

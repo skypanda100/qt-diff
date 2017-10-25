@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     widget/file/zdiffareawidget.cpp \
     widget/file/ztextwidget.cpp \
     widget/file/zscrolltextwidget.cpp \
-    widget/file/zdiffarea.cpp
+    widget/file/zdiffarea.cpp \
+    util/zrand.cpp
 
 HEADERS  += mainwindow.h \
     util/zfile.h \
@@ -58,7 +59,8 @@ HEADERS  += mainwindow.h \
     widget/file/zdiffareawidget.h \
     widget/file/ztextwidget.h \
     widget/file/zscrolltextwidget.h \
-    widget/file/zdiffarea.h
+    widget/file/zdiffarea.h \
+    util/zrand.h
 
 RESOURCES += \
     resource.qrc

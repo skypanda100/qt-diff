@@ -19,9 +19,17 @@ public:
     Status status() const;
     void setStatus(Status status);
 
+    QFileInfo srcTempFileInfo() const;
+    void setSrcTempFileInfo(const QFileInfo &srcTempFileInfo);
+
+    QFileInfo dstTempFileInfo() const;
+    void setDstTempFileInfo(const QFileInfo &dstTempFileInfo);
+
 private:
     QFileInfo mSrcFileInfo;
     QFileInfo mDstFileInfo;
+    QFileInfo mSrcTempFileInfo;
+    QFileInfo mDstTempFileInfo;
     Status mStatus; //0:same 1:modify 2:delete 3:add
 };
 
