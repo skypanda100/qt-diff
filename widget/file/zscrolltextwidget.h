@@ -18,6 +18,7 @@ public:
     QRectF blockArea(ZDiffInfo diffInfo);
     void clearText();
     void setTextToFile(const QString &path);
+    int visibleBlockCount();
 
 signals:
     void textChanged();

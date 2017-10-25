@@ -56,6 +56,11 @@ void ZScrollTextWidget::setTextToFile(const QString &path)
     writer.write(mTextWidget->document());
 }
 
+int ZScrollTextWidget::visibleBlockCount()
+{
+    return mTextWidget->visibleBlockCount();
+}
+
 void ZScrollTextWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);

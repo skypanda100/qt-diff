@@ -651,12 +651,15 @@ void ZFileWidget::onScrollValueChanged(int value)
     Status srcStatus = Added;
     Status dstStatus = Removed;
     ZScrollTextWidget *dstScrollTextWidget = mDstScrollTextWidget;
+    int center = mSrcScrollTextWidget->visibleBlockCount() / 2;
     if(sender == mDstScrollTextWidget)
     {
         srcStatus = Removed;
         dstStatus = Added;
         dstScrollTextWidget = mSrcScrollTextWidget;
+        center = mDstScrollTextWidget->visibleBlockCount() / 2;
     }
+    value += center;
     for(int i = modelCount - 1;i >= 0;i--)
     {
         if(value == srcIndex)
@@ -673,6 +676,7 @@ void ZFileWidget::onScrollValueChanged(int value)
             dstIndex++;
         }
     }
+    dstIndex -= center;
     dstScrollTextWidget->onScrollValueChangedWithoutSignal(dstIndex);
 }
 

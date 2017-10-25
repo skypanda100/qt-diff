@@ -14,6 +14,7 @@ public:
     int lineNumberAreaWidth();
     bool isBlockContained(ZDiffInfo diffInfo);
     QRectF blockArea(ZDiffInfo diffInfo);
+    int visibleBlockCount();
 
 signals:
     void scrollValueChanged(int value);

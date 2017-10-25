@@ -135,6 +135,11 @@ QRectF ZTextWidget::blockArea(ZDiffInfo diffInfo)
     return QRectF(point, QSize(this->width(), y2 - y1));
 }
 
+int ZTextWidget::visibleBlockCount()
+{
+    return mLastVisibleBlockNo - mFirstVisibleBlockNo;
+}
+
 void ZTextWidget::resizeEvent(QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent(event);
