@@ -147,14 +147,18 @@ void ZTextWidget::wheelEvent(QWheelEvent *event)
 {
     int numDegrees = event->delta() / 8;
     int numSteps = qAbs(numDegrees / 15);
+    int value = 0;
     if(numDegrees > 0)
     {
-        emit scrollValueChanged(this->verticalScrollBar()->value() - numSteps);
+        value = this->verticalScrollBar()->value() - numSteps;
     }
     else
     {
-        emit scrollValueChanged(this->verticalScrollBar()->value() + numSteps);
+        value = this->verticalScrollBar()->value() + numSteps;
     }
+    value = value < 0 ? 0 : value;
+    emit scrollValueChanged(value);
+
     event->accept();
 }
 

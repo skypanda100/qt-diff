@@ -659,6 +659,10 @@ void ZFileWidget::onScrollValueChanged(int value)
     }
     for(int i = modelCount - 1;i >= 0;i--)
     {
+        if(value == srcIndex)
+        {
+            break;
+        }
         ZFileDiffModel fileDiffModel = mModelLst[i];
         if(fileDiffModel.status() != srcStatus)
         {
@@ -667,10 +671,6 @@ void ZFileWidget::onScrollValueChanged(int value)
         if(fileDiffModel.status() != dstStatus)
         {
             dstIndex++;
-        }
-        if(value == srcIndex)
-        {
-            break;
         }
     }
     dstScrollTextWidget->onScrollValueChangedWithoutSignal(dstIndex);
