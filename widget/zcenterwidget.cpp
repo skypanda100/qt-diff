@@ -95,6 +95,13 @@ void ZCenterWidget::folderComparison()
     this->setCurrentIndex(index);
 }
 
+void ZCenterWidget::fileComparison()
+{
+    ZPathDiffModel pathDiffModel;
+    pathDiffModel.setStatus(Same);
+    fileCompare(pathDiffModel);
+}
+
 void ZCenterWidget::startOrRecompare()
 {
     if(this->currentWidget() == NULL)
@@ -104,6 +111,14 @@ void ZCenterWidget::startOrRecompare()
     if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
         ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+        if(widget != NULL)
+        {
+            widget->compare();
+        }
+    }
+    else if(QString::compare(this->currentWidget()->objectName(), OBJECT_FILE_COMPARISON) == 0)
+    {
+        ZFileWidget *widget = (ZFileWidget *)(this->currentWidget());
         if(widget != NULL)
         {
             widget->compare();
@@ -124,7 +139,6 @@ void ZCenterWidget::stopCompare()
         {
             widget->stopCompare();
         }
-
     }
 }
 
@@ -137,27 +151,28 @@ void ZCenterWidget::fileCompare(ZPathDiffModel pathDiffModel)
     ZFileWidget *fileWidget = new ZFileWidget(pathDiffModel);
     fileWidget->setObjectName(OBJECT_FILE_COMPARISON);
     QString title;
-    switch(pathDiffModel.status())
+    QString srcFileName = pathDiffModel.srcFileInfo().fileName();
+    QString dstFileName = pathDiffModel.dstFileInfo().fileName();
+    if(srcFileName.isEmpty() && dstFileName.isEmpty())
     {
-    case Same:
-    case Modified:
-    case Removed:
-        title = pathDiffModel.srcFileInfo().fileName();
-        break;
-    case Added:
-        title = pathDiffModel.dstFileInfo().fileName();
-        break;
-    default:
-        title = "File comparison";
+        title = QString("Text comparison:%1").arg(mTextCount);
+        mTextCount++;
     }
-
+    else if(srcFileName.isEmpty() && !dstFileName.isEmpty())
+    {
+        title = dstFileName;
+    }
+    else
+    {
+        title = srcFileName;
+    }
     int index = addTab(fileWidget, QIcon(":/icon/file.png"), title);
     this->setCurrentIndex(index);
 }
 
 void ZCenterWidget::initData()
 {
-
+    mTextCount = 1;
 }
 
 void ZCenterWidget::initUI()

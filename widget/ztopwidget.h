@@ -11,6 +11,7 @@ public:
 
 signals:
     void folderComparison();
+    void fileComparison();
     void startOrRecompare();
     void stopCompare();
 

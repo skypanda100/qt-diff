@@ -33,6 +33,7 @@ public:
 public slots:
     void closeTab(int index = -1);
     void folderComparison();
+    void fileComparison();
     void startOrRecompare();
     void stopCompare();
     void fileCompare(ZPathDiffModel pathDiffModel);
@@ -47,6 +48,7 @@ private:
 
 private:
     ZTabBar *mTabBar;
+    int mTextCount;
 };
 
 #endif // ZCENTERWIDGET

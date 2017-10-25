@@ -19,6 +19,9 @@ public:
     ZFileWidget(ZPathDiffModel pathDiffModel, QWidget *parent = 0);
     ~ZFileWidget();
 
+public slots:
+    void compare();
+
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;

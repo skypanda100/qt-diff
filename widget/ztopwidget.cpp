@@ -33,7 +33,7 @@ void ZTopWidget::initUI()
     mFileButton = new QToolButton;
     QIcon fileIcon(":/icon/file.png");
     mFileButton->setIcon(fileIcon);
-    mFileButton->setText("New file\ncomparison");
+    mFileButton->setText("New text\ncomparison");
     mFileButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mFileButton->setFixedSize(QSize(75, 100));
 
@@ -61,6 +61,7 @@ void ZTopWidget::initUI()
 void ZTopWidget::initConnect()
 {
     connect(mFolderButton, SIGNAL(clicked()), this, SIGNAL(folderComparison()));
+    connect(mFileButton, SIGNAL(clicked()), this, SIGNAL(fileComparison()));
     connect(mRefreshButton, SIGNAL(clicked()), this, SIGNAL(startOrRecompare()));
     connect(mStopButton, SIGNAL(clicked()), this, SIGNAL(stopCompare()));
 }

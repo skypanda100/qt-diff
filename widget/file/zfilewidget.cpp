@@ -25,6 +25,28 @@ ZFileWidget::~ZFileWidget()
     delete mDstScrollTextWidget;
 }
 
+void ZFileWidget::compare()
+{
+    mSrcScrollTextWidget->clearText();
+    mDstScrollTextWidget->clearText();
+    clearData();
+
+    QString srcPath = mPathEditSrc->text().trimmed();
+    QString dstPath = mPathEditDst->text().trimmed();
+    QFileInfo srcFileInfo(srcPath);
+    QFileInfo dstFileInfo(dstPath);
+    mPathDiffModel.setSrcFileInfo(srcFileInfo);
+    mPathDiffModel.setDstFileInfo(dstFileInfo);
+
+    setTempFile();
+    getLineFromFile();
+    getDiffInfo();
+    getDiffArea();
+    setText();
+    setDiffInfo();
+    update();
+}
+
 void ZFileWidget::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
