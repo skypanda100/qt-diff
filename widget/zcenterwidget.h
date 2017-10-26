@@ -49,6 +49,7 @@ private:
 private:
     ZTabBar *mTabBar;
     int mTextCount;
+    int mFolderCount;
 };
 
 #endif // ZCENTERWIDGET
