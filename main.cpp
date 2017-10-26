@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     qDebug() << QFontDatabase::applicationFontFamilies(id);
 
     QFont font;
-    font.setFamily("Microsoft YaHei");
+    font.setFamily("Helvetica");
     qApp->setFont(font);
 
     MainWindow w;
