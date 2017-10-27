@@ -626,14 +626,14 @@ void ZFileWidget::setText()
     {
         mSrcScrollTextWidget->appendText(mSrcLineLst[i]);
     }
-    mSrcScrollTextWidget->onScrollValueChangedWithoutSignal(srcLineCount);
+    mSrcScrollTextWidget->onScrollValueChangedWithoutSignal(srcLineCount - 1);
 
     int dstLineCount = mDstLineLst.size();
     for(int i = 0;i < dstLineCount;i++)
     {
         mDstScrollTextWidget->appendText(mDstLineLst[i]);
     }
-    mDstScrollTextWidget->onScrollValueChangedWithoutSignal(dstLineCount);
+    mDstScrollTextWidget->onScrollValueChangedWithoutSignal(dstLineCount - 1);
 }
 
 void ZFileWidget::setDiffInfo()
@@ -676,6 +676,7 @@ void ZFileWidget::onScrollValueChanged(int value)
             dstIndex++;
         }
     }
+
     dstIndex -= center;
     dstScrollTextWidget->onScrollValueChangedWithoutSignal(dstIndex);
 }

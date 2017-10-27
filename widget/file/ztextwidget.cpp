@@ -191,7 +191,8 @@ void ZTextWidget::updateLineNumberArea(const QRect &rect, int dy)
 
 void ZTextWidget::initData()
 {
-
+    mFirstVisibleBlockNo = 0;
+    mLastVisibleBlockNo = 0;
 }
 
 void ZTextWidget::initUI()
