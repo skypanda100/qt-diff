@@ -22,6 +22,7 @@ void MainWindow::initData()
 
 void MainWindow::initUI()
 {
+    this->setContentsMargins(10, 10, 10, 10);
     mTopWidget = new ZTopWidget;
     mTopWidget->setFloatable(false);
     mTopWidget->setMovable(false);

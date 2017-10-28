@@ -734,7 +734,7 @@ QLabel
 }
 
 QTabWidget{
-    border: 1px transparent black;
+    border: 1px solid #444;
 }
 
 QTabWidget::pane {
