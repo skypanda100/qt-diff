@@ -562,7 +562,7 @@ QStackedWidget
 }
 
 QToolBar {
-    border: 1px transparent #393838;
+    border: 1px solid #444;
     background: 1px solid #302F2F;
     font-weight: bold;
 }
@@ -954,13 +954,12 @@ QTreeView::branch:open:has-children:has-siblings:hover  {
     }
 
 QListView::item:!selected:hover, QListView::item:!selected:hover, QTreeView::item:!selected:hover  {
-    background: rgba(0, 0, 0, 0);
-    outline: 0;
+    background: rgba(61, 142, 201, 70);
     color: #FFFFFF
 }
 
 QListView::item:selected:hover, QListView::item:selected:hover, QTreeView::item:selected:hover  {
-    background: #3d8ec9;
+    background: rgba(61, 142, 201, 200);
     color: #FFFFFF;
 }
 
