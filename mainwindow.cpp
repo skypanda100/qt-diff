@@ -23,6 +23,8 @@ void MainWindow::initData()
 void MainWindow::initUI()
 {
     mTopWidget = new ZTopWidget;
+    mTopWidget->setFloatable(false);
+    mTopWidget->setMovable(false);
     this->addToolBar(mTopWidget);
 
     mCenterWidget = new ZCenterWidget;

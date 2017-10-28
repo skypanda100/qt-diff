@@ -55,7 +55,7 @@ void ZTopWidget::initUI()
     this->addWidget(mFileButton);
     this->addWidget(mRefreshButton);
     this->addWidget(mStopButton);
-    this->setIconSize(QSize(60, 60));
+    this->setIconSize(QSize(45, 45));
 }
 
 void ZTopWidget::initConnect()

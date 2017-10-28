@@ -147,7 +147,7 @@ void ZFolderWidget::initUI()
     mTreeView = new QTreeView;
     ZTreeModel *model = new ZTreeModel(mHeader, "");
     mTreeView->setModel(model);
-    mTreeView->setAlternatingRowColors(true);
+    mTreeView->setAlternatingRowColors(false);
 
     mFileLabel = new QLabel;
     mLineLabel = new QLabel;
@@ -164,6 +164,10 @@ void ZFolderWidget::initUI()
     folderLayout->addWidget(mTimeLabel, 0, Qt::AlignRight);
 
     setLayout(folderLayout);
+
+    //test
+    mPathEditSrc->setText("E:/WorkSpace/QT/qt-diff_bak");
+    mPathEditDst->setText("E:/WorkSpace/QT/qt-diff");
 }
 
 void ZFolderWidget::initConnect()

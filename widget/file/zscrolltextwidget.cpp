@@ -132,6 +132,7 @@ void ZScrollTextWidget::initUI()
     mAboveWidget = new QWidget;
     mAboveWidget->setLayout(aboveGridLayout);
     mAboveWidget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    mAboveWidget->setStyleSheet("background-color:transparent;");
 
     QStackedLayout *stackedLayout = new QStackedLayout;
     stackedLayout->setSpacing(0);

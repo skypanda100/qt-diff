@@ -17,10 +17,16 @@ int main(int argc, char *argv[])
     font.setFamily("Helvetica");
     qApp->setFont(font);
 
+    QFile qss(":/qdarkstyle/style.qss");
+    qss.open(QFile::ReadOnly);
+    qApp->setStyleSheet(qss.readAll());
+    qss.close();
+
     MainWindow w;
     w.show();
 
     w.resize(QSize(850, 600));
+    w.setFocus();
 
     return a.exec();
 }
