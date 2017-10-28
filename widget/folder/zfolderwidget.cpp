@@ -165,9 +165,9 @@ void ZFolderWidget::initUI()
 
     setLayout(folderLayout);
 
-    //test
-    mPathEditSrc->setText("E:/WorkSpace/QT/qt-diff_bak");
-    mPathEditDst->setText("E:/WorkSpace/QT/qt-diff");
+//    //test
+//    mPathEditSrc->setText("E:/WorkSpace/QT/qt-diff_bak");
+//    mPathEditDst->setText("E:/WorkSpace/QT/qt-diff");
 }
 
 void ZFolderWidget::initConnect()

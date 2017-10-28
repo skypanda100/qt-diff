@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = qt-diff
+TARGET = zdiff
 TEMPLATE = app
 
 
@@ -64,3 +64,6 @@ HEADERS  += mainwindow.h \
 
 RESOURCES += \
     resource.qrc
+
+RC_FILE += \
+    zdiff.rc
