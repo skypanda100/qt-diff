@@ -48,6 +48,7 @@ void ZDiffAreaWidget::paintEvent(QPaintEvent *event)
                 }
                 else
                 {
+                    painter.setPen(color);
                     color.setAlpha(STATUS_CLR_ALPHA);
                     painter.setBrush(QBrush(color));
                     painter.drawRect(QRectF(startPoint, QSizeF(rectf.width(), rectf.height())));
