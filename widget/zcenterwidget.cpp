@@ -141,7 +141,7 @@ void ZCenterWidget::initUI()
     mTabWidget->setTabsClosable(true);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
-    tabLayout->setContentsMargins(0, 10, 0, 0);
+    tabLayout->setContentsMargins(0, STANDARD_MARGIN, 0, 0);
     tabLayout->addWidget(mTabWidget);
     this->setLayout(tabLayout);
 }

@@ -44,5 +44,7 @@ const int OVERVIEW_DIFF_AREA_MARGIN = 4;
 const QColor OVERVIEW_DIFF_AREA_CLR = QColor(200, 0, 0, 150);
 
 const int SHOW_DIFF_DELAY = 1000;
+
+const int STANDARD_MARGIN = 10;
 #endif // CONS
 

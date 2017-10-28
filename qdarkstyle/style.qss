@@ -37,6 +37,7 @@ QWidget:item:hover
 QWidget:item:selected
 {
     background-color: #3d8ec9;
+
 }
 
 QCheckBox
@@ -562,7 +563,6 @@ QStackedWidget
 }
 
 QToolBar {
-    border-top: 1px solid #444;
     border-bottom: 1px solid #444;
     background: 1px solid #302F2F;
     font-weight: bold;
@@ -779,18 +779,19 @@ QTabBar::tab:top {
     border-bottom: 1px transparent #4A4949;
     background-color: #302F2F;
     padding: 5px;
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 QTabBar::tab:top:!selected
 {
     color: #b1b1b1;
-    background-color: #201F1F;
-    border: 1px transparent #4A4949;
+    border: 1px solid #4A4949;
     border-bottom: 1px solid #4A4949;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
+    background-color: #201F1F;
+    padding: 5px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 QTabBar::tab:top:!selected:hover {
