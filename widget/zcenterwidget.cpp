@@ -2,53 +2,8 @@
 #include "widget/folder/zfolderwidget.h"
 #include "widget/file/zfilewidget.h"
 
-ZTabBar::ZTabBar(QWidget *parent)
-    : QTabBar(parent)
-{
-    setAcceptDrops(true);
-    setMovable(true);
-    setTabsClosable(true);
-    connect(this, SIGNAL(tabCloseRequested(int)),
-            this, SIGNAL(closeTab(int)));
-}
-
-ZTabBar::~ZTabBar(){
-
-}
-
-void ZTabBar::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-        mDragStartPos = event->pos();
-    QTabBar::mousePressEvent(event);
-}
-
-void ZTabBar::mouseMoveEvent(QMouseEvent *event)
-{
-    if (event->buttons() == Qt::LeftButton) {
-        int diffX = event->pos().x() - mDragStartPos.x();
-        int diffY = event->pos().y() - mDragStartPos.y();
-        if ((event->pos() - mDragStartPos).manhattanLength() > QApplication::startDragDistance()
-            && diffX < 3 && diffX > -3
-            && diffY < -10) {
-            QDrag *drag = new QDrag(this);
-            QMimeData *mimeData = new QMimeData;
-            QList<QUrl> urls;
-            int index = tabAt(event->pos());
-            QUrl url = tabData(index).toUrl();
-            urls.append(url);
-            mimeData->setUrls(urls);
-            mimeData->setText(tabText(index));
-            mimeData->setData(QLatin1String("action"), "tab-reordering");
-            drag->setMimeData(mimeData);
-            drag->exec();
-        }
-    }
-    QTabBar::mouseMoveEvent(event);
-}
-
 ZCenterWidget::ZCenterWidget(QWidget *parent)
-    :QTabWidget(parent)
+    :QWidget(parent)
 {
     initData();
     initUI();
@@ -57,31 +12,31 @@ ZCenterWidget::ZCenterWidget(QWidget *parent)
 
 ZCenterWidget::~ZCenterWidget()
 {
-    delete mTabBar;
+    delete mTabWidget;
 }
 
 void ZCenterWidget::closeTab(int index)
 {
     if(index < 0)
     {
-        index = currentIndex();
+        index = mTabWidget->currentIndex();
     }
 
-    if(index < 0 || index >= count())
+    if(index < 0 || index >= mTabWidget->count())
     {
         return;
     }
 
-    if(QString::compare(this->widget(index)->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
+    if(QString::compare(mTabWidget->widget(index)->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
-        ZFolderWidget *widget = (ZFolderWidget *)(this->widget(index));
-        removeTab(index);
+        ZFolderWidget *widget = (ZFolderWidget *)(mTabWidget->widget(index));
+        mTabWidget->removeTab(index);
         delete widget;
     }
     else
     {
-        ZFileWidget *widget = (ZFileWidget *)(this->widget(index));
-        removeTab(index);
+        ZFileWidget *widget = (ZFileWidget *)(mTabWidget->widget(index));
+        mTabWidget->removeTab(index);
         delete widget;
     }
 }
@@ -93,8 +48,8 @@ void ZCenterWidget::folderComparison()
     ZFolderWidget *folderWidget = new ZFolderWidget;
     folderWidget->setObjectName(OBJECT_FOLDER_COMPARISON);
     connect(folderWidget, SIGNAL(fileCompare(ZPathDiffModel)), this, SLOT(fileCompare(ZPathDiffModel)));
-    int index = addTab(folderWidget, QIcon(":/icon/folder.png"), title);
-    this->setCurrentIndex(index);
+    int index = mTabWidget->addTab(folderWidget, QIcon(":/icon/folder.png"), title);
+    mTabWidget->setCurrentIndex(index);
 }
 
 void ZCenterWidget::fileComparison()
@@ -106,21 +61,21 @@ void ZCenterWidget::fileComparison()
 
 void ZCenterWidget::startOrRecompare()
 {
-    if(this->currentWidget() == NULL)
+    if(mTabWidget->currentWidget() == NULL)
     {
         return;
     }
-    if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
+    if(QString::compare(mTabWidget->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
-        ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+        ZFolderWidget *widget = (ZFolderWidget *)(mTabWidget->currentWidget());
         if(widget != NULL)
         {
             widget->compare();
         }
     }
-    else if(QString::compare(this->currentWidget()->objectName(), OBJECT_FILE_COMPARISON) == 0)
+    else if(QString::compare(mTabWidget->currentWidget()->objectName(), OBJECT_FILE_COMPARISON) == 0)
     {
-        ZFileWidget *widget = (ZFileWidget *)(this->currentWidget());
+        ZFileWidget *widget = (ZFileWidget *)(mTabWidget->currentWidget());
         if(widget != NULL)
         {
             widget->compare();
@@ -130,13 +85,13 @@ void ZCenterWidget::startOrRecompare()
 
 void ZCenterWidget::stopCompare()
 {
-    if(this->currentWidget() == NULL)
+    if(mTabWidget->currentWidget() == NULL)
     {
         return;
     }
-    if(QString::compare(this->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
+    if(QString::compare(mTabWidget->currentWidget()->objectName(), OBJECT_FOLDER_COMPARISON) == 0)
     {
-        ZFolderWidget *widget = (ZFolderWidget *)(this->currentWidget());
+        ZFolderWidget *widget = (ZFolderWidget *)(mTabWidget->currentWidget());
         if(widget != NULL)
         {
             widget->stopCompare();
@@ -145,7 +100,7 @@ void ZCenterWidget::stopCompare()
 }
 
 void ZCenterWidget::paintEvent(QPaintEvent *event){
-    QTabWidget::paintEvent(event);
+    QWidget::paintEvent(event);
 }
 
 void ZCenterWidget::fileCompare(ZPathDiffModel pathDiffModel)
@@ -168,8 +123,8 @@ void ZCenterWidget::fileCompare(ZPathDiffModel pathDiffModel)
     {
         title = srcFileName;
     }
-    int index = addTab(fileWidget, QIcon(":/icon/file.png"), title);
-    this->setCurrentIndex(index);
+    int index = mTabWidget->addTab(fileWidget, QIcon(":/icon/file.png"), title);
+    mTabWidget->setCurrentIndex(index);
 }
 
 void ZCenterWidget::initData()
@@ -180,14 +135,19 @@ void ZCenterWidget::initData()
 
 void ZCenterWidget::initUI()
 {
-    setElideMode(Qt::ElideRight);
-    mTabBar = new ZTabBar(this);
-    setTabBar(mTabBar);
-    setDocumentMode(true);
+    mTabWidget = new QTabWidget;
+    mTabWidget->setElideMode(Qt::ElideRight);
+    mTabWidget->setDocumentMode(true);
+    mTabWidget->setTabsClosable(true);
+
+    QVBoxLayout *tabLayout = new QVBoxLayout;
+    tabLayout->setContentsMargins(0, 10, 0, 0);
+    tabLayout->addWidget(mTabWidget);
+    this->setLayout(tabLayout);
 }
 
 void ZCenterWidget::initConnect()
 {
-    connect(mTabBar, SIGNAL(closeTab(int)), this, SLOT(closeTab(int)));
+    connect(mTabWidget->tabBar(), SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 }
 

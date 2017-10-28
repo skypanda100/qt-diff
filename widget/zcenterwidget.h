@@ -4,26 +4,7 @@
 #include <QtWidgets>
 #include "diff/zpathdiffmodel.h"
 
-class ZTabBar : public QTabBar{
-    Q_OBJECT
-
-public:
-    ZTabBar(QWidget *parent = 0);
-    ~ZTabBar();
-
-signals:
-    void closeTab(int);
-
-protected:
-    void mousePressEvent(QMouseEvent* event);
-    void mouseMoveEvent(QMouseEvent* event);
-
-private:
-    friend class ZCenterWidget;
-    QPoint mDragStartPos;
-};
-
-class ZCenterWidget : public QTabWidget{
+class ZCenterWidget : public QWidget{
     Q_OBJECT
 
 public:
@@ -47,7 +28,7 @@ private:
     void initConnect();
 
 private:
-    ZTabBar *mTabBar;
+    QTabWidget *mTabWidget;
     int mTextCount;
     int mFolderCount;
 };
