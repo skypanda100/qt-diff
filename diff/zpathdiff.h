@@ -18,6 +18,7 @@ public:
     QList<ZPathDiffModel> execute();
 
 private:
+    void sort(QList<ZPathDiffModel> &pathModelList);
 
 private:
     QString mPathSrc;

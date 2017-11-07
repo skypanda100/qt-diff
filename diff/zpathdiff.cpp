@@ -2,6 +2,7 @@
 #include <QFileInfo>
 #include "util/zfile.h"
 #include "env/zcons.h"
+#include <QDebug>
 
 ZPathDiff::ZPathDiff()
 {
@@ -31,6 +32,9 @@ void ZPathDiff::setPathDst(const QString &pathDst)
 
 QList<ZPathDiffModel> ZPathDiff::execute()
 {
+    mPathSrc = QDir::cleanPath(mPathSrc);
+    mPathDst = QDir::cleanPath(mPathDst);
+
     QList<ZPathDiffModel> pathModelLst;
     QFileInfoList srcFileInfoList = ZFile::files(mPathSrc);
     QFileInfoList dstFileInfoList = ZFile::files(mPathDst);
@@ -107,14 +111,39 @@ QList<ZPathDiffModel> ZPathDiff::execute()
         for(int i = 0;i < dstFileCount;i++)
         {
             QFileInfo dstFileInfo = dstFileInfoList[i];
+            QString dstPathWithoutBase = dstFileInfo.absolutePath().remove(0, mPathDst.length());
+            ZPathDiffModel dstModel;
+            dstModel.setDstFileInfo(dstFileInfo);
+            dstModel.setStatus(Added);
 
-            ZPathDiffModel model;
-            model.setDstFileInfo(dstFileInfo);
-            model.setStatus(Added);
+            int pathModelCount = pathModelLst.size();
+            int srcIndex = pathModelCount + 1;
+            int leftCharCount = dstPathWithoutBase.length();
+            for(int j = 0;j < pathModelCount;j++)
+            {
+                QString tmpDstPathWithoutBase = dstPathWithoutBase;
+                ZPathDiffModel pathModel = pathModelLst[j];
+                QString pathWithoutBase = pathModel.status() == Added
+                        ? pathModel.dstFileInfo().absolutePath().remove(0, mPathDst.length())
+                        : pathModel.srcFileInfo().absolutePath().remove(0, mPathSrc.length());
+                if(pathWithoutBase.length() <= tmpDstPathWithoutBase.length())
+                {
 
-            pathModelLst.append(model);
+                    if(tmpDstPathWithoutBase.indexOf(pathWithoutBase) == 0)
+                    {
+                        int tmpLeftCharCount = tmpDstPathWithoutBase.remove(0, pathWithoutBase.length()).length();
+                        if(tmpLeftCharCount <= leftCharCount)
+                        {
+                            srcIndex = j + 1;
+                            leftCharCount = tmpLeftCharCount;
+                        }
+                    }
+                }
+            }
+            pathModelLst.insert(srcIndex, dstModel);
         }
     }
 
     return pathModelLst;
 }
+
