@@ -49,5 +49,9 @@
         <file>qdarkstyle/rc/up_arrow_disabled.png</file>
         <file>qdarkstyle/rc/Vmovetoolbar.png</file>
         <file>qdarkstyle/rc/Vsepartoolbar.png</file>
+        <file>font/Consolas/consola.ttf</file>
+        <file>font/Consolas/consolab.ttf</file>
+        <file>font/Consolas/consolai.ttf</file>
+        <file>font/Consolas/consolaz.ttf</file>
     </qresource>
 </RCC>

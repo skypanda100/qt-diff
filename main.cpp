@@ -6,15 +6,17 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    int id = QFontDatabase::addApplicationFont(":/font/Helvetica/Helvetica.ttf");
+    int id = QFontDatabase::addApplicationFont(":/font/Consolas/consola.ttf");
     qDebug() << QFontDatabase::applicationFontFamilies(id);
-    id = QFontDatabase::addApplicationFont(":/font/Helvetica/Helvetica-Light.ttf");
+    id = QFontDatabase::addApplicationFont(":/font/Consolas/consolab.ttf");
     qDebug() << QFontDatabase::applicationFontFamilies(id);
-    id = QFontDatabase::addApplicationFont(":/font/Helvetica/Helvetica-Bold.ttf");
+    id = QFontDatabase::addApplicationFont(":/font/Consolas/consolai.ttf");
+    qDebug() << QFontDatabase::applicationFontFamilies(id);
+    id = QFontDatabase::addApplicationFont(":/font/Consolas/consolaz.ttf");
     qDebug() << QFontDatabase::applicationFontFamilies(id);
 
     QFont font;
-    font.setFamily("Helvetica");
+    font.setFamily("Consolas");
     qApp->setFont(font);
 
     QFile qss(":/qdarkstyle/style.qss");
