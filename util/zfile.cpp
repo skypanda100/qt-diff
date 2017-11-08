@@ -27,6 +27,7 @@ int ZFile::lines(QFile *file)
     }
 
     QTextStream in(file);
+    in.setCodec("UTF-8");
     while(!in.atEnd())
     {
         in.readLine();
@@ -50,6 +51,7 @@ int ZFile::linesWithLine(QFile *file, QList<QString> &lineLst)
     }
 
     QTextStream in(file);
+    in.setCodec("UTF-8");
     while(!in.atEnd())
     {
         lineLst.append(in.readLine());
@@ -73,6 +75,7 @@ int ZFile::linesWithHash(QFile *file, QList<unsigned int> &hashLst)
     }
 
     QTextStream in(file);
+    in.setCodec("UTF-8");
     while(!in.atEnd())
     {
         QString line = in.readLine();
