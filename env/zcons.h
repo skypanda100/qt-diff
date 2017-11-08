@@ -33,7 +33,7 @@ const int STATUS_CLR_ALPHA = 100;
 const QString OBJECT_FOLDER_COMPARISON = "folder";
 const QString OBJECT_FILE_COMPARISON = "file";
 
-const QColor LINE_NUMBER_AREA = QColor(230, 230, 230);
+const QColor LINE_NUMBER_AREA = QColor(140, 140, 140);
 
 const int SCROLL_BAR_WIDTH = 16;
 

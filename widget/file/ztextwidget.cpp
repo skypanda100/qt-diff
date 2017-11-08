@@ -18,7 +18,7 @@ void ZTextWidget::lineNumberAreaPaintEvent(QPaintEvent */*event*/)
 {
     QPainter painter(mLineNumberArea);
     painter.setRenderHint(QPainter::Antialiasing, true);
-//    painter.fillRect(this->rect(), QBrush(LINE_NUMBER_AREA));
+    painter.setPen(LINE_NUMBER_AREA);
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();

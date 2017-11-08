@@ -211,9 +211,8 @@ QMenuBar::item:selected
 
 QMenuBar::item:pressed
 {
-    border: 1px solid #3A3939;
-    background-color: #3d8ec9;
-    color: black;
+    background-color: #4EA6EA;
+    color: white;
     margin-bottom:-1px;
     padding-bottom:1px;
 }
@@ -312,7 +311,7 @@ QAbstractItemView
 
 QWidget:focus, QMenuBar:focus
 {
-    border: 1px solid #4EA6EA;
+    /*border: 1px solid #4EA6EA;*/
 }
 
 QTabWidget:focus, QCheckBox:focus, QRadioButton:focus, QSlider:focus
@@ -631,11 +630,13 @@ QPushButton:checked{
     border-color: #6A6969;
 }
 
+/*
 QComboBox:hover,QPushButton:hover,QAbstractSpinBox:hover,QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QAbstractView:hover,QTreeView:hover
 {
     border: 1px solid #4EA6EA;
     color: white;
 }
+*/
 
 QComboBox:on
 {
@@ -679,7 +680,7 @@ QComboBox::down-arrow:focus
 
 QPushButton:pressed
 {
-    border: 2px solid #4EA6EA;
+    border: 1px solid #4EA6EA;
 }
 
 QAbstractSpinBox {
@@ -795,7 +796,7 @@ QTabBar::tab:top:!selected
 }
 
 QTabBar::tab:top:!selected:hover {
-    background-color: #48576b;
+    /*background-color: #48576b;*/
 }
 
 /* BOTTOM TABS */
@@ -1011,25 +1012,23 @@ QToolButton {
 
 QToolButton[popupMode="1"] { /* only for MenuButtonPopup */
  padding-right: 20px; /* make way for the popup button */
- border: 1px transparent #4A4949;
  border-radius: 5px;
 }
 
 QToolButton[popupMode="2"] { /* only for InstantPopup */
  padding-right: 10px; /* make way for the popup button */
- border: 1px transparent #4A4949;
 }
 
 
 QToolButton:hover, QToolButton::menu-button:hover {
-    background-color: transparent;
-    border: 1px solid #4EA6EA;
+    background-color: #222222;
+    color: white;
 }
 
 QToolButton:checked, QToolButton:pressed,
         QToolButton::menu-button:pressed {
-    background-color: #4A4949;
-    border: 1px solid #4EA6EA;
+    background-color: #111111;
+    color: white;
 }
 
 /* the subcontrol below is used only in the InstantPopup or DelayedPopup mode */
