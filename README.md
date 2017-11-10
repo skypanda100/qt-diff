@@ -1,3 +1,17 @@
+# ScreenShot(windows)
+* Folder comparison  
+![folder comparison](/screenshot/1.png)
+
+* Text comparison  
+![text comparison](/screenshot/2.png)
+
+# ScreenShot(linux)
+* Folder comparison  
+![folder comparison](/screenshot/3.png)
+
+* Text comparison  
+![text comparison](/screenshot/4.png)
+
 # LCS
 举例说明：A=GGATCGA，B=GAATTCAGTTA  
 * 初始化LD矩阵  
@@ -32,13 +46,6 @@
 搜索晚整个匹配路径，匹配字串也就完成了  
 A：GGA_TC_G__A  
 B：GAATTCAGTTA  
-
-# ScreenShot
-* Folder comparison  
-![folder comparison](/screenshot/1.png)
-
-* Text comparison  
-![text comparison](/screenshot/2.png)
 
 # Release
 [download](https://github.com/skypanda100/qt-diff/releases)
